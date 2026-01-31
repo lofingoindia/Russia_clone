@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Dashboard from "./Dashboard";
 import UsersPage from "./UsersPage";
 import LoginPage from "./LoginPage";
+import { authAPI, usersAPI, getToken, getAdminInfo, User as APIUser } from "./lib/api";
 
 interface User {
   id: number;
@@ -13,8 +14,12 @@ interface User {
   address: string;
   role: string;
   profileImage: string | null;
-  doc1: string | File | null;
-  doc2: string | File | null;
+  doc1: string | null;
+  doc1Url: string | null;
+  doc1Name: string | null;
+  doc2: string | null;
+  doc2Url: string | null;
+  doc2Name: string | null;
 }
 
 export default function Home() {
@@ -22,48 +27,103 @@ export default function Home() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [users, setUsers] = useState<User[]>([
-    { id: 1, name: 'Alice Johnson', email: 'alice@example.com', phone: '+1 (555) 123-4567', address: '123 Maple St, Springfield, IL', role: 'Admin', profileImage: null, doc1: 'passport.pdf', doc2: 'id_card.png' },
-    { id: 2, name: 'Bob Smith', email: 'bob@example.com', phone: '+1 (555) 987-6543', address: '456 Oak Ave, Metropolis, NY', role: 'Manager', profileImage: null, doc1: 'contract.pdf', doc2: null },
-  ]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [adminInfo, setAdminInfoState] = useState<{ name: string; role: string } | null>(null);
+
+  // Convert API User to local User format
+  const mapApiUser = (apiUser: APIUser): User => ({
+    id: apiUser.id,
+    name: apiUser.name,
+    email: apiUser.email,
+    phone: apiUser.phone || '',
+    address: apiUser.address || '',
+    role: apiUser.role,
+    profileImage: apiUser.profileImage,
+    doc1: apiUser.doc1,
+    doc1Url: apiUser.doc1Url,
+    doc1Name: apiUser.doc1Name,
+    doc2: apiUser.doc2,
+    doc2Url: apiUser.doc2Url,
+    doc2Name: apiUser.doc2Name,
+  });
+
+  // Fetch users from API
+  const fetchUsers = async () => {
+    try {
+      const response = await usersAPI.getAll();
+      if (response.success && response.data) {
+        setUsers(response.data.map(mapApiUser));
+      }
+    } catch (error) {
+      console.error('Failed to fetch users:', error);
+    }
+  };
 
   // Initialize state from localStorage on mount
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
     const savedTab = localStorage.getItem('activeTab');
-    const savedAuth = localStorage.getItem('isLoggedIn') === 'true';
+    const token = getToken();
+    const admin = getAdminInfo();
 
     if (savedTheme) setTheme(savedTheme);
     if (savedTab) setActiveTab(savedTab);
-    if (savedAuth) setIsLoggedIn(true);
+    
+    if (token && admin) {
+      setIsLoggedIn(true);
+      setAdminInfoState(admin);
+    }
 
     setMounted(true);
+    setLoading(false);
   }, []);
+
+  // Fetch users when logged in
+  useEffect(() => {
+    if (isLoggedIn && mounted) {
+      fetchUsers();
+    }
+  }, [isLoggedIn, mounted]);
 
   // Sync state to localStorage
   useEffect(() => {
     if (mounted) {
       localStorage.setItem('theme', theme);
       localStorage.setItem('activeTab', activeTab);
-      localStorage.setItem('isLoggedIn', isLoggedIn.toString());
     }
-  }, [theme, activeTab, isLoggedIn, mounted]);
+  }, [theme, activeTab, mounted]);
 
   const toggleTheme = () => {
     setTheme(prev => prev === 'light' ? 'dark' : 'light');
   };
 
-  const handleLogin = () => {
-    setIsLoggedIn(true);
+  const handleLogin = async (email: string, password: string): Promise<boolean> => {
+    try {
+      const response = await authAPI.login(email, password);
+      if (response.success && response.data) {
+        const { admin } = response.data as { admin: { name: string; role: string } };
+        setIsLoggedIn(true);
+        setAdminInfoState(admin);
+        await fetchUsers();
+        return true;
+      }
+      return false;
+    } catch {
+      return false;
+    }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await authAPI.logout();
     setIsLoggedIn(false);
+    setAdminInfoState(null);
+    setUsers([]);
     localStorage.removeItem('isLoggedIn');
   };
 
   // Prevent hydration mismatch
-  if (!mounted) {
+  if (!mounted || loading) {
     return (
       <div className="min-h-screen bg-background text-foreground" style={{ visibility: 'hidden' }}>
         <div className="flex h-screen overflow-hidden">
@@ -87,9 +147,25 @@ export default function Home() {
     <div className={theme === 'dark' ? 'dark text-foreground' : 'text-foreground'}>
       <div className="bg-background min-h-screen">
         {activeTab === "Dashboard" ? (
-          <Dashboard onTabChange={setActiveTab} theme={theme} onThemeToggle={toggleTheme} onLogout={handleLogout} users={users} />
+          <Dashboard 
+            onTabChange={setActiveTab} 
+            theme={theme} 
+            onThemeToggle={toggleTheme} 
+            onLogout={handleLogout} 
+            users={users}
+            adminInfo={adminInfo}
+          />
         ) : (
-          <UsersPage onTabChange={setActiveTab} theme={theme} onThemeToggle={toggleTheme} onLogout={handleLogout} users={users} setUsers={setUsers} />
+          <UsersPage 
+            onTabChange={setActiveTab} 
+            theme={theme} 
+            onThemeToggle={toggleTheme} 
+            onLogout={handleLogout} 
+            users={users} 
+            setUsers={setUsers}
+            refreshUsers={fetchUsers}
+            adminInfo={adminInfo}
+          />
         )}
       </div>
     </div>

@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 
 interface LoginPageProps {
-    onLogin: () => void;
+    onLogin: (email: string, password: string) => Promise<boolean>;
     theme: 'light' | 'dark';
     onThemeToggle: () => void;
 }
@@ -12,13 +12,23 @@ const LoginPage = ({ onLogin, theme, onThemeToggle }: LoginPageProps) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState('');
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (email === 'admin@russiaapp.com' && password === 'admin123') {
-            onLogin();
-        } else {
-            alert('Invalid credentials. Use the ones at the bottom.');
+        setError('');
+        setIsLoading(true);
+
+        try {
+            const success = await onLogin(email, password);
+            if (!success) {
+                setError('Invalid email or password');
+            }
+        } catch {
+            setError('Login failed. Please try again.');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -107,11 +117,17 @@ const LoginPage = ({ onLogin, theme, onThemeToggle }: LoginPageProps) => {
                             </div>
 
                             <div className="pt-4 space-y-4">
+                                {error && (
+                                    <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-[10px] text-sm text-red-600 dark:text-red-400">
+                                        {error}
+                                    </div>
+                                )}
                                 <button
                                     type="submit"
-                                    className="w-full py-3.5 bg-[#3B82F6] text-white text-sm font-bold rounded-[10px] border border-[#3B82F6] cursor-default"
+                                    disabled={isLoading}
+                                    className="w-full py-3.5 bg-[#3B82F6] text-white text-sm font-bold rounded-[10px] border border-[#3B82F6] cursor-default disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    Sign In
+                                    {isLoading ? 'Signing In...' : 'Sign In'}
                                 </button>
 
                             </div>

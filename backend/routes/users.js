@@ -1,0 +1,440 @@
+const express = require('express');
+const { pool } = require('../config/database');
+const { authenticateToken } = require('../middleware/auth');
+const { uploadUserFiles, handleUploadError } = require('../middleware/upload');
+const fs = require('fs');
+const path = require('path');
+
+const router = express.Router();
+
+// Helper function to build file URL
+const buildFileUrl = (req, filePath) => {
+    if (!filePath) return null;
+    return `${req.protocol}://${req.get('host')}/uploads/${filePath}`;
+};
+
+// Helper function to delete file
+const deleteFile = (filePath) => {
+    if (!filePath) return;
+    const fullPath = path.join(__dirname, '..', 'uploads', filePath);
+    if (fs.existsSync(fullPath)) {
+        fs.unlinkSync(fullPath);
+    }
+};
+
+// GET /api/users - Get all users
+router.get('/', authenticateToken, async (req, res) => {
+    try {
+        const [users] = await pool.execute(
+            `SELECT id, name, email, phone, address, role, 
+                    profile_image, doc1, doc1_original_name, doc2, doc2_original_name,
+                    is_active, created_at, updated_at 
+             FROM users 
+             WHERE is_active = 1 
+             ORDER BY created_at DESC`
+        );
+
+        // Build full URLs for files
+        const usersWithUrls = users.map(user => ({
+            ...user,
+            profileImage: buildFileUrl(req, user.profile_image),
+            doc1Url: buildFileUrl(req, user.doc1),
+            doc1Name: user.doc1_original_name,
+            doc2Url: buildFileUrl(req, user.doc2),
+            doc2Name: user.doc2_original_name
+        }));
+
+        res.json({
+            success: true,
+            data: usersWithUrls,
+            count: users.length
+        });
+    } catch (error) {
+        console.error('Get users error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+});
+
+// GET /api/users/stats - Get dashboard statistics
+router.get('/stats', authenticateToken, async (req, res) => {
+    try {
+        // Total users
+        const [[{ total }]] = await pool.execute(
+            'SELECT COUNT(*) as total FROM users WHERE is_active = 1'
+        );
+
+        // Users by role
+        const [roleStats] = await pool.execute(
+            `SELECT role, COUNT(*) as count 
+             FROM users 
+             WHERE is_active = 1 
+             GROUP BY role`
+        );
+
+        // Users with documents
+        const [[{ withDocs }]] = await pool.execute(
+            `SELECT COUNT(*) as withDocs 
+             FROM users 
+             WHERE is_active = 1 AND (doc1 IS NOT NULL OR doc2 IS NOT NULL)`
+        );
+
+        // Recent users (last 7 days)
+        const [[{ recentCount }]] = await pool.execute(
+            `SELECT COUNT(*) as recentCount 
+             FROM users 
+             WHERE is_active = 1 AND created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)`
+        );
+
+        res.json({
+            success: true,
+            data: {
+                totalUsers: total,
+                roleDistribution: roleStats,
+                usersWithDocuments: withDocs,
+                recentUsers: recentCount
+            }
+        });
+    } catch (error) {
+        console.error('Get stats error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+});
+
+// GET /api/users/:id - Get single user
+router.get('/:id', authenticateToken, async (req, res) => {
+    try {
+        const [users] = await pool.execute(
+            `SELECT id, name, email, phone, address, role, 
+                    profile_image, doc1, doc1_original_name, doc2, doc2_original_name,
+                    is_active, created_at, updated_at 
+             FROM users 
+             WHERE id = ? AND is_active = 1`,
+            [req.params.id]
+        );
+
+        if (users.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        const user = users[0];
+        res.json({
+            success: true,
+            data: {
+                ...user,
+                profileImage: buildFileUrl(req, user.profile_image),
+                doc1Url: buildFileUrl(req, user.doc1),
+                doc1Name: user.doc1_original_name,
+                doc2Url: buildFileUrl(req, user.doc2),
+                doc2Name: user.doc2_original_name
+            }
+        });
+    } catch (error) {
+        console.error('Get user error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+});
+
+// POST /api/users - Create new user
+router.post('/', authenticateToken, uploadUserFiles, handleUploadError, async (req, res) => {
+    try {
+        const { name, email, phone, address, role } = req.body;
+
+        // Validate required fields
+        if (!name || !email) {
+            return res.status(400).json({
+                success: false,
+                message: 'Name and email are required'
+            });
+        }
+
+        // Check if email already exists
+        const [existing] = await pool.execute(
+            'SELECT id FROM users WHERE email = ?',
+            [email]
+        );
+
+        if (existing.length > 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'Email already exists'
+            });
+        }
+
+        // Handle file uploads
+        let profileImage = null;
+        let doc1 = null;
+        let doc1OriginalName = null;
+        let doc2 = null;
+        let doc2OriginalName = null;
+
+        if (req.files) {
+            if (req.files.profileImage) {
+                profileImage = 'profiles/' + req.files.profileImage[0].filename;
+            }
+            if (req.files.doc1) {
+                doc1 = 'documents/' + req.files.doc1[0].filename;
+                doc1OriginalName = req.files.doc1[0].originalname;
+            }
+            if (req.files.doc2) {
+                doc2 = 'documents/' + req.files.doc2[0].filename;
+                doc2OriginalName = req.files.doc2[0].originalname;
+            }
+        }
+
+        // Insert user
+        const [result] = await pool.execute(
+            `INSERT INTO users (name, email, phone, address, role, profile_image, doc1, doc1_original_name, doc2, doc2_original_name) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [name, email, phone || null, address || null, role || 'User', profileImage, doc1, doc1OriginalName, doc2, doc2OriginalName]
+        );
+
+        // Get created user
+        const [users] = await pool.execute(
+            'SELECT * FROM users WHERE id = ?',
+            [result.insertId]
+        );
+
+        const user = users[0];
+
+        res.status(201).json({
+            success: true,
+            message: 'User created successfully',
+            data: {
+                ...user,
+                profileImage: buildFileUrl(req, user.profile_image),
+                doc1Url: buildFileUrl(req, user.doc1),
+                doc1Name: user.doc1_original_name,
+                doc2Url: buildFileUrl(req, user.doc2),
+                doc2Name: user.doc2_original_name
+            }
+        });
+    } catch (error) {
+        console.error('Create user error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+});
+
+// PUT /api/users/:id - Update user
+router.put('/:id', authenticateToken, uploadUserFiles, handleUploadError, async (req, res) => {
+    try {
+        const { name, email, phone, address, role } = req.body;
+        const userId = req.params.id;
+
+        // Check if user exists
+        const [existing] = await pool.execute(
+            'SELECT * FROM users WHERE id = ? AND is_active = 1',
+            [userId]
+        );
+
+        if (existing.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        const currentUser = existing[0];
+
+        // Check email uniqueness if changed
+        if (email && email !== currentUser.email) {
+            const [emailCheck] = await pool.execute(
+                'SELECT id FROM users WHERE email = ? AND id != ?',
+                [email, userId]
+            );
+            if (emailCheck.length > 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Email already exists'
+                });
+            }
+        }
+
+        // Handle file uploads
+        let profileImage = currentUser.profile_image;
+        let doc1 = currentUser.doc1;
+        let doc1OriginalName = currentUser.doc1_original_name;
+        let doc2 = currentUser.doc2;
+        let doc2OriginalName = currentUser.doc2_original_name;
+
+        if (req.files) {
+            if (req.files.profileImage) {
+                // Delete old file
+                deleteFile(currentUser.profile_image);
+                profileImage = 'profiles/' + req.files.profileImage[0].filename;
+            }
+            if (req.files.doc1) {
+                deleteFile(currentUser.doc1);
+                doc1 = 'documents/' + req.files.doc1[0].filename;
+                doc1OriginalName = req.files.doc1[0].originalname;
+            }
+            if (req.files.doc2) {
+                deleteFile(currentUser.doc2);
+                doc2 = 'documents/' + req.files.doc2[0].filename;
+                doc2OriginalName = req.files.doc2[0].originalname;
+            }
+        }
+
+        // Update user
+        await pool.execute(
+            `UPDATE users SET 
+                name = ?, email = ?, phone = ?, address = ?, role = ?,
+                profile_image = ?, doc1 = ?, doc1_original_name = ?, doc2 = ?, doc2_original_name = ?,
+                updated_at = NOW()
+             WHERE id = ?`,
+            [
+                name || currentUser.name,
+                email || currentUser.email,
+                phone !== undefined ? phone : currentUser.phone,
+                address !== undefined ? address : currentUser.address,
+                role || currentUser.role,
+                profileImage, doc1, doc1OriginalName, doc2, doc2OriginalName,
+                userId
+            ]
+        );
+
+        // Get updated user
+        const [users] = await pool.execute(
+            'SELECT * FROM users WHERE id = ?',
+            [userId]
+        );
+
+        const user = users[0];
+
+        res.json({
+            success: true,
+            message: 'User updated successfully',
+            data: {
+                ...user,
+                profileImage: buildFileUrl(req, user.profile_image),
+                doc1Url: buildFileUrl(req, user.doc1),
+                doc1Name: user.doc1_original_name,
+                doc2Url: buildFileUrl(req, user.doc2),
+                doc2Name: user.doc2_original_name
+            }
+        });
+    } catch (error) {
+        console.error('Update user error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+});
+
+// DELETE /api/users/:id - Delete user (soft delete)
+router.delete('/:id', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.params.id;
+
+        // Check if user exists
+        const [existing] = await pool.execute(
+            'SELECT * FROM users WHERE id = ? AND is_active = 1',
+            [userId]
+        );
+
+        if (existing.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        // Soft delete
+        await pool.execute(
+            'UPDATE users SET is_active = 0, updated_at = NOW() WHERE id = ?',
+            [userId]
+        );
+
+        res.json({
+            success: true,
+            message: 'User deleted successfully'
+        });
+    } catch (error) {
+        console.error('Delete user error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+});
+
+// GET /api/users/:id/download/:docType - Download document
+router.get('/:id/download/:docType', authenticateToken, async (req, res) => {
+    try {
+        const { id, docType } = req.params;
+
+        if (!['doc1', 'doc2', 'profile'].includes(docType)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid document type'
+            });
+        }
+
+        const [users] = await pool.execute(
+            'SELECT * FROM users WHERE id = ? AND is_active = 1',
+            [id]
+        );
+
+        if (users.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        const user = users[0];
+        let filePath, originalName;
+
+        if (docType === 'doc1') {
+            filePath = user.doc1;
+            originalName = user.doc1_original_name;
+        } else if (docType === 'doc2') {
+            filePath = user.doc2;
+            originalName = user.doc2_original_name;
+        } else {
+            filePath = user.profile_image;
+            originalName = 'profile' + path.extname(user.profile_image || '.jpg');
+        }
+
+        if (!filePath) {
+            return res.status(404).json({
+                success: false,
+                message: 'File not found'
+            });
+        }
+
+        const fullPath = path.join(__dirname, '..', 'uploads', filePath);
+
+        if (!fs.existsSync(fullPath)) {
+            return res.status(404).json({
+                success: false,
+                message: 'File not found on server'
+            });
+        }
+
+        res.download(fullPath, originalName || path.basename(filePath));
+    } catch (error) {
+        console.error('Download error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+});
+
+module.exports = router;
