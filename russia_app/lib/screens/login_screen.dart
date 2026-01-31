@@ -12,22 +12,22 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _identifierController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final ApiService _apiService = ApiService();
   bool _isLoading = false;
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _identifierController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
   void _handleLogin() async {
     // Validate input
-    if (_emailController.text.trim().isEmpty || _passwordController.text.trim().isEmpty) {
-      _showError('Please enter both email and password');
+    if (_identifierController.text.trim().isEmpty || _passwordController.text.trim().isEmpty) {
+      _showError('Please enter email/phone and password');
       return;
     }
 
@@ -37,7 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       final result = await _apiService.login(
-        _emailController.text.trim(),
+        _identifierController.text.trim(),
         _passwordController.text,
       );
 
@@ -110,9 +110,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 32),
                   _buildTextField(
-                    controller: _emailController,
-                    hint: 'Email Address',
-                    keyboardType: TextInputType.emailAddress,
+                    controller: _identifierController,
+                    hint: 'Email or Phone Number',
+                    keyboardType: TextInputType.text,
                   ),
                   const SizedBox(height: 16),
                   _buildTextField(

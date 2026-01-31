@@ -52,8 +52,8 @@ class ApiService {
     return token != null && token.isNotEmpty;
   }
 
-  // User Login
-  Future<Map<String, dynamic>> login(String email, String password) async {
+  // User Login (supports both email and phone)
+  Future<Map<String, dynamic>> login(String identifier, String password) async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/auth/user/login'),
@@ -61,7 +61,7 @@ class ApiService {
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
-          'email': email,
+          'identifier': identifier,
           'password': password,
         }),
       );

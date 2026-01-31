@@ -87,26 +87,26 @@ router.post('/login', async (req, res) => {
 // POST /api/auth/user/login - User login (for mobile app)
 router.post('/user/login', async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { identifier, password } = req.body;
 
         // Validate input
-        if (!email || !password) {
+        if (!identifier || !password) {
             return res.status(400).json({
                 success: false,
-                message: 'Email and password are required'
+                message: 'Email/Phone and password are required'
             });
         }
 
-        // Find user by email
+        // Find user by email or phone
         const [users] = await pool.execute(
-            'SELECT * FROM users WHERE email = ? AND is_active = 1',
-            [email]
+            'SELECT * FROM users WHERE (email = ? OR phone = ?) AND is_active = 1',
+            [identifier, identifier]
         );
 
         if (users.length === 0) {
             return res.status(401).json({
                 success: false,
-                message: 'Invalid email or password'
+                message: 'Invalid email/phone or password'
             });
         }
 
