@@ -149,13 +149,21 @@ router.get('/:id', authenticateToken, async (req, res) => {
 // POST /api/users - Create new user
 router.post('/', authenticateToken, uploadUserFiles, handleUploadError, async (req, res) => {
     try {
-        const { name, email, phone, address, role } = req.body;
+        const { name, email, password, phone, address, role } = req.body;
 
         // Validate required fields
-        if (!name || !email) {
+        if (!name || !email || !password) {
             return res.status(400).json({
                 success: false,
-                message: 'Name and email are required'
+                message: 'Name, email, and password are required'
+            });
+        }
+
+        // Validate password length
+        if (password.length < 6) {
+            return res.status(400).json({
+                success: false,
+                message: 'Password must be at least 6 characters long'
             });
         }
 
@@ -171,6 +179,10 @@ router.post('/', authenticateToken, uploadUserFiles, handleUploadError, async (r
                 message: 'Email already exists'
             });
         }
+
+        // Hash password
+        const bcrypt = require('bcryptjs');
+        const hashedPassword = await bcrypt.hash(password, 10);
 
         // Handle file uploads
         let profileImage = null;
@@ -195,14 +207,14 @@ router.post('/', authenticateToken, uploadUserFiles, handleUploadError, async (r
 
         // Insert user
         const [result] = await pool.execute(
-            `INSERT INTO users (name, email, phone, address, role, profile_image, doc1, doc1_original_name, doc2, doc2_original_name) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            [name, email, phone || null, address || null, role || 'User', profileImage, doc1, doc1OriginalName, doc2, doc2OriginalName]
+            `INSERT INTO users (name, email, password, phone, address, role, profile_image, doc1, doc1_original_name, doc2, doc2_original_name) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [name, email, hashedPassword, phone || null, address || null, role || 'User', profileImage, doc1, doc1OriginalName, doc2, doc2OriginalName]
         );
 
-        // Get created user
+        // Get created user (without password)
         const [users] = await pool.execute(
-            'SELECT * FROM users WHERE id = ?',
+            'SELECT id, name, email, phone, address, role, profile_image, doc1, doc1_original_name, doc2, doc2_original_name, is_active, created_at, updated_at FROM users WHERE id = ?',
             [result.insertId]
         );
 
@@ -232,7 +244,7 @@ router.post('/', authenticateToken, uploadUserFiles, handleUploadError, async (r
 // PUT /api/users/:id - Update user
 router.put('/:id', authenticateToken, uploadUserFiles, handleUploadError, async (req, res) => {
     try {
-        const { name, email, phone, address, role } = req.body;
+        const { name, email, password, phone, address, role } = req.body;
         const userId = req.params.id;
 
         // Check if user exists
@@ -264,6 +276,19 @@ router.put('/:id', authenticateToken, uploadUserFiles, handleUploadError, async 
             }
         }
 
+        // Hash password if provided
+        const bcrypt = require('bcryptjs');
+        let hashedPassword = currentUser.password;
+        if (password && password.length > 0) {
+            if (password.length < 6) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Password must be at least 6 characters long'
+                });
+            }
+            hashedPassword = await bcrypt.hash(password, 10);
+        }
+
         // Handle file uploads
         let profileImage = currentUser.profile_image;
         let doc1 = currentUser.doc1;
@@ -292,13 +317,14 @@ router.put('/:id', authenticateToken, uploadUserFiles, handleUploadError, async 
         // Update user
         await pool.execute(
             `UPDATE users SET 
-                name = ?, email = ?, phone = ?, address = ?, role = ?,
+                name = ?, email = ?, password = ?, phone = ?, address = ?, role = ?,
                 profile_image = ?, doc1 = ?, doc1_original_name = ?, doc2 = ?, doc2_original_name = ?,
                 updated_at = NOW()
              WHERE id = ?`,
             [
                 name || currentUser.name,
                 email || currentUser.email,
+                hashedPassword,
                 phone !== undefined ? phone : currentUser.phone,
                 address !== undefined ? address : currentUser.address,
                 role || currentUser.role,
@@ -307,9 +333,9 @@ router.put('/:id', authenticateToken, uploadUserFiles, handleUploadError, async 
             ]
         );
 
-        // Get updated user
+        // Get updated user (without password)
         const [users] = await pool.execute(
-            'SELECT * FROM users WHERE id = ?',
+            'SELECT id, name, email, phone, address, role, profile_image, doc1, doc1_original_name, doc2, doc2_original_name, is_active, created_at, updated_at FROM users WHERE id = ?',
             [userId]
         );
 

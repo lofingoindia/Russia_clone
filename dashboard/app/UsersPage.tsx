@@ -50,6 +50,7 @@ const UsersPage = ({
     const [formData, setFormData] = useState({
         name: '',
         email: '',
+        password: '',
         phone: '',
         address: '',
         role: 'User',
@@ -82,6 +83,7 @@ const UsersPage = ({
         setFormData({
             name: user.name,
             email: user.email,
+            password: '', // Leave empty, will only update if filled
             phone: user.phone || '',
             address: user.address || '',
             role: user.role,
@@ -134,6 +136,17 @@ const UsersPage = ({
             const apiFormData = new FormData();
             apiFormData.append('name', formData.name);
             apiFormData.append('email', formData.email);
+            
+            // Add password only if it's provided (for create or update)
+            if (formData.password) {
+                apiFormData.append('password', formData.password);
+            } else if (!isEditing) {
+                // Password is required when creating new user
+                setError('Password is required for new users');
+                setIsSubmitting(false);
+                return;
+            }
+            
             apiFormData.append('phone', formData.phone);
             apiFormData.append('address', formData.address);
             apiFormData.append('role', formData.role);
@@ -168,6 +181,7 @@ const UsersPage = ({
         setFormData({ 
             name: '', 
             email: '', 
+            password: '',
             phone: '', 
             address: '', 
             role: 'User', 
@@ -362,6 +376,21 @@ const UsersPage = ({
                                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                             className="w-full px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                                             placeholder="email@example.com"
+                                        />
+                                    </div>
+
+                                    <div className="space-y-1.5">
+                                        <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                                            Password {isEditing && <span className="text-xs font-normal text-gray-500">(leave blank to keep current)</span>}
+                                        </label>
+                                        <input
+                                            type="password"
+                                            required={!isEditing}
+                                            value={formData.password}
+                                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                            className="w-full px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                                            placeholder="Enter password (min 6 characters)"
+                                            minLength={6}
                                         />
                                     </div>
 

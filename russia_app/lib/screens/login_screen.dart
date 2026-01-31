@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../main_screen.dart';
-
+import '../services/api_service.dart';
 import 'info_screen.dart';
 import 'splash_screen.dart';
 
@@ -12,40 +12,66 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final ApiService _apiService = ApiService();
   bool _isLoading = false;
-  
-  // Static ID and Password for now as per requirement
-  final String _staticPhone = "1234567890";
-  final String _staticPassword = "password123";
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   void _handleLogin() async {
+    // Validate input
+    if (_emailController.text.trim().isEmpty || _passwordController.text.trim().isEmpty) {
+      _showError('Please enter both email and password');
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
 
-    // Simulate a small network delay for a better feel
-    await Future.delayed(const Duration(milliseconds: 600));
-
-    if (!mounted) return;
-
-    if (_phoneController.text == _staticPhone && _passwordController.text == _staticPassword) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const SplashScreen()),
+    try {
+      final result = await _apiService.login(
+        _emailController.text.trim(),
+        _passwordController.text,
       );
-    } else {
+
+      if (!mounted) return;
+
+      if (result['success'] == true) {
+        // Login successful, navigate to splash screen
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const SplashScreen()),
+        );
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+        _showError(result['message'] ?? 'Login failed. Please try again.');
+      }
+    } catch (e) {
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Invalid phone number or password. Hint: 1234567890 / password123'),
-          backgroundColor: Colors.redAccent,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      _showError('An error occurred. Please check your connection and try again.');
     }
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.redAccent,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 4),
+      ),
+    );
   }
 
   @override
@@ -84,9 +110,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 32),
                   _buildTextField(
-                    controller: _phoneController,
-                    hint: 'Phone Number',
-                    keyboardType: TextInputType.phone,
+                    controller: _emailController,
+                    hint: 'Email Address',
+                    keyboardType: TextInputType.emailAddress,
                   ),
                   const SizedBox(height: 16),
                   _buildTextField(

@@ -30,6 +30,7 @@ CREATE TABLE `users` (
     `id` INT PRIMARY KEY AUTO_INCREMENT,
     `name` VARCHAR(100) NOT NULL,
     `email` VARCHAR(255) NOT NULL UNIQUE,
+    `password` VARCHAR(255) NOT NULL,
     `phone` VARCHAR(50) DEFAULT NULL,
     `address` TEXT DEFAULT NULL,
     `role` ENUM('Admin', 'Manager', 'User') DEFAULT 'User',
@@ -56,7 +57,8 @@ INSERT INTO `admins` (`name`, `email`, `password`, `role`) VALUES
 
 -- ===========================================
 -- INSERT SAMPLE USERS (Optional - for testing)
+-- Password for all: password123 (bcrypt hashed)
 -- ===========================================
-INSERT INTO `users` (`name`, `email`, `phone`, `address`, `role`, `doc1_original_name`, `doc2_original_name`) VALUES
-('Alice Johnson', 'alice@example.com', '+1 (555) 123-4567', '123 Maple St, Springfield, IL', 'Admin', 'passport.pdf', 'id_card.png'),
-('Bob Smith', 'bob@example.com', '+1 (555) 987-6543', '456 Oak Ave, Metropolis, NY', 'Manager', 'contract.pdf', NULL);
+INSERT INTO `users` (`name`, `email`, `password`, `phone`, `address`, `role`, `doc1_original_name`, `doc2_original_name`) VALUES
+('Alice Johnson', 'alice@example.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '+1 (555) 123-4567', '123 Maple St, Springfield, IL', 'Admin', 'passport.pdf', 'id_card.png'),
+('Bob Smith', 'bob@example.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '+1 (555) 987-6543', '456 Oak Ave, Metropolis, NY', 'Manager', 'contract.pdf', NULL);
