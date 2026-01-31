@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:russia_app/main_screen.dart';
+import 'package:russia_app/screens/login_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         scaffoldBackgroundColor: Colors.white,
       ),
-      home: const MainScreen(),
+      home: const LoginScreen(),
     );
   }
 }

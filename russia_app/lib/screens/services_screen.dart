@@ -49,21 +49,21 @@ class _ServicesScreenState extends State<ServicesScreen> {
               // Header
               const Center(
                 child: Text(
-                  'Services',
+                  'Сервисы',
                   style: TextStyle(
-                    fontSize: 22,
+                    fontSize: 15,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,
                   ),
                 ),
               ),
               
-              const SizedBox(height: 30),
+              const SizedBox(height: 24),
               
               // Get Consultation Card
               _buildServiceCard(
-                imagePath: 'lib/assets/get.png',
-                title: 'Get Consultation',
+                imagePath: 'lib/assets/bb.png',
+                title: 'Получить консультацию',
                 onTap: () {
                   _showConsultationDialog(context);
                 },
@@ -73,8 +73,8 @@ class _ServicesScreenState extends State<ServicesScreen> {
               
               // Informational Materials Card
               _buildServiceCard(
-                imagePath: 'lib/assets/info.png',
-                title: 'Informational Materials',
+                imagePath: 'lib/assets/aa.png',
+                title: 'Информационные материалы',
                 onTap: () {
                   setState(() {
                     _showInformationalMaterials = true;
@@ -99,10 +99,10 @@ class _ServicesScreenState extends State<ServicesScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.04),
@@ -115,17 +115,17 @@ class _ServicesScreenState extends State<ServicesScreen> {
           children: [
             // Image with background
             Container(
-              width: 56,
-              height: 56,
+              width: 42,
+              height: 42,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(12),
                 child: Image.asset(
                   imagePath,
-                  width: 56,
-                  height: 56,
+                  width: 42,
+                  height: 42,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -136,14 +136,14 @@ class _ServicesScreenState extends State<ServicesScreen> {
               child: Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 17,
+                  fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: Colors.black87,
                 ),
               ),
             ),
             // Arrow
-            Icon(Icons.chevron_right, color: Colors.grey[400], size: 26),
+            Icon(Icons.chevron_right, color: Colors.grey[400], size: 22),
           ],
         ),
       ),
@@ -152,12 +152,12 @@ class _ServicesScreenState extends State<ServicesScreen> {
 
   Widget _buildInformationalMaterialsView() {
     final materials = [
-      'Mandatory Procedures',
-      'Patent',
-      'Permanent and Temporary Residence',
-      'Employment',
-      'Countering Terrorism',
-      'Regulatory Documents',
+      'Обязательные процедуры',
+      'Патент',
+      'Постоянное и временное проживание',
+      'Трудоустройство',
+      'Противодействие терроризму',
+      'Нормативные документы',
     ];
 
     return SafeArea(
@@ -180,7 +180,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                       });
                     },
                     child: Container(
-                      padding: const EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
@@ -193,18 +193,18 @@ class _ServicesScreenState extends State<ServicesScreen> {
                         ],
                       ),
                       child: const Icon(
-                        Icons.arrow_back,
+                        Icons.arrow_back_ios_new,
                         color: Colors.black87,
-                        size: 24,
+                        size: 16,
                       ),
                     ),
                   ),
                   const Expanded(
                     child: Center(
                       child: Text(
-                        'Informational Materials',
+                        'Информационные материалы',
                         style: TextStyle(
-                          fontSize: 22,
+                          fontSize: 15,
                           fontWeight: FontWeight.bold,
                           color: Colors.black87,
                         ),
@@ -251,10 +251,10 @@ class _ServicesScreenState extends State<ServicesScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.04),
@@ -269,7 +269,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
             Text(
               '$number.',
               style: const TextStyle(
-                fontSize: 18,
+                fontSize: 13,
                 fontWeight: FontWeight.w600,
                 color: Colors.black87,
               ),
@@ -280,14 +280,14 @@ class _ServicesScreenState extends State<ServicesScreen> {
               child: Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 17,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: Colors.black87,
                 ),
               ),
             ),
             // Arrow
-            Icon(Icons.chevron_right, color: Colors.grey[400], size: 26),
+            Icon(Icons.chevron_right, color: Colors.grey[400], size: 22),
           ],
         ),
       ),
@@ -297,8 +297,8 @@ class _ServicesScreenState extends State<ServicesScreen> {
   Widget _buildMaterialDetailView() {
     // Define sub-items for Mandatory Procedures (index 0)
     final mandatoryProceduresSubItems = [
-      'Registration at Place of Stay',
-      'Registration Deadlines and Procedure',
+      'Постановка на миграционный учет по месту пребывания',
+      'Сроки и порядок постановки на учет',
     ];
 
     final hasMandatoryProcedures = _selectedMaterialIndex == 0;
@@ -324,7 +324,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                       });
                     },
                     child: Container(
-                      padding: const EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
@@ -337,9 +337,9 @@ class _ServicesScreenState extends State<ServicesScreen> {
                         ],
                       ),
                       child: const Icon(
-                        Icons.arrow_back,
+                        Icons.arrow_back_ios_new,
                         color: Colors.black87,
-                        size: 24,
+                        size: 16,
                       ),
                     ),
                   ),
@@ -348,7 +348,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                       child: Text(
                         _selectedMaterial ?? '',
                         style: const TextStyle(
-                          fontSize: 22,
+                          fontSize: 15,
                           fontWeight: FontWeight.bold,
                           color: Colors.black87,
                         ),
@@ -385,9 +385,9 @@ class _ServicesScreenState extends State<ServicesScreen> {
                   child: Padding(
                     padding: const EdgeInsets.only(top: 150),
                     child: Text(
-                      'No Data Available',
+                      'Нет данных',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 15,
                         fontWeight: FontWeight.w500,
                         color: Colors.grey[500],
                       ),
@@ -425,7 +425,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                       });
                     },
                     child: Container(
-                      padding: const EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
@@ -438,9 +438,9 @@ class _ServicesScreenState extends State<ServicesScreen> {
                         ],
                       ),
                       child: const Icon(
-                        Icons.arrow_back,
+                        Icons.arrow_back_ios_new,
                         color: Colors.black87,
-                        size: 24,
+                        size: 16,
                       ),
                     ),
                   ),
@@ -449,7 +449,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                       child: Text(
                         _selectedSubItem ?? '',
                         style: const TextStyle(
-                          fontSize: 22,
+                          fontSize: 15,
                           fontWeight: FontWeight.bold,
                           color: Colors.black87,
                         ),
@@ -468,9 +468,9 @@ class _ServicesScreenState extends State<ServicesScreen> {
                 child: Padding(
                   padding: const EdgeInsets.only(top: 150),
                   child: Text(
-                    'No Data Available',
+                    'Нет данных',
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 15,
                       fontWeight: FontWeight.w500,
                       color: Colors.grey[500],
                     ),
@@ -494,14 +494,15 @@ class _ServicesScreenState extends State<ServicesScreen> {
       barrierDismissible: true,
       builder: (BuildContext context) {
         return Dialog(
+          insetPadding: const EdgeInsets.symmetric(horizontal: 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(28),
+            borderRadius: BorderRadius.circular(20),
           ),
           child: Container(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(28),
+              borderRadius: BorderRadius.circular(20),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -509,67 +510,67 @@ class _ServicesScreenState extends State<ServicesScreen> {
               children: [
                 // Title
                 const Text(
-                  'Get Consultation',
+                  'Получить консультацию',
                   style: TextStyle(
-                    fontSize: 22,
+                    fontSize: 15,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 12),
                 
                 // Institution Name
                 const Text(
-                  'State Budgetary Institution "Migration Center"',
+                  'ГБУ «Миграционный центр»',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 12,
                     fontWeight: FontWeight.w600,
                     color: Colors.black87,
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 10),
                 
                 // Address
                 RichText(
                   text: const TextSpan(
                     style: TextStyle(
-                      fontSize: 15,
+                      fontSize: 11,
                       color: Colors.black87,
                       height: 1.5,
                     ),
                     children: [
                       TextSpan(
-                        text: 'Address: ',
+                        text: 'Адрес: ',
                         style: TextStyle(fontWeight: FontWeight.w500),
                       ),
                       TextSpan(
-                        text: 'Moscow, Troitsky Administrative Okrug, Voronovo area, 64th kilometer, 1, bld.47',
+                        text: 'Москва, Троицкий административный округ, район Вороново, 64-й километр, 1, стр.47',
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 10),
                 
                 // Working Hours
                 const Text(
-                  'Daily from 08:00 to 20:00',
+                  'Ежедневно с 08:00 до 20:00',
                   style: TextStyle(
-                    fontSize: 15,
+                    fontSize: 11,
                     color: Colors.black87,
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 10),
                 
                 // Telephone
                 RichText(
                   text: const TextSpan(
                     style: TextStyle(
-                      fontSize: 15,
+                      fontSize: 11,
                       color: Colors.black87,
                     ),
                     children: [
                       TextSpan(
-                        text: 'Telephone  ',
+                        text: 'Телефон  ',
                         style: TextStyle(fontWeight: FontWeight.w500),
                       ),
                       TextSpan(
@@ -579,7 +580,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 28),
+                const SizedBox(height: 20),
                 
                 // Call Button
                 SizedBox(
@@ -592,16 +593,16 @@ class _ServicesScreenState extends State<ServicesScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF32BA7C),
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(28),
+                        borderRadius: BorderRadius.circular(24),
                       ),
                       elevation: 0,
                     ),
                     child: const Text(
-                      'Call',
+                      'Позвонить',
                       style: TextStyle(
-                        fontSize: 17,
+                        fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -619,16 +620,16 @@ class _ServicesScreenState extends State<ServicesScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF4A5568),
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(28),
+                        borderRadius: BorderRadius.circular(24),
                       ),
                       elevation: 0,
                     ),
                     child: const Text(
-                      'Cancel',
+                      'Отмена',
                       style: TextStyle(
-                        fontSize: 17,
+                        fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -653,7 +654,7 @@ class ServicesBackground extends StatelessWidget {
       width: double.infinity,
       height: double.infinity,
       child: Image.asset(
-        'lib/assets/bg.png',
+        'lib/assets/ground.png',
         fit: BoxFit.fill,
       ),
     );

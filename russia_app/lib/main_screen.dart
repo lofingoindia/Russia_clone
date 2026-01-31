@@ -58,11 +58,11 @@ class CustomBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double barHeight = 90;
-    final double circleSize = 92;
+    final double barHeight = 75;
+    final double circleSize = 60;
 
     return Container(
-      height: 120, // Total height to accommodate the circle and shadow
+      height: 100, // Total height to accommodate the circle and shadow
       width: double.infinity,
       child: Stack(
         alignment: Alignment.bottomCenter,
@@ -75,9 +75,9 @@ class CustomBottomNavBar extends StatelessWidget {
           
           // Navigation Items
           Padding(
-            padding: const EdgeInsets.only(bottom: 10), // Adjust to center items vertically in bar
+            padding: const EdgeInsets.only(bottom: 8), // Adjust to center items vertically in bar
             child: Container(
-              height: 70,
+              height: 60,
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -87,20 +87,20 @@ class CustomBottomNavBar extends StatelessWidget {
                     index: 0,
                     imagePath: 'lib/assets/p.png',
                     icon: Icons.person,
-                    label: 'Profile',
+                    label: 'Профиль',
                     isActive: currentIndex == 0,
                     activeColor: const Color(0xFF32BA7C),
                   ),
                   
                   // Empty space for the center circle
-                  const SizedBox(width: 80),
+                  const SizedBox(width: 60),
                   
                   // Services
                   _buildNavItem(
                     index: 2,
                     imagePath: 'lib/assets/S.png',
                     icon: Icons.apps,
-                    label: 'Services',
+                    label: 'Сервисы',
                     isActive: currentIndex == 2,
                     activeColor: const Color(0xFF32BA7C),
                   ),
@@ -111,7 +111,7 @@ class CustomBottomNavBar extends StatelessWidget {
           
           // Center Circle (Home)
           Positioned(
-            top: 5,
+            top: 8,
             child: GestureDetector(
               onTap: () => onTap(1),
               child: Container(
@@ -122,8 +122,8 @@ class CustomBottomNavBar extends StatelessWidget {
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: currentIndex == 1 
-                        ? const Color(0xFF32BA7C) // Green when selected
-                        : const Color(0xFFE5E5E5), // Grey when not
+                        ? const Color(0xFF32BA7C)
+                        : const Color(0xFFE5E5E5),
                     width: 2.5,
                   ),
                   boxShadow: [
@@ -146,25 +146,25 @@ class CustomBottomNavBar extends StatelessWidget {
                       colorFilter: ColorFilter.mode(
                         currentIndex == 1 
                             ? const Color(0xFF32BA7C)
-                            : const Color(0xFFAAB2B9),
+                            : Color(0xFF3C4451).withOpacity(0.8),
                         BlendMode.srcIn,
                       ),
                       child: Image.asset(
                         'lib/assets/home.png',
-                        width: 64,
-                        height: 64,
+                        width: 32,
+                        height: 32,
                       ),
                     ),
                     Transform.translate(
-                      offset: const Offset(0, -14),
+                      offset: const Offset(0, -10),
                       child: Text(
-                        'Home',
+                        'Главная',
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 10,
                           fontWeight: FontWeight.w600,
                           color: currentIndex == 1 
                               ? const Color(0xFF32BA7C) // Green when selected
-                              : const Color(0xFFAAB2B9),
+                              : Color(0xFF3C4451).withOpacity(0.8),
                         ),
                       ),
                     ),
@@ -179,7 +179,7 @@ class CustomBottomNavBar extends StatelessWidget {
   }
 
   Widget _buildServicesIcon(bool isActive) {
-    final color = isActive ? const Color(0xFF32BA7C) : const Color(0xFFAAB2B9);
+    final color = isActive ? const Color(0xFF32BA7C) : Color(0xFF3C4451).withOpacity(0.8);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -206,11 +206,11 @@ class CustomBottomNavBar extends StatelessWidget {
 
   Widget _dot(Color color) {
     return Container(
-      width: 9,
-      height: 9,
+      width: 6,
+      height: 6,
       decoration: BoxDecoration(
         color: color,
-        borderRadius: BorderRadius.circular(2.5),
+        borderRadius: BorderRadius.circular(1.5),
       ),
     );
   }
@@ -224,12 +224,12 @@ class CustomBottomNavBar extends StatelessWidget {
     required bool isActive,
     required Color activeColor,
   }) {
-    final color = isActive ? activeColor : const Color(0xFFAAB2B9);
+    final color = isActive ? activeColor : Color(0xFF3C4451).withOpacity(0.8);
     return GestureDetector(
       onTap: () => onTap(index),
       behavior: HitTestBehavior.opaque,
       child: Container(
-        width: 90,
+        width: 70,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -238,25 +238,25 @@ class CustomBottomNavBar extends StatelessWidget {
                     colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
                     child: Image.asset(
                       imagePath,
-                      width: 32,
-                      height: 32,
+                      width: 17,
+                      height: 17,
                       errorBuilder: (context, error, stackTrace) => Icon(
                         icon ?? Icons.error,
                         color: color,
-                        size: 32,
+                        size: 17,
                       ),
                     ),
                   )
                 : Icon(
                     icon,
                     color: color,
-                    size: 32,
+                    size: 17,
                   )),
             const SizedBox(height: 6),
             Text(
               label,
               style: TextStyle(
-                fontSize: 13,
+                fontSize: 9,
                 color: color,
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
               ),
@@ -276,46 +276,31 @@ class NotchPainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     Path path = Path();
-    double cornerRadius = 24;
-    double notchRadius = 58; // Half of notch width
+    double notchRadius = 36; // Tighter fit: 60px circle + low padding
     double centerX = size.width / 2;
     
     // Start from bottom left
     path.moveTo(0, size.height);
-    path.lineTo(0, cornerRadius);
+    path.lineTo(0, 0); // Straight to top left
     
-    // Top left corner
-    path.quadraticBezierTo(0, 0, cornerRadius, 0);
+    // Line to start of notch
+    path.lineTo(centerX - notchRadius, 0);
     
-    // Line to start of notch smoothly
-    path.lineTo(centerX - notchRadius - 10, 0);
-    
-    // Smooth transition into the notch
-    path.quadraticBezierTo(
-      centerX - notchRadius, 
-      0, 
-      centerX - notchRadius, 
-      12,
-    );
+    // Vertical line down (to make it a deep U)
+    path.lineTo(centerX - notchRadius, 10);
     
     // The Circular Notch (The "U")
     path.arcToPoint(
-      Offset(centerX + notchRadius, 12),
+      Offset(centerX + notchRadius, 10),
       radius: Radius.circular(notchRadius),
       clockwise: false,
     );
     
-    // Smooth transition out of the notch
-    path.quadraticBezierTo(
-      centerX + notchRadius, 
-      0, 
-      centerX + notchRadius + 10, 
-      0,
-    );
+    // Vertical line up
+    path.lineTo(centerX + notchRadius, 0);
     
     // Top right corner
-    path.lineTo(size.width - cornerRadius, 0);
-    path.quadraticBezierTo(size.width, 0, size.width, cornerRadius);
+    path.lineTo(size.width, 0); // Straight to top right
     
     // Bottom right
     path.lineTo(size.width, size.height);

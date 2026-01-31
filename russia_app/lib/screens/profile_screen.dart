@@ -18,7 +18,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: Stack(
         children: [
           // Background
-          const ProfileBackground(),
+          ProfileBackground(
+            imagePath: _showPersonalInfo 
+                ? 'lib/assets/bgg.png' 
+                : (_showDocuments ? 'lib/assets/ground.png' : 'lib/assets/bg.png'),
+          ),
           
           // Content - toggle between profile, documents, and personal info
           _showPersonalInfo
@@ -36,7 +40,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -45,11 +49,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               // Header
               const Center(
                 child: Text(
-                  'Profile',
+                  'Профиль',
                   style: TextStyle(
-                    fontSize: 22,
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: Color(0xFF3C4451),
                   ),
                 ),
               ),
@@ -68,8 +72,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               
               // Personal Information Button
               _buildNavigationButton(
-                icon: Icons.person_outline,
-                title: 'Personal Information',
+                imagePath: 'lib/assets/pi.png',
+                title: 'Персональные данные',
                 onTap: () {
                   setState(() {
                     _showPersonalInfo = true;
@@ -81,8 +85,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               
               // Documents Button
               _buildNavigationButton(
-                icon: Icons.description_outlined,
-                title: 'Documents',
+                imagePath: 'lib/assets/docs.png',
+                title: 'Документы',
                 onTap: () {
                   setState(() {
                     _showDocuments = true;
@@ -104,7 +108,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -120,7 +124,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       });
                     },
                     child: Container(
-                      padding: const EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
@@ -133,40 +137,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ],
                       ),
                       child: const Icon(
-                        Icons.arrow_back,
-                        color: Colors.black87,
-                        size: 24,
+                        Icons.arrow_back_ios_new,
+                        color: Color(0xFF3C4451),
+                        size: 20,
                       ),
                     ),
                   ),
-                  const Expanded(
-                    child: Center(
-                      child: Text(
-                        'Documents',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
-                      ),
+                  const SizedBox(width: 16),
+                  const Text(
+                    'Документы',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF3C4451),
                     ),
                   ),
+                  const Spacer(),
                   Container(
                     padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
+                    // decoration: BoxDecoration(
+                    //   color: Colors.white,
+                    //   shape: BoxShape.circle,
+                    //   boxShadow: [
+                    //     BoxShadow(
+                    //       color: Colors.black.withOpacity(0.05),
+                    //       blurRadius: 8,
+                    //       offset: const Offset(0, 2),
+                    //     ),
+                    //   ],
+                    // ),
                     child: const Icon(
                       Icons.refresh,
-                      color: Colors.black87,
+                      color: Color(0xFF3C4451),
                       size: 24,
                     ),
                   ),
@@ -178,7 +180,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               // Identity Document Card
               _buildDocumentCard(
                 imagePath: 'lib/assets/ps.png',
-                title: 'Identity Document',
+                title: 'Документ, удостоверяющий личность',
                 onTap: () {
                   // TODO: Navigate to Identity Document detail
                 },
@@ -189,7 +191,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               // Migration Card
               _buildDocumentCard(
                 imagePath: 'lib/assets/d.png',
-                title: 'Migration Card',
+                title: 'Миграционная карта',
                 onTap: () {
                   // TODO: Navigate to Migration Card detail
                 },
@@ -213,7 +215,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             // Header with back button
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               child: Row(
                 children: [
                   GestureDetector(
@@ -223,46 +225,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       });
                     },
                     child: Container(
-                      padding: const EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(10),
                       decoration: const BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
-                        Icons.arrow_back,
-                        color: Colors.black87,
-                        size: 24,
+                        Icons.arrow_back_ios_new,
+                        color: Color(0xFF3C4451),
+                        size: 20,
                       ),
                     ),
                   ),
                   const Expanded(
                     child: Center(
                       child: Text(
-                        'Personal Data',
+                        'Персональные данные',
                         style: TextStyle(
-                          fontSize: 22,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                          color: Color(0xFF3C4451),
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 40), // Balance the back button
+                  const SizedBox(width: 120), // Balance the back button
                 ],
               ),
             ),
             
             // Content
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Column(
                 children: [
+                  const SizedBox(height: 55),
                   // Personal Information Card
                   Container(
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(24),
+                      borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.04),
@@ -282,43 +285,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    'Full Name',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey[600],
+                                    Text(
+                                      'ФИО',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: Colors.grey[600],
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  const Text(
-                                    '',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.black87,
+                                    const SizedBox(height: 2),
+                                    const Text(
+                                      '',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        color: Color(0xFF3C4451),
+                                      ),
                                     ),
-                                  ),
                                 ],
                               ),
                             ),
-                            const SizedBox(width: 20),
+                            const SizedBox(width: 15),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 Text(
-                                  'Gender',
+                                  'Пол',
                                   style: TextStyle(
-                                    fontSize: 14,
+                                    fontSize: 10,
                                     color: Colors.grey[600],
                                   ),
                                 ),
-                                const SizedBox(height: 8),
+                                const SizedBox(height: 2),
                                 const Text(
-                                  'Male',
+                                  'Мужской',
                                   style: TextStyle(
-                                    fontSize: 16,
+                                    fontSize: 12,
                                     fontWeight: FontWeight.w600,
-                                    color: Colors.black87,
+                                    color: Color(0xFF3C4451),
                                   ),
                                 ),
                               ],
@@ -326,7 +329,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ],
                         ),
                         
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 6),
                         
                         // Date of Birth and Gender Row
                         Row(
@@ -336,87 +339,65 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    'Date of Birth',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey[600],
+                                    Text(
+                                      'Дата рождения',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: Colors.grey[600],
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  const Text(
-                                    '2000-12-06',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.black87,
+                                    const SizedBox(height: 2),
+                                    const Text(
+                                      '2000-12-06',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        color: Color(0xFF3C4451),
+                                      ),
                                     ),
-                                  ),
                                 ],
                               ),
                             ),
-                            // const SizedBox(width: 20),
-                            // Column(
-                            //   crossAxisAlignment: CrossAxisAlignment.end,
-                            //   children: [
-                            //     Text(
-                            //       'Gender',
-                            //       style: TextStyle(
-                            //         fontSize: 14,
-                            //         color: Colors.grey[600],
-                            //       ),
-                            //     ),
-                            //     const SizedBox(height: 8),
-                            //     const Text(
-                            //       'Male',
-                            //       style: TextStyle(
-                            //         fontSize: 16,
-                            //         fontWeight: FontWeight.w600,
-                            //         color: Colors.black87,
-                            //       ),
-                            //     ),
-                            //   ],
-                            // ),
                           ],
                         ),
                         
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 6),
                         
                         // Place of Birth
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'Place of Birth',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey[600],
+                              Text(
+                                'Место рождения',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: Colors.grey[600],
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 8),
-                            const Text(
-                              'Uzbekistan',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black87,
+                              const SizedBox(height: 2),
+                              const Text(
+                                'Узбекистан',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF3C4451),
+                                ),
                               ),
-                            ),
                           ],
                         ),
                       ],
                     ),
                   ),
                   
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 10),
                   
                   // Contact Details Card
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(24),
+                      borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.04),
@@ -429,58 +410,58 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Contact Details',
+                          'Контактные данные',
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 12,
                             fontWeight: FontWeight.w600,
                             color: Colors.grey[700],
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 8),
                         
                         // Phone Number
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Phone Number',
+                              'Номер телефона',
                               style: TextStyle(
-                                fontSize: 14,
+                                fontSize: 10,
                                 color: Colors.grey[600],
                               ),
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 2),
                             const Text(
                               '+79099893489',
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 12,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.black87,
+                                color: Color(0xFF3C4451),
                               ),
                             ),
                           ],
                         ),
                         
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 8),
                         
                         // Additional Number
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Additional Number',
+                              'Дополнительный номер',
                               style: TextStyle(
-                                fontSize: 14,
+                                fontSize: 10,
                                 color: Colors.grey[600],
                               ),
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 2),
                             const Text(
                               '',
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: 12,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.black87,
+                                color: Color(0xFF3C4451),
                               ),
                             ),
                           ],
@@ -509,10 +490,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.04),
@@ -522,51 +503,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Image with background
             Container(
-              width: 80,
-              height: 80,
+              width: 60,
+              height: 60,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(12),
                 child: Image.asset(
                   imagePath,
-                  width: 90,
-                  height: 90,
+                  width: 60,
+                  height: 60,
                   fit: BoxFit.cover,
                 ),
               ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 8),
             // Title
             Expanded(
               child: Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 18,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black87,
+                  color: Color(0xFF3C4451),
                 ),
               ),
             ),
             // Arrow
-            Icon(Icons.chevron_right, color: Colors.grey[400], size: 26),
+            Icon(Icons.chevron_right, color: Colors.grey[400], size: 24),
           ],
         ),
       ),
     );
   }
 
-Widget _buildUserInfoCard() {
+  Widget _buildUserInfoCard() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
@@ -579,38 +561,38 @@ Widget _buildUserInfoCard() {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Full Name',
+            'ФИО',
             style: TextStyle(
-              fontSize: 13,
+              fontSize: 10,
               color: Colors.grey[600],
               fontWeight: FontWeight.w400,
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 2),
           const Text(
-            'Muhammatkulov Urozali Husan Ugli',
+            'МУХАММАДКУЛОВ УРОЗАЛИ ХУСАН УГЛИ',
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: Colors.black87,
+              color: Color(0xFF3C4451),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 6),
           Text(
-            'Citizenship',
+            'Гражданство',
             style: TextStyle(
-              fontSize: 13,
+              fontSize: 10,
               color: Colors.grey[600],
               fontWeight: FontWeight.w400,
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 2),
           const Text(
-            'Uzbekistan',
+            'Узбекистан',
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: Colors.black87,
+              color: Color(0xFF3C4451),
             ),
           ),
         ],
@@ -620,10 +602,10 @@ Widget _buildUserInfoCard() {
 
   Widget _buildForeignCitizenCard() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
@@ -636,14 +618,14 @@ Widget _buildUserInfoCard() {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Foreign Citizen Card',
+            'Карта иностранного гражданина',
             style: TextStyle(
-              fontSize: 17,
+              fontSize: 12,
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: Color(0xFF3C4451),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 6),
           
           // KIG Number and Expiry Date
           Row(
@@ -653,20 +635,20 @@ Widget _buildUserInfoCard() {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'KIG Number',
+                      'Номер КИГ',
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 10,
                         color: Colors.grey[600],
                         fontWeight: FontWeight.w400,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 2),
                     const Text(
                       'AA1484021',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: Colors.black87,
+                        color: Color(0xFF3C4451),
                       ),
                     ),
                   ],
@@ -677,20 +659,20 @@ Widget _buildUserInfoCard() {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'KIG Expiry Date:',
+                      'Срок действия КИГ:',
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 10,
                         color: Colors.grey[600],
                         fontWeight: FontWeight.w400,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 2),
                     const Text(
                       '2030-12-29',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: Colors.black87,
+                        color: Color(0xFF3C4451),
                       ),
                     ),
                   ],
@@ -699,47 +681,41 @@ Widget _buildUserInfoCard() {
             ],
           ),
           
-          const SizedBox(height: 16),
+          const SizedBox(height: 10),
           
           // Card Image and QR Code
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // Card Image Placeholder
-              Expanded(
-                flex: 3,
-                child: Container(
-                  height: 180,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.asset(
-                      'lib/assets/card.png',
-                      fit: BoxFit.cover,
-                    ),
+              Container(
+                width: 190,
+                height: 160,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.asset(
+                    'lib/assets/card.png',
+                    fit: BoxFit.cover,
                   ),
                 ),
               ),
               
-              const SizedBox(width: 20),
-              
               // QR Code
-              Expanded(
-                flex: 2,
-                child: Container(
-                  height: 120,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.asset(
-                      'lib/assets/qrr.png',
-                      fit: BoxFit.cover,
-                    ),
+              Container(
+                width: 110,
+                height: 130,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.asset(
+                    'lib/assets/qrr.png',
+                    fit: BoxFit.contain,
                   ),
                 ),
               ),
@@ -751,17 +727,17 @@ Widget _buildUserInfoCard() {
   }
 
   Widget _buildNavigationButton({
-    required IconData icon,
+    required String imagePath,
     required String title,
     required VoidCallback onTap,
   }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.04),
@@ -771,20 +747,26 @@ Widget _buildUserInfoCard() {
           ],
         ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(icon, color: Colors.black87, size: 26),
-            const SizedBox(width: 16),
+            Image.asset(
+              imagePath,
+              width: 44,
+              height: 44,
+              fit: BoxFit.contain,
+            ),
+            const SizedBox(width: 2),
             Expanded(
               child: Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 16,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black87,
+                  color: Color(0xFF3C4451),
                 ),
               ),
             ),
-            Icon(Icons.chevron_right, color: Colors.grey[400], size: 26),
+            const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 16),
           ],
         ),
       ),
@@ -794,7 +776,8 @@ Widget _buildUserInfoCard() {
 
 // Background widget similar to HomeScreen
 class ProfileBackground extends StatelessWidget {
-  const ProfileBackground({super.key});
+  final String? imagePath;
+  const ProfileBackground({super.key, this.imagePath});
 
   @override
   Widget build(BuildContext context) {
@@ -802,7 +785,7 @@ class ProfileBackground extends StatelessWidget {
       width: double.infinity,
       height: double.infinity,
       child: Image.asset(
-        'lib/assets/bg.png',
+        imagePath ?? 'lib/assets/bg.png',
         fit: BoxFit.fill,
       ),
     );
