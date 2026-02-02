@@ -73,17 +73,17 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   'welcome_message'.tr(),
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w600,
                     color: Colors.white, // Assuming dark background or overlay needed
                     height: 1.2,
-                    shadows: [
-                      Shadow(
-                        blurRadius: 10.0,
-                        color: Colors.black45,
-                        offset: Offset(2.0, 2.0),
-                      ),
-                    ],
+                    // shadows: [
+                    //   Shadow(
+                    //     blurRadius: 10.0,
+                    //     color: Colors.black45,
+                    //     offset: Offset(2.0, 2.0),
+                    //   ),
+                    // ],
                   ),
                 ),
               ),

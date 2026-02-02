@@ -788,22 +788,19 @@ class _StoryOverlayState extends State<_StoryOverlay> {
             ),
             // Close Button (Top Right)
             Positioned(
-              top: 30,
-              right: 30,
+              top: 35,
+              right: 25,
               child: SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 16, right: 20),
-                  child: GestureDetector(
-                    onTap: () => Navigator.of(context, rootNavigator: true).pop(),
-                    child: Container(
-                      width: 35,
-                      height: 35,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(Icons.close, color: Colors.black, size: 20),
+                child: GestureDetector(
+                  onTap: () => Navigator.of(context, rootNavigator: true).pop(),
+                  child: Container(
+                    width: 35,
+                    height: 35,
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
                     ),
+                    child: const Icon(Icons.close, color: Colors.black, size: 20),
                   ),
                 ),
               ),
