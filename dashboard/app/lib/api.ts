@@ -48,7 +48,7 @@ const apiRequest = async (
     options: RequestInit = {}
 ): Promise<{ success: boolean; data?: unknown; message?: string; count?: number }> => {
     const token = getToken();
-    
+
     const headers: HeadersInit = {
         ...(options.headers || {}),
     };
@@ -90,13 +90,13 @@ export const authAPI = {
             method: 'POST',
             body: JSON.stringify({ email, password }),
         });
-        
+
         if (response.success && response.data) {
             const { token, admin } = response.data as { token: string; admin: { id: number; name: string; email: string; role: string } };
             setToken(token);
             setAdminInfo(admin);
         }
-        
+
         return response;
     },
 
@@ -138,6 +138,9 @@ export interface User {
     doc2: string | null;
     doc2Url: string | null;
     doc2Name: string | null;
+    doc3: string | null;
+    doc3Urls: string[] | null;
+    doc3Names: string[] | null;
     is_active: number;
     created_at: string;
     updated_at: string;
@@ -190,15 +193,15 @@ export const usersAPI = {
         return response as { success: boolean; message?: string };
     },
 
-    downloadDocument: (id: number, docType: 'doc1' | 'doc2' | 'profile') => {
+    downloadDocument: (id: number, docType: string) => {
         const token = getToken();
         const url = `${API_BASE_URL}/users/${id}/download/${docType}`;
-        
+
         // Create a temporary link and download
         const link = document.createElement('a');
         link.href = url;
         link.setAttribute('download', '');
-        
+
         // We need to add auth header for protected route, so we'll use fetch
         fetch(url, {
             headers: {

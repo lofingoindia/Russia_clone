@@ -20,6 +20,9 @@ interface User {
   doc2: string | null;
   doc2Url: string | null;
   doc2Name: string | null;
+  doc3: string | null;
+  doc3Urls: string[] | null;
+  doc3Names: string[] | null;
 }
 
 export default function Home() {
@@ -46,6 +49,9 @@ export default function Home() {
     doc2: apiUser.doc2,
     doc2Url: apiUser.doc2Url,
     doc2Name: apiUser.doc2Name,
+    doc3: apiUser.doc3,
+    doc3Urls: apiUser.doc3Urls,
+    doc3Names: apiUser.doc3Names,
   });
 
   // Fetch users from API
@@ -69,7 +75,7 @@ export default function Home() {
 
     if (savedTheme) setTheme(savedTheme);
     if (savedTab) setActiveTab(savedTab);
-    
+
     if (token && admin) {
       setIsLoggedIn(true);
       setAdminInfoState(admin);
@@ -147,21 +153,21 @@ export default function Home() {
     <div className={theme === 'dark' ? 'dark text-foreground' : 'text-foreground'}>
       <div className="bg-background min-h-screen">
         {activeTab === "Dashboard" ? (
-          <Dashboard 
-            onTabChange={setActiveTab} 
-            theme={theme} 
-            onThemeToggle={toggleTheme} 
-            onLogout={handleLogout} 
+          <Dashboard
+            onTabChange={setActiveTab}
+            theme={theme}
+            onThemeToggle={toggleTheme}
+            onLogout={handleLogout}
             users={users}
             adminInfo={adminInfo}
           />
         ) : (
-          <UsersPage 
-            onTabChange={setActiveTab} 
-            theme={theme} 
-            onThemeToggle={toggleTheme} 
-            onLogout={handleLogout} 
-            users={users} 
+          <UsersPage
+            onTabChange={setActiveTab}
+            theme={theme}
+            onThemeToggle={toggleTheme}
+            onLogout={handleLogout}
+            users={users}
             setUsers={setUsers}
             refreshUsers={fetchUsers}
             adminInfo={adminInfo}

@@ -63,7 +63,8 @@ const upload = multer({
 const uploadUserFiles = upload.fields([
     { name: 'profileImage', maxCount: 1 },
     { name: 'doc1', maxCount: 1 },
-    { name: 'doc2', maxCount: 1 }
+    { name: 'doc2', maxCount: 1 },
+    { name: 'doc3', maxCount: 10 } // Multiple files allowed
 ]);
 
 // Error handler for multer

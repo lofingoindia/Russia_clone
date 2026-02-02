@@ -28,6 +28,7 @@ router.get('/', authenticateToken, async (req, res) => {
         const [users] = await pool.execute(
             `SELECT id, name, email, phone, address, role, 
                     profile_image, doc1, doc1_original_name, doc2, doc2_original_name,
+                    doc3, doc3_original_names,
                     is_active, created_at, updated_at 
              FROM users 
              WHERE is_active = 1 
@@ -35,14 +36,28 @@ router.get('/', authenticateToken, async (req, res) => {
         );
 
         // Build full URLs for files
-        const usersWithUrls = users.map(user => ({
-            ...user,
-            profileImage: buildFileUrl(req, user.profile_image),
-            doc1Url: buildFileUrl(req, user.doc1),
-            doc1Name: user.doc1_original_name,
-            doc2Url: buildFileUrl(req, user.doc2),
-            doc2Name: user.doc2_original_name
-        }));
+        const usersWithUrls = users.map(user => {
+            // Parse doc3 JSON arrays
+            let doc3Paths = [];
+            let doc3Names = [];
+            try {
+                if (user.doc3) doc3Paths = JSON.parse(user.doc3);
+                if (user.doc3_original_names) doc3Names = JSON.parse(user.doc3_original_names);
+            } catch (e) {
+                console.error('Error parsing doc3 JSON:', e);
+            }
+
+            return {
+                ...user,
+                profileImage: buildFileUrl(req, user.profile_image),
+                doc1Url: buildFileUrl(req, user.doc1),
+                doc1Name: user.doc1_original_name,
+                doc2Url: buildFileUrl(req, user.doc2),
+                doc2Name: user.doc2_original_name,
+                doc3Urls: doc3Paths.map(p => buildFileUrl(req, p)),
+                doc3Names: doc3Names
+            };
+        });
 
         res.json({
             success: true,
@@ -78,7 +93,7 @@ router.get('/stats', authenticateToken, async (req, res) => {
         const [[{ withDocs }]] = await pool.execute(
             `SELECT COUNT(*) as withDocs 
              FROM users 
-             WHERE is_active = 1 AND (doc1 IS NOT NULL OR doc2 IS NOT NULL)`
+             WHERE is_active = 1 AND (doc1 IS NOT NULL OR doc2 IS NOT NULL OR doc3 IS NOT NULL)`
         );
 
         // Recent users (last 7 days)
@@ -112,6 +127,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
         const [users] = await pool.execute(
             `SELECT id, name, email, phone, address, role, 
                     profile_image, doc1, doc1_original_name, doc2, doc2_original_name,
+                    doc3, doc3_original_names,
                     is_active, created_at, updated_at 
              FROM users 
              WHERE id = ? AND is_active = 1`,
@@ -126,6 +142,17 @@ router.get('/:id', authenticateToken, async (req, res) => {
         }
 
         const user = users[0];
+
+        // Parse doc3 JSON arrays
+        let doc3Paths = [];
+        let doc3Names = [];
+        try {
+            if (user.doc3) doc3Paths = JSON.parse(user.doc3);
+            if (user.doc3_original_names) doc3Names = JSON.parse(user.doc3_original_names);
+        } catch (e) {
+            console.error('Error parsing doc3 JSON:', e);
+        }
+
         res.json({
             success: true,
             data: {
@@ -134,7 +161,9 @@ router.get('/:id', authenticateToken, async (req, res) => {
                 doc1Url: buildFileUrl(req, user.doc1),
                 doc1Name: user.doc1_original_name,
                 doc2Url: buildFileUrl(req, user.doc2),
-                doc2Name: user.doc2_original_name
+                doc2Name: user.doc2_original_name,
+                doc3Urls: doc3Paths.map(p => buildFileUrl(req, p)),
+                doc3Names: doc3Names
             }
         });
     } catch (error) {
@@ -190,6 +219,8 @@ router.post('/', authenticateToken, uploadUserFiles, handleUploadError, async (r
         let doc1OriginalName = null;
         let doc2 = null;
         let doc2OriginalName = null;
+        let doc3Paths = [];
+        let doc3OriginalNames = [];
 
         if (req.files) {
             if (req.files.profileImage) {
@@ -203,22 +234,38 @@ router.post('/', authenticateToken, uploadUserFiles, handleUploadError, async (r
                 doc2 = 'documents/' + req.files.doc2[0].filename;
                 doc2OriginalName = req.files.doc2[0].originalname;
             }
+            if (req.files.doc3) {
+                req.files.doc3.forEach(file => {
+                    doc3Paths.push('documents/' + file.filename);
+                    doc3OriginalNames.push(file.originalname);
+                });
+            }
         }
 
         // Insert user
         const [result] = await pool.execute(
-            `INSERT INTO users (name, email, password, phone, address, role, profile_image, doc1, doc1_original_name, doc2, doc2_original_name) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            [name, email, hashedPassword, phone || null, address || null, role || 'User', profileImage, doc1, doc1OriginalName, doc2, doc2OriginalName]
+            `INSERT INTO users (name, email, password, phone, address, role, profile_image, doc1, doc1_original_name, doc2, doc2_original_name, doc3, doc3_original_names) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [name, email, hashedPassword, phone || null, address || null, role || 'User', profileImage, doc1, doc1OriginalName, doc2, doc2OriginalName, doc3Paths.length > 0 ? JSON.stringify(doc3Paths) : null, doc3OriginalNames.length > 0 ? JSON.stringify(doc3OriginalNames) : null]
         );
 
         // Get created user (without password)
         const [users] = await pool.execute(
-            'SELECT id, name, email, phone, address, role, profile_image, doc1, doc1_original_name, doc2, doc2_original_name, is_active, created_at, updated_at FROM users WHERE id = ?',
+            'SELECT id, name, email, phone, address, role, profile_image, doc1, doc1_original_name, doc2, doc2_original_name, doc3, doc3_original_names, is_active, created_at, updated_at FROM users WHERE id = ?',
             [result.insertId]
         );
 
         const user = users[0];
+
+        // Parse doc3 JSON for response
+        let responseDoc3Paths = [];
+        let responseDoc3Names = [];
+        try {
+            if (user.doc3) responseDoc3Paths = JSON.parse(user.doc3);
+            if (user.doc3_original_names) responseDoc3Names = JSON.parse(user.doc3_original_names);
+        } catch (e) {
+            console.error('Error parsing doc3 JSON:', e);
+        }
 
         res.status(201).json({
             success: true,
@@ -229,7 +276,9 @@ router.post('/', authenticateToken, uploadUserFiles, handleUploadError, async (r
                 doc1Url: buildFileUrl(req, user.doc1),
                 doc1Name: user.doc1_original_name,
                 doc2Url: buildFileUrl(req, user.doc2),
-                doc2Name: user.doc2_original_name
+                doc2Name: user.doc2_original_name,
+                doc3Urls: responseDoc3Paths.map(p => buildFileUrl(req, p)),
+                doc3Names: responseDoc3Names
             }
         });
     } catch (error) {
@@ -295,6 +344,8 @@ router.put('/:id', authenticateToken, uploadUserFiles, handleUploadError, async 
         let doc1OriginalName = currentUser.doc1_original_name;
         let doc2 = currentUser.doc2;
         let doc2OriginalName = currentUser.doc2_original_name;
+        let doc3 = currentUser.doc3;
+        let doc3OriginalNames = currentUser.doc3_original_names;
 
         if (req.files) {
             if (req.files.profileImage) {
@@ -312,6 +363,26 @@ router.put('/:id', authenticateToken, uploadUserFiles, handleUploadError, async 
                 doc2 = 'documents/' + req.files.doc2[0].filename;
                 doc2OriginalName = req.files.doc2[0].originalname;
             }
+            if (req.files.doc3) {
+                // Delete old doc3 files
+                try {
+                    if (currentUser.doc3) {
+                        const oldPaths = JSON.parse(currentUser.doc3);
+                        oldPaths.forEach(p => deleteFile(p));
+                    }
+                } catch (e) {
+                    console.error('Error deleting old doc3 files:', e);
+                }
+                // Add new doc3 files
+                const doc3Paths = [];
+                const doc3Names = [];
+                req.files.doc3.forEach(file => {
+                    doc3Paths.push('documents/' + file.filename);
+                    doc3Names.push(file.originalname);
+                });
+                doc3 = JSON.stringify(doc3Paths);
+                doc3OriginalNames = JSON.stringify(doc3Names);
+            }
         }
 
         // Update user
@@ -319,6 +390,7 @@ router.put('/:id', authenticateToken, uploadUserFiles, handleUploadError, async 
             `UPDATE users SET 
                 name = ?, email = ?, password = ?, phone = ?, address = ?, role = ?,
                 profile_image = ?, doc1 = ?, doc1_original_name = ?, doc2 = ?, doc2_original_name = ?,
+                doc3 = ?, doc3_original_names = ?,
                 updated_at = NOW()
              WHERE id = ?`,
             [
@@ -329,17 +401,28 @@ router.put('/:id', authenticateToken, uploadUserFiles, handleUploadError, async 
                 address !== undefined ? address : currentUser.address,
                 role || currentUser.role,
                 profileImage, doc1, doc1OriginalName, doc2, doc2OriginalName,
+                doc3, doc3OriginalNames,
                 userId
             ]
         );
 
         // Get updated user (without password)
         const [users] = await pool.execute(
-            'SELECT id, name, email, phone, address, role, profile_image, doc1, doc1_original_name, doc2, doc2_original_name, is_active, created_at, updated_at FROM users WHERE id = ?',
+            'SELECT id, name, email, phone, address, role, profile_image, doc1, doc1_original_name, doc2, doc2_original_name, doc3, doc3_original_names, is_active, created_at, updated_at FROM users WHERE id = ?',
             [userId]
         );
 
         const user = users[0];
+
+        // Parse doc3 JSON for response
+        let responseDoc3Paths = [];
+        let responseDoc3Names = [];
+        try {
+            if (user.doc3) responseDoc3Paths = JSON.parse(user.doc3);
+            if (user.doc3_original_names) responseDoc3Names = JSON.parse(user.doc3_original_names);
+        } catch (e) {
+            console.error('Error parsing doc3 JSON:', e);
+        }
 
         res.json({
             success: true,
@@ -350,7 +433,9 @@ router.put('/:id', authenticateToken, uploadUserFiles, handleUploadError, async 
                 doc1Url: buildFileUrl(req, user.doc1),
                 doc1Name: user.doc1_original_name,
                 doc2Url: buildFileUrl(req, user.doc2),
-                doc2Name: user.doc2_original_name
+                doc2Name: user.doc2_original_name,
+                doc3Urls: responseDoc3Paths.map(p => buildFileUrl(req, p)),
+                doc3Names: responseDoc3Names
             }
         });
     } catch (error) {
@@ -404,7 +489,11 @@ router.get('/:id/download/:docType', authenticateToken, async (req, res) => {
     try {
         const { id, docType } = req.params;
 
-        if (!['doc1', 'doc2', 'profile'].includes(docType)) {
+        // Check if docType is valid (now includes doc3-INDEX pattern)
+        const validDocTypes = ['doc1', 'doc2', 'profile'];
+        const isDoc3 = docType.startsWith('doc3-');
+
+        if (!validDocTypes.includes(docType) && !isDoc3) {
             return res.status(400).json({
                 success: false,
                 message: 'Invalid document type'
@@ -432,6 +521,20 @@ router.get('/:id/download/:docType', authenticateToken, async (req, res) => {
         } else if (docType === 'doc2') {
             filePath = user.doc2;
             originalName = user.doc2_original_name;
+        } else if (isDoc3) {
+            // Handle doc3 with index (e.g., doc3-0, doc3-1, etc.)
+            const docIndex = parseInt(docType.split('-')[1], 10);
+            try {
+                const doc3Paths = user.doc3 ? JSON.parse(user.doc3) : [];
+                const doc3Names = user.doc3_original_names ? JSON.parse(user.doc3_original_names) : [];
+
+                if (docIndex >= 0 && docIndex < doc3Paths.length) {
+                    filePath = doc3Paths[docIndex];
+                    originalName = doc3Names[docIndex] || path.basename(filePath);
+                }
+            } catch (e) {
+                console.error('Error parsing doc3 JSON for download:', e);
+            }
         } else {
             filePath = user.profile_image;
             originalName = 'profile' + path.extname(user.profile_image || '.jpg');

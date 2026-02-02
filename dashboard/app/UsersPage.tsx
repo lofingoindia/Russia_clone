@@ -18,6 +18,9 @@ interface User {
     doc2: string | null;
     doc2Url: string | null;
     doc2Name: string | null;
+    doc3: string | null;
+    doc3Urls: string[] | null;
+    doc3Names: string[] | null;
 }
 
 const UsersPage = ({
@@ -60,21 +63,34 @@ const UsersPage = ({
         doc1Name: null as string | null,
         doc2: null as File | null,
         doc2Name: null as string | null,
+        doc3: [] as File[],
+        doc3Names: [] as string[],
     });
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'profileImage' | 'doc1' | 'doc2') => {
-        if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'profileImage' | 'doc1' | 'doc2' | 'doc3') => {
+        if (e.target.files && e.target.files.length > 0) {
             if (field === 'profileImage') {
-                setFormData({ 
-                    ...formData, 
+                const file = e.target.files[0];
+                setFormData({
+                    ...formData,
                     profileImage: file,
                     profileImagePreview: URL.createObjectURL(file)
                 });
             } else if (field === 'doc1') {
+                const file = e.target.files[0];
                 setFormData({ ...formData, doc1: file, doc1Name: file.name });
-            } else {
+            } else if (field === 'doc2') {
+                const file = e.target.files[0];
                 setFormData({ ...formData, doc2: file, doc2Name: file.name });
+            } else if (field === 'doc3') {
+                // Handle multiple files
+                const files = Array.from(e.target.files);
+                const fileNames = files.map(f => f.name);
+                setFormData({
+                    ...formData,
+                    doc3: files,
+                    doc3Names: fileNames
+                });
             }
         }
     };
@@ -93,6 +109,8 @@ const UsersPage = ({
             doc1Name: user.doc1Name,
             doc2: null,
             doc2Name: user.doc2Name,
+            doc3: [],
+            doc3Names: user.doc3Names || [],
         });
         setSelectedUser(user);
         setIsEditing(true);
@@ -110,8 +128,8 @@ const UsersPage = ({
         setShowDeleteConfirm(true);
     };
 
-    const handleDownload = (userId: number, docType: 'doc1' | 'doc2' | 'profile') => {
-        usersAPI.downloadDocument(userId, docType);
+    const handleDownload = (userId: number, docType: string) => {
+        usersAPI.downloadDocument(userId, docType as 'doc1' | 'doc2' | 'profile');
     };
 
     const handleDelete = async () => {
@@ -136,7 +154,7 @@ const UsersPage = ({
             const apiFormData = new FormData();
             apiFormData.append('name', formData.name);
             apiFormData.append('email', formData.email);
-            
+
             // Add password only if it's provided (for create or update)
             if (formData.password) {
                 apiFormData.append('password', formData.password);
@@ -146,11 +164,11 @@ const UsersPage = ({
                 setIsSubmitting(false);
                 return;
             }
-            
+
             apiFormData.append('phone', formData.phone);
             apiFormData.append('address', formData.address);
             apiFormData.append('role', formData.role);
-            
+
             if (formData.profileImage) {
                 apiFormData.append('profileImage', formData.profileImage);
             }
@@ -159,6 +177,12 @@ const UsersPage = ({
             }
             if (formData.doc2) {
                 apiFormData.append('doc2', formData.doc2);
+            }
+            // Handle multiple doc3 files
+            if (formData.doc3.length > 0) {
+                formData.doc3.forEach((file) => {
+                    apiFormData.append('doc3', file);
+                });
             }
 
             if (isEditing && selectedUser) {
@@ -178,19 +202,21 @@ const UsersPage = ({
     };
 
     const resetForm = () => {
-        setFormData({ 
-            name: '', 
-            email: '', 
+        setFormData({
+            name: '',
+            email: '',
             password: '',
-            phone: '', 
-            address: '', 
-            role: 'User', 
-            profileImage: null, 
+            phone: '',
+            address: '',
+            role: 'User',
+            profileImage: null,
             profileImagePreview: null,
-            doc1: null, 
+            doc1: null,
             doc1Name: null,
             doc2: null,
-            doc2Name: null
+            doc2Name: null,
+            doc3: [],
+            doc3Names: []
         });
         setSelectedUser(null);
         setIsEditing(false);
@@ -262,10 +288,11 @@ const UsersPage = ({
                                             </span>
                                         </td>
                                         <td className="p-4">
-                                            <div className="flex gap-1.5">
+                                            <div className="flex gap-1.5 flex-wrap">
                                                 {(user.doc1 || user.doc1Url) && <span className="text-[10px] bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 px-2 py-1 rounded-md font-medium">ID</span>}
                                                 {(user.doc2 || user.doc2Url) && <span className="text-[10px] bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 px-2 py-1 rounded-md font-medium">Card</span>}
-                                                {!(user.doc1 || user.doc1Url) && !(user.doc2 || user.doc2Url) && <span className="text-xs text-gray-400 dark:text-gray-500">None</span>}
+                                                {user.doc3Urls && user.doc3Urls.length > 0 && <span className="text-[10px] bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 px-2 py-1 rounded-md font-medium">+{user.doc3Urls.length}</span>}
+                                                {!(user.doc1 || user.doc1Url) && !(user.doc2 || user.doc2Url) && !(user.doc3Urls && user.doc3Urls.length > 0) && <span className="text-xs text-gray-400 dark:text-gray-500">None</span>}
                                             </div>
                                         </td>
                                         <td className="p-4 text-right">
@@ -433,11 +460,43 @@ const UsersPage = ({
                                             </label>
                                         </div>
                                     </div>
+                                    <div className="space-y-1.5">
+                                        <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                                            Additional Documents <span className="text-xs font-normal text-gray-500">(Multiple files allowed)</span>
+                                        </label>
+                                        <div className="flex items-center space-x-3">
+                                            <label className="flex-1 cursor-pointer px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg text-sm flex items-center justify-between hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                                                <span className="text-gray-600 dark:text-gray-400 text-sm truncate">
+                                                    {formData.doc3.length > 0
+                                                        ? `${formData.doc3.length} file(s) selected`
+                                                        : formData.doc3Names.length > 0
+                                                            ? `${formData.doc3Names.length} existing file(s)`
+                                                            : 'Choose files...'}
+                                                </span>
+                                                <span className="text-xs font-medium text-indigo-600 dark:text-indigo-400">Browse</span>
+                                                <input type="file" className="hidden" multiple onChange={(e) => handleFileChange(e, 'doc3')} />
+                                            </label>
+                                        </div>
+                                        {/* Show selected file names */}
+                                        {(formData.doc3.length > 0 || formData.doc3Names.length > 0) && (
+                                            <div className="mt-2 space-y-1">
+                                                {(formData.doc3.length > 0 ? formData.doc3.map(f => f.name) : formData.doc3Names).map((name, idx) => (
+                                                    <div key={idx} className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+                                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-500">
+                                                            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                                                            <polyline points="13 2 13 9 20 9"></polyline>
+                                                        </svg>
+                                                        <span className="truncate">{name}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
 
                                 <div className="pt-6 flex gap-3">
-                                    <button 
-                                        type="submit" 
+                                    <button
+                                        type="submit"
                                         disabled={isSubmitting}
                                         className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
                                     >
@@ -526,7 +585,23 @@ const UsersPage = ({
                                                     </div>
                                                 </div>
                                             )}
-                                            {!(selectedUser?.doc1 || selectedUser?.doc1Url) && !(selectedUser?.doc2 || selectedUser?.doc2Url) && <p className="text-sm text-gray-500 dark:text-gray-400">No documents uploaded.</p>}
+                                            {selectedUser?.doc3Urls && selectedUser.doc3Urls.length > 0 && (
+                                                <div className="space-y-2">
+                                                    <p className="text-xs font-medium text-gray-600 dark:text-gray-400">Additional Documents</p>
+                                                    <div className="space-y-2">
+                                                        {selectedUser.doc3Names?.map((name, idx) => (
+                                                            <div key={idx} className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg gap-3">
+                                                                <div className="flex items-center space-x-2 overflow-hidden">
+                                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-600 dark:text-green-400 shrink-0"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
+                                                                    <span className="text-sm font-medium text-gray-900 dark:text-white truncate">{name || 'Document'}</span>
+                                                                </div>
+                                                                <button onClick={() => handleDownload(selectedUser.id, `doc3-${idx}`)} className="text-xs font-medium text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 cursor-default shrink-0">Download</button>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {!(selectedUser?.doc1 || selectedUser?.doc1Url) && !(selectedUser?.doc2 || selectedUser?.doc2Url) && !(selectedUser?.doc3Urls && selectedUser.doc3Urls.length > 0) && <p className="text-sm text-gray-500 dark:text-gray-400">No documents uploaded.</p>}
                                         </div>
                                     </div>
                                 </div>
