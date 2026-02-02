@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../main_screen.dart';
 import '../services/api_service.dart';
 import 'info_screen.dart';
@@ -27,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void _handleLogin() async {
     // Validate input
     if (_identifierController.text.trim().isEmpty || _passwordController.text.trim().isEmpty) {
-      _showError('Please enter email/phone and password');
+      _showError('login_error_empty'.tr());
       return;
     }
 
@@ -52,14 +53,14 @@ class _LoginScreenState extends State<LoginScreen> {
         setState(() {
           _isLoading = false;
         });
-        _showError(result['message'] ?? 'Login failed. Please try again.');
+        _showError(result['message'] ?? 'login_error_failed'.tr());
       }
     } catch (e) {
       if (!mounted) return;
       setState(() {
         _isLoading = false;
       });
-      _showError('An error occurred. Please check your connection and try again.');
+      _showError('login_error_general'.tr());
     }
   }
 
@@ -99,9 +100,9 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    'Login',
-                    style: TextStyle(
+                  Text(
+                    'login_title'.tr(),
+                    style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w700,
                       color: Color(0xFF1A1A1A),
@@ -111,13 +112,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 32),
                   _buildTextField(
                     controller: _identifierController,
-                    hint: 'Email or Phone Number',
+                    hint: 'login_hint'.tr(),
                     keyboardType: TextInputType.text,
                   ),
                   const SizedBox(height: 16),
                   _buildTextField(
                     controller: _passwordController,
-                    hint: 'Password',
+                    hint: 'password_hint'.tr(),
                     isPassword: true,
                   ),
                   const SizedBox(height: 32),
@@ -144,9 +145,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 strokeWidth: 2,
                               ),
                             )
-                          : const Text(
-                              'Login',
-                              style: TextStyle(
+                          : Text(
+                              'login_button'.tr(),
+                              style: const TextStyle(
                                 fontSize: 17,
                                 fontWeight: FontWeight.w600,
                                 letterSpacing: 0.2,

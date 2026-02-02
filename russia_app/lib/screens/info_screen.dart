@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../main_screen.dart';
 
 class InfoScreen extends StatelessWidget {
@@ -18,9 +19,9 @@ class InfoScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(height: 10),
-                const Text(
-                  'Пользователям',
-                  style: TextStyle(
+                Text(
+                  'users_title'.tr(),
+                  style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF3C4451),
@@ -39,13 +40,13 @@ class InfoScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
                     children: [
-                      _buildInfoRow('lib/assets/l.png', 'Заходите в приложение каждый день'),
+                      _buildInfoRow('lib/assets/l.png', 'info_daily'.tr()),
                       const SizedBox(height: 6),
-                      _buildInfoRow('lib/assets/pl.png', 'Не отключайте геолокацию'),
+                      _buildInfoRow('lib/assets/pl.png', 'info_geo'.tr()),
                       const SizedBox(height: 6),
-                      _buildInfoRow('lib/assets/v.png', 'Выключайте VPN при использовании приложения'),
+                      _buildInfoRow('lib/assets/v.png', 'info_vpn'.tr()),
                       const SizedBox(height: 6),
-                      _buildInfoRow('lib/assets/no.png', 'Не отключайте Push-уведомления.'),
+                      _buildInfoRow('lib/assets/no.png', 'info_push'.tr()),
                     ],  
                   ),
                 ),
@@ -53,8 +54,8 @@ class InfoScreen extends StatelessWidget {
                 // const Spacer(),
                 const SizedBox(height: 160),
                 // Footer
-                const Text(
-                  'При возникновении трудностей,\nобратитесь на горячую линию',
+                Text(
+                  'info_footer'.tr(),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 13,
@@ -101,9 +102,9 @@ class InfoScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(30),
                 ),
                 alignment: Alignment.center,
-                child: const Text(
-                  'Закрыть',
-                  style: TextStyle(
+                child: Text(
+                  'close'.tr(),
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.w600,

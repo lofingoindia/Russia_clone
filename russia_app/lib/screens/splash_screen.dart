@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'info_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -68,8 +69,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               opacity: _fadeAnimation,
               child: SlideTransition(
                 position: _slideAnimation,
-                child: const Text(
-                  'Hello, \nUROZALI',
+                child: Text(
+                  'welcome_message'.tr(),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 32,

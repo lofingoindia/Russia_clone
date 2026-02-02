@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
+
 
 class ServicesScreen extends StatefulWidget {
   const ServicesScreen({super.key});
@@ -9,6 +11,7 @@ class ServicesScreen extends StatefulWidget {
 
 class _ServicesScreenState extends State<ServicesScreen> {
   bool _showInformationalMaterials = false;
+  bool _showQA = false;
   String? _selectedMaterial;
   int? _selectedMaterialIndex;
   String? _selectedSubItem;
@@ -29,7 +32,9 @@ class _ServicesScreenState extends State<ServicesScreen> {
                   ? _buildMaterialDetailView()
                   : _showInformationalMaterials
                       ? _buildInformationalMaterialsView()
-                      : _buildServicesView(),
+                      : _showQA
+                          ? _buildQAView()
+                          : _buildServicesView(),
         ],
       ),
     );
@@ -47,9 +52,9 @@ class _ServicesScreenState extends State<ServicesScreen> {
               const SizedBox(height: 20),
               
               // Header
-              const Center(
+              Center(
                 child: Text(
-                  'Сервисы',
+                  'services'.tr(),
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
@@ -60,27 +65,49 @@ class _ServicesScreenState extends State<ServicesScreen> {
               
               const SizedBox(height: 24),
               
-              // Get Consultation Card
+              // Q&A Card
               _buildServiceCard(
-                imagePath: 'lib/assets/bb.png',
-                title: 'Получить консультацию',
+                imagePath: 'lib/assets/faq.png',
+                title: 'qa'.tr(),
                 onTap: () {
-                  _showConsultationDialog(context);
+                  setState(() {
+                    _showQA = true;
+                  });
                 },
               ),
               
               const SizedBox(height: 16),
-              
-              // Informational Materials Card
               _buildServiceCard(
                 imagePath: 'lib/assets/aa.png',
-                title: 'Информационные материалы',
+                title: 'info_materials'.tr(),
                 onTap: () {
                   setState(() {
                     _showInformationalMaterials = true;
                   });
                 },
               ),
+              const SizedBox(height: 16),
+              // Get Consultation Card
+              _buildServiceCard(
+                imagePath: 'lib/assets/bb.png',
+                title: 'get_consultation'.tr(),
+                onTap: () {
+                  _showConsultationDialog(context);
+                },
+              ),
+              
+              // const SizedBox(height: 16),
+              
+              // // Informational Materials Card
+              // _buildServiceCard(
+              //   imagePath: 'lib/assets/aa.png',
+              //   title: 'Информационные материалы',
+              //   onTap: () {
+              //     setState(() {
+              //       _showInformationalMaterials = true;
+              //     });
+              //   },
+              // ),
               
               // Extra padding for bottom nav
               const SizedBox(height: 120),
@@ -152,12 +179,12 @@ class _ServicesScreenState extends State<ServicesScreen> {
 
   Widget _buildInformationalMaterialsView() {
     final materials = [
-      'Обязательные процедуры',
-      'Патент',
-      'Постоянное и временное проживание',
-      'Трудоустройство',
-      'Противодействие терроризму',
-      'Нормативные документы',
+      'mat_1'.tr(),
+      'mat_2'.tr(),
+      'mat_3'.tr(),
+      'mat_4'.tr(),
+      'mat_5'.tr(),
+      'mat_6'.tr(),
     ];
 
     return SafeArea(
@@ -199,10 +226,10 @@ class _ServicesScreenState extends State<ServicesScreen> {
                       ),
                     ),
                   ),
-                  const Expanded(
+                  Expanded(
                     child: Center(
                       child: Text(
-                        'Информационные материалы',
+                        'info_materials'.tr(),
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
@@ -297,8 +324,8 @@ class _ServicesScreenState extends State<ServicesScreen> {
   Widget _buildMaterialDetailView() {
     // Define sub-items for Mandatory Procedures (index 0)
     final mandatoryProceduresSubItems = [
-      'Постановка на миграционный учет по месту пребывания',
-      'Сроки и порядок постановки на учет',
+      'mat_1_sub_1'.tr(),
+      'mat_1_sub_2'.tr(),
     ];
 
     final hasMandatoryProcedures = _selectedMaterialIndex == 0;
@@ -385,7 +412,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                   child: Padding(
                     padding: const EdgeInsets.only(top: 150),
                     child: Text(
-                      'Нет данных',
+                      'no_data'.tr(),
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w500,
@@ -468,7 +495,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                 child: Padding(
                   padding: const EdgeInsets.only(top: 150),
                   child: Text(
-                    'Нет данных',
+                    'no_data'.tr(),
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w500,
@@ -487,6 +514,93 @@ class _ServicesScreenState extends State<ServicesScreen> {
     );
   }
 
+  Widget _buildQAView() {
+    final questions = [
+      'qa_1'.tr(),
+      'qa_2'.tr(),
+      'qa_3'.tr(),
+      'qa_4'.tr(),
+      'qa_5'.tr(),
+      'qa_6'.tr(),
+      'qa_7'.tr(),
+    ];
+
+    return SafeArea(
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 20),
+              
+              // Header with back button
+              Row(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _showQA = false;
+                      });
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.arrow_back_ios_new,
+                        color: Colors.black87,
+                        size: 16,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  Text(
+                    'qa'.tr(),
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ],
+              ),
+              
+              const SizedBox(height: 30),
+              
+              // Questions List
+              ...List.generate(questions.length, (index) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: _buildMaterialCard(
+                    number: index + 1,
+                    title: questions[index],
+                    onTap: () {
+                      // No specific action defined, but can be expanded later
+                    },
+                  ),
+                );
+              }),
+              
+              // Extra padding for bottom nav
+              const SizedBox(height: 120),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
 
   void _showConsultationDialog(BuildContext context) {
     showDialog(
@@ -494,114 +608,122 @@ class _ServicesScreenState extends State<ServicesScreen> {
       barrierDismissible: true,
       builder: (BuildContext context) {
         return Dialog(
-          insetPadding: const EdgeInsets.symmetric(horizontal: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+          insetPadding: const EdgeInsets.symmetric(horizontal: 40),
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(12),
+              topRight: Radius.circular(55),
+              bottomLeft: Radius.circular(12),
+              bottomRight: Radius.circular(12),
+            ),
           ),
           child: Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 24),
+            decoration: const BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(12),
+                topRight: Radius.circular(50),
+                bottomLeft: Radius.circular(12),
+                bottomRight: Radius.circular(12),
+              ),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Title
-                const Text(
-                  'Получить консультацию',
-                  style: TextStyle(
-                    fontSize: 15,
+                Text(
+                  'support'.tr(),
+                  style: const TextStyle(
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
                 
-                // Institution Name
-                const Text(
-                  'ГБУ «Миграционный центр»',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
+                // Body Text
+                Text(
+                  'support_text'.tr(),
+                  style: const TextStyle(
+                    fontSize: 13,
                     color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                
-                // Address
-                RichText(
-                  text: const TextSpan(
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: Colors.black87,
-                      height: 1.5,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: 'Адрес: ',
-                        style: TextStyle(fontWeight: FontWeight.w500),
-                      ),
-                      TextSpan(
-                        text: 'Москва, Троицкий административный округ, район Вороново, 64-й километр, 1, стр.47',
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 10),
-                
-                // Working Hours
-                const Text(
-                  'Ежедневно с 08:00 до 20:00',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                
-                // Telephone
-                RichText(
-                  text: const TextSpan(
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: Colors.black87,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: 'Телефон  ',
-                        style: TextStyle(fontWeight: FontWeight.w500),
-                      ),
-                      TextSpan(
-                        text: '+7 (495) 777-77-77',
-                        style: TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                    ],
+                    height: 1.4,
                   ),
                 ),
                 const SizedBox(height: 20),
+
+                // Working Hours
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 90,
+                      child: Text(
+                        'daily'.tr(),
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      'working_hours'.tr(),
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+
+                // Telephone
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 90,
+                      child: Text(
+                        'phone'.tr(),
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+                    const Text(
+                      '+7 499 530-56-88',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
                 
                 // Call Button
                 SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
+                    width: double.infinity,
+                    child: ElevatedButton(
                     onPressed: () {
                       // TODO: Implement call functionality
                       Navigator.of(context).pop();
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF32BA7C),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      backgroundColor: const Color(0xFF6FE2A6), // Lighter green from image
+                      foregroundColor: Colors.black87,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(24),
                       ),
                       elevation: 0,
                     ),
-                    child: const Text(
-                      'Позвонить',
-                      style: TextStyle(
+                    child: Text(
+                      'call'.tr(),
+                      style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),
@@ -612,23 +734,23 @@ class _ServicesScreenState extends State<ServicesScreen> {
                 
                 // Cancel Button
                 SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
+                    width: double.infinity,
+                    child: ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF4A5568),
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(24),
                       ),
                       elevation: 0,
                     ),
-                    child: const Text(
-                      'Отмена',
-                      style: TextStyle(
+                    child: Text(
+                      'close'.tr(),
+                      style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),
@@ -654,7 +776,7 @@ class ServicesBackground extends StatelessWidget {
       width: double.infinity,
       height: double.infinity,
       child: Image.asset(
-        'lib/assets/ground.png',
+        'lib/assets/backy.png',
         fit: BoxFit.fill,
       ),
     );

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import 'package:easy_localization/easy_localization.dart';
+import '../services/api_service.dart';
 import 'login_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -12,6 +14,10 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   bool _showDocuments = false;
   bool _showPersonalInfo = false;
+  bool _showDocumentDetail = false;
+  String? _selectedDocTitle;
+  String? _selectedDocKey;
+  List<String> _selectedDocUrls = [];
   final ApiService _apiService = ApiService();
   Map<String, dynamic>? _userData;
   bool _isLoading = true;
@@ -23,11 +29,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _loadUserData() async {
-    final userData = await _apiService.getUserData();
-    setState(() {
-      _userData = userData;
-      _isLoading = false;
-    });
+    // Check if logged in first
+    final isLoggedIn = await _apiService.isLoggedIn();
+    if (!isLoggedIn) return;
+
+    // Fetch fresh profile data to get document URLs
+    final profileData = await _apiService.getUserProfile();
+    
+    if (mounted) {
+      if (profileData['success'] == true) {
+        setState(() {
+          _userData = profileData['user'];
+          _isLoading = false;
+        });
+      } else {
+        // Fallback to locally stored data if network fails
+        final localData = await _apiService.getUserData();
+        setState(() {
+          _userData = localData;
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   Future<void> _handleLogout() async {
@@ -35,17 +58,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Выйти'),
-        content: const Text('Вы уверены, что хотите выйти?'),
+        title: Text('logout_confirmation_title'.tr()),
+        content: Text('logout_confirmation'.tr()),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Отмена'),
+            child: Text('cancel'.tr()),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Выйти'),
+            child: Text('logout'.tr()),
           ),
         ],
       ),
@@ -71,16 +94,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
           // Background
           ProfileBackground(
             imagePath: _showPersonalInfo 
-                ? 'lib/assets/bgg.png' 
-                : (_showDocuments ? 'lib/assets/ground.png' : 'lib/assets/bg.png'),
+                ? 'lib/assets/backy.png' 
+                : (_showDocuments ? 'lib/assets/backy.png' : 'lib/assets/backy.png'),
           ),
           
-          // Content - toggle between profile, documents, and personal info
-          _showPersonalInfo
-              ? _buildPersonalInfoView()
-              : _showDocuments
-                  ? _buildDocumentsView()
-                  : _buildProfileView(),
+          // Content - toggle between profile, documents, personal info, and document detail
+          _showDocumentDetail
+              ? _buildDocumentDetailView()
+              : _showPersonalInfo
+                  ? _buildPersonalInfoView()
+                  : _showDocuments
+                      ? _buildDocumentsView()
+                      : _buildProfileView(),
         ],
       ),
     );
@@ -98,9 +123,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 20),
               
               // Header
-              const Center(
+              Center(
                 child: Text(
-                  'Профиль',
+                  'profile'.tr(),
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -124,7 +149,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               // Personal Information Button
               _buildNavigationButton(
                 imagePath: 'lib/assets/pi.png',
-                title: 'Персональные данные',
+                title: 'personal_data'.tr(),
                 onTap: () {
                   setState(() {
                     _showPersonalInfo = true;
@@ -137,7 +162,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               // Documents Button
               _buildNavigationButton(
                 imagePath: 'lib/assets/docs.png',
-                title: 'Документы',
+                title: 'documents'.tr(),
                 onTap: () {
                   setState(() {
                     _showDocuments = true;
@@ -148,49 +173,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 10),
               
               // Logout Button
-              GestureDetector(
-                onTap: _handleLogout,
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.04),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.red.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Icon(
-                          Icons.logout,
-                          color: Colors.red,
-                          size: 20,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      const Text(
-                        'Выйти из аккаунта',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.red,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              // GestureDetector(
+              //   onTap: _handleLogout,
+              //   child: Container(
+              //     width: double.infinity,
+              //     padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+              //     decoration: BoxDecoration(
+              //       color: Colors.white,
+              //       borderRadius: BorderRadius.circular(16),
+              //       boxShadow: [
+              //         BoxShadow(
+              //           color: Colors.black.withOpacity(0.04),
+              //           blurRadius: 10,
+              //           offset: const Offset(0, 4),
+              //         ),
+              //       ],
+              //     ),
+              //     child: Row(
+              //       children: [
+              //         Container(
+              //           padding: const EdgeInsets.all(8),
+              //           decoration: BoxDecoration(
+              //             color: Colors.red.withOpacity(0.1),
+              //             borderRadius: BorderRadius.circular(8),
+              //           ),
+              //           child: const Icon(
+              //             Icons.logout,
+              //             color: Colors.red,
+              //             size: 20,
+              //           ),
+              //         ),
+              //         const SizedBox(width: 12),
+              //         const Text(
+              //           'Выйти из аккаунта',
+              //           style: TextStyle(
+              //             fontSize: 14,
+              //             fontWeight: FontWeight.w600,
+              //             color: Colors.red,
+              //           ),
+              //         ),
+              //       ],
+              //     ),
+              //   ),
+              // ),
               
               // Extra padding for bottom nav
               const SizedBox(height: 120),
@@ -212,7 +237,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               const SizedBox(height: 20),
               
-              // Header with back button and refresh icon
+              // Header with back button
               Row(
                 children: [
                   GestureDetector(
@@ -242,34 +267,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  const Text(
-                    'Документы',
-                    style: TextStyle(
+                  const SizedBox(width: 16),
+                  Text(
+                    'documents'.tr(),
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF3C4451),
                     ),
                   ),
                   const Spacer(),
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    // decoration: BoxDecoration(
-                    //   color: Colors.white,
-                    //   shape: BoxShape.circle,
-                    //   boxShadow: [
-                    //     BoxShadow(
-                    //       color: Colors.black.withOpacity(0.05),
-                    //       blurRadius: 8,
-                    //       offset: const Offset(0, 2),
-                    //     ),
-                    //   ],
-                    // ),
-                    child: const Icon(
-                      Icons.refresh,
-                      color: Color(0xFF3C4451),
-                      size: 24,
-                    ),
-                  ),
                 ],
               ),
               
@@ -277,10 +284,61 @@ class _ProfileScreenState extends State<ProfileScreen> {
               
               // Identity Document Card
               _buildDocumentCard(
-                imagePath: 'lib/assets/ps.png',
-                title: 'Документ, удостоверяющий личность',
+                imagePath: 'lib/assets/d11.png',
+                title: 'doc_identity'.tr(),
                 onTap: () {
-                  // TODO: Navigate to Identity Document detail
+                  setState(() {
+                    _selectedDocTitle = 'doc_identity'.tr();
+                    _selectedDocKey = 'doc_identity';
+                    _selectedDocUrls = _userData?['doc1Url'] != null 
+                        ? [_userData!['doc1Url'] as String] 
+                        : [];
+                    _showDocumentDetail = true;
+                  });
+                },
+              ),
+              
+              const SizedBox(height: 16),
+              
+              // Fingerprint and Photo Registration Card
+              _buildDocumentCard(
+                imagePath: 'lib/assets/d2.png',
+                title: 'doc_fingerprint'.tr(),
+                onTap: () {
+                  setState(() {
+                    _selectedDocTitle = 'doc_fingerprint'.tr();
+                    _selectedDocKey = 'doc_fingerprint';
+                    // Fetch all additional documents
+                    final doc3Urls = _userData?['doc3Urls'];
+                    if (doc3Urls != null && doc3Urls is List) {
+                      _selectedDocUrls = List<String>.from(doc3Urls);
+                    } else {
+                      _selectedDocUrls = [];
+                    }
+                    _showDocumentDetail = true;
+                  });
+                },
+              ),
+              
+              const SizedBox(height: 16),
+
+              // Taxpayer Identification Number (INN) Card
+              _buildDocumentCard(
+                imagePath: 'lib/assets/d3.png',
+                title: 'doc_inn'.tr(),
+                onTap: () {
+                  setState(() {
+                    _selectedDocTitle = 'doc_inn'.tr();
+                    _selectedDocKey = 'doc_inn';
+                    // Fetch INN documents
+                    final doc4Urls = _userData?['doc4Urls'];
+                    if (doc4Urls != null && doc4Urls is List) {
+                       _selectedDocUrls = List<String>.from(doc4Urls);
+                    } else {
+                      _selectedDocUrls = [];
+                    }
+                    _showDocumentDetail = true;
+                  });
                 },
               ),
               
@@ -288,10 +346,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
               
               // Migration Card
               _buildDocumentCard(
-                imagePath: 'lib/assets/d.png',
-                title: 'Миграционная карта',
+                imagePath: 'lib/assets/mc.png',
+                title: 'doc_migration'.tr(),
                 onTap: () {
-                  // TODO: Navigate to Migration Card detail
+                  setState(() {
+                    _selectedDocTitle = 'doc_migration'.tr();
+                    _selectedDocKey = 'doc_migration';
+                    _selectedDocUrls = _userData?['doc2Url'] != null 
+                        ? [_userData!['doc2Url'] as String] 
+                        : [];
+                    _showDocumentDetail = true;
+                  });
                 },
               ),
               
@@ -323,7 +388,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       });
                     },
                     child: Container(
-                      padding: const EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(8),
                       decoration: const BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
@@ -331,16 +396,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: const Icon(
                         Icons.arrow_back_ios_new,
                         color: Color(0xFF3C4451),
-                        size: 20,
+                        size: 16,
                       ),
                     ),
                   ),
-                  const Expanded(
+                  Expanded(
                     child: Center(
                       child: Text(
-                        'Персональные данные',
+                        'personal_data'.tr(),
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF3C4451),
                         ),
@@ -384,7 +449,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                     Text(
-                                      'ФИО',
+                                      'full_name'.tr(),
                                       style: TextStyle(
                                         fontSize: 10,
                                         color: Colors.grey[600],
@@ -407,15 +472,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 Text(
-                                  'Пол',
+                                  'gender'.tr(),
                                   style: TextStyle(
                                     fontSize: 10,
                                     color: Colors.grey[600],
                                   ),
                                 ),
                                 const SizedBox(height: 2),
-                                const Text(
-                                  'Мужской',
+                                Text(
+                                  'male'.tr(),
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,
@@ -438,7 +503,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                     Text(
-                                      'Дата рождения',
+                                      'dob'.tr(),
                                       style: TextStyle(
                                         fontSize: 10,
                                         color: Colors.grey[600],
@@ -466,15 +531,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                               Text(
-                                'Место рождения',
+                                'pob'.tr(),
                                 style: TextStyle(
                                   fontSize: 10,
                                   color: Colors.grey[600],
                                 ),
                               ),
                               const SizedBox(height: 2),
-                              const Text(
-                                'Узбекистан',
+                              Text(
+                                'country_uzbekistan'.tr(),
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
@@ -508,7 +573,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Контактные данные',
+                          'contact_data'.tr(),
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
@@ -522,7 +587,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Номер телефона',
+                              'phone_number'.tr(),
                               style: TextStyle(
                                 fontSize: 10,
                                 color: Colors.grey[600],
@@ -547,7 +612,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Дополнительный номер',
+                              'additional_number'.tr(),
                               style: TextStyle(
                                 fontSize: 10,
                                 color: Colors.grey[600],
@@ -579,6 +644,203 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Widget _buildDocumentDetailView() {
+    return SafeArea(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            child: Row(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _showDocumentDetail = false;
+                      _selectedDocTitle = null;
+                      _selectedDocKey = null;
+                      _selectedDocUrls = [];
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.arrow_back_ios_new,
+                      color: Color(0xFF3C4451),
+                      size: 20,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                // Flexible title to handle long text
+                Expanded(
+                  child: Text(
+                    _selectedDocTitle ?? 'documents'.tr(),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF3C4451),
+                      height: 1.2,
+                    ),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          // Document Content
+          Expanded(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 20.0),
+                  child: Container( // Outer White Card
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(20), // Padding between outer card and inner border
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        Container( // Inner Grey Border Container
+                      width: double.infinity,
+                      constraints: const BoxConstraints(minHeight: 450),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Colors.grey.withOpacity(0.2),
+                          width: 2,
+                        ),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 20.0),
+                          child: _selectedDocUrls.isNotEmpty
+                              ? Column(
+                                  children: _selectedDocUrls.map((url) => Padding(
+                                    padding: const EdgeInsets.only(bottom: 20.0),
+                                    child: Image.network(
+                                      url,
+                                      fit: BoxFit.scaleDown,
+                                      alignment: Alignment.topCenter,
+                                      loadingBuilder: (context, child, loadingProgress) {
+                                        if (loadingProgress == null) return child;
+                                        return Center(
+                                          child: CircularProgressIndicator(
+                                            value: loadingProgress.expectedTotalBytes != null
+                                                ? loadingProgress.cumulativeBytesLoaded / 
+                                                    loadingProgress.expectedTotalBytes!
+                                                : null,
+                                          ),
+                                        );
+                                      },
+                                      errorBuilder: (context, error, stackTrace) =>
+                                          Center(
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Icon(Icons.broken_image, size: 50, color: Colors.grey),
+                                            SizedBox(height: 10),
+                                            Text('error_loading_doc'.tr(), style: TextStyle(color: Colors.grey)),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  )).toList(),
+                                )
+                              : Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(Icons.insert_drive_file, size: 50, color: Colors.grey),
+                                      const SizedBox(height: 10),
+                                      Text('doc_not_loaded'.tr(), style: TextStyle(color: Colors.grey)),
+                                    ],
+                                  ),
+                                ),
+                        ),
+                      ),
+                    ),
+                        const SizedBox(height: 20),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: _selectedDocKey == 'doc_migration'
+                              ? Column(
+                                  children: [
+                                    Text(
+                                      'doc_not_actual'.tr(),
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Colors.grey[600],
+                                        fontSize: 14, // Slightly larger base text
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'contact_mc_link'.tr(),
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        color: Colors.blue, // Blue link color
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w400,
+                                        decoration: TextDecoration.underline,
+                                        decorationColor: Colors.blue,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : Text(
+                                  'doc_display_issue'.tr(),
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Colors.grey[500],
+                                    fontSize: 12,
+                                    height: 1.4,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ),
+            ),
+          ),
+          
+          const SizedBox(height: 40), // Spacing for bottom nav
+        ],
+      ),
+    );
+  }
+
+
 
   Widget _buildDocumentCard({
     required String imagePath,
@@ -605,8 +867,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             // Image with background
             Container(
-              width: 60,
-              height: 60,
+              width: 45,
+              height: 45,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -614,8 +876,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 borderRadius: BorderRadius.circular(12),
                 child: Image.asset(
                   imagePath,
-                  width: 60,
-                  height: 60,
+                  width: 45,
+                  height: 45,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -811,33 +1073,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              const SizedBox(width: 20),
               // Card Image Placeholder
               Container(
-                width: 190,
-                height: 160,
+                width: 170,
+                height: 100,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: Image.asset(
-                    'lib/assets/card.png',
+                    'lib/assets/c.png',
                     fit: BoxFit.cover,
                   ),
                 ),
               ),
               
+              const SizedBox(width: 20),
+
               // QR Code
               Container(
                 width: 110,
-                height: 130,
+                height: 150,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: Image.asset(
-                    'lib/assets/qrr.png',
+                    'lib/assets/qqr.png',
                     fit: BoxFit.contain,
                   ),
                 ),
@@ -908,7 +1173,7 @@ class ProfileBackground extends StatelessWidget {
       width: double.infinity,
       height: double.infinity,
       child: Image.asset(
-        imagePath ?? 'lib/assets/bg.png',
+        imagePath ?? 'lib/assets/bgg.png',
         fit: BoxFit.fill,
       ),
     );
@@ -1105,3 +1370,4 @@ class QRCodePainter extends CustomPainter {
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
+

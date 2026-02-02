@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'screens/home_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/services_screen.dart';
@@ -59,7 +60,7 @@ class CustomBottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double barHeight = 75;
-    final double circleSize = 60;
+    final double circleSize = 75;
 
     return Container(
       height: 100, // Total height to accommodate the circle and shadow
@@ -87,7 +88,7 @@ class CustomBottomNavBar extends StatelessWidget {
                     index: 0,
                     imagePath: 'lib/assets/p.png',
                     icon: Icons.person,
-                    label: 'Профиль',
+                    label: 'profile'.tr(),
                     isActive: currentIndex == 0,
                     activeColor: const Color(0xFF32BA7C),
                   ),
@@ -100,7 +101,7 @@ class CustomBottomNavBar extends StatelessWidget {
                     index: 2,
                     imagePath: 'lib/assets/S.png',
                     icon: Icons.apps,
-                    label: 'Сервисы',
+                    label: 'services'.tr(),
                     isActive: currentIndex == 2,
                     activeColor: const Color(0xFF32BA7C),
                   ),
@@ -158,7 +159,7 @@ class CustomBottomNavBar extends StatelessWidget {
                     Transform.translate(
                       offset: const Offset(0, -10),
                       child: Text(
-                        'Главная',
+                        'home'.tr(),
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
@@ -276,31 +277,38 @@ class NotchPainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     Path path = Path();
-    double notchRadius = 36; // Tighter fit: 60px circle + low padding
+    double notchRadius = 41;
     double centerX = size.width / 2;
+    double cornerRadius = 30.0; // Rounded top corners
     
     // Start from bottom left
     path.moveTo(0, size.height);
-    path.lineTo(0, 0); // Straight to top left
+    path.lineTo(0, cornerRadius); // Go up to start of corner
     
-    // Line to start of notch
+    // Top Left Corner
+    path.quadraticBezierTo(0, 0, cornerRadius, 0);
+    
+    // Line to start of notch (Sharp edge)
     path.lineTo(centerX - notchRadius, 0);
     
-    // Vertical line down (to make it a deep U)
-    path.lineTo(centerX - notchRadius, 10);
+    // Vertical line down (Deep and Sharp)
+    path.lineTo(centerX - notchRadius, 20);
     
     // The Circular Notch (The "U")
     path.arcToPoint(
-      Offset(centerX + notchRadius, 10),
+      Offset(centerX + notchRadius, 20),
       radius: Radius.circular(notchRadius),
       clockwise: false,
     );
     
-    // Vertical line up
+    // Vertical line up (Sharp exit)
     path.lineTo(centerX + notchRadius, 0);
     
-    // Top right corner
-    path.lineTo(size.width, 0); // Straight to top right
+    // Line to start of right corner
+    path.lineTo(size.width - cornerRadius, 0);
+    
+    // Top Right Corner
+    path.quadraticBezierTo(size.width, 0, size.width, cornerRadius);
     
     // Bottom right
     path.lineTo(size.width, size.height);
@@ -310,8 +318,8 @@ class NotchPainter extends CustomPainter {
     // Subtle Shadow for the bar
     canvas.drawShadow(
       path, 
-      Colors.black.withOpacity(0.1), 
-      8, 
+      Colors.black.withOpacity(0.08), 
+      10, 
       false
     );
     

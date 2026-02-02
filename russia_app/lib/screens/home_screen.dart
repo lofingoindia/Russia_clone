@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'login_screen.dart';
 
 
@@ -13,6 +14,14 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   HomeViewType _currentView = HomeViewType.home;
+  bool _isLanguageExpanded = false;
+
+  final List<Map<String, dynamic>> _languages = [
+    {'name': 'Русский', 'sub': 'Russian', 'flag': '🇷🇺', 'locale': const Locale('ru')},
+    {'name': "O'zbek", 'sub': 'Uzbek', 'flag': '🇺🇿', 'locale': const Locale('uz')},
+    {'name': 'Кыргызча', 'sub': 'Kyrgyz', 'flag': '🇰🇬', 'locale': const Locale('ky')},
+    {'name': 'English', 'sub': 'English', 'flag': '🇬🇧', 'locale': const Locale('en')},
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +32,8 @@ class _HomeScreenState extends State<HomeScreen> {
           // Background components
           HomeBackground(
             imagePath: _currentView == HomeViewType.home 
-                ? 'lib/assets/homebg.png' 
-                : 'lib/assets/ground.png',
+                ? 'lib/assets/gg.png' 
+                : 'lib/assets/backy.png',
           ),
           
           // Foreground content
@@ -101,130 +110,397 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildSettingsView() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        children: [
-          const SizedBox(height: 10),
-          // Header
-          Row(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _currentView = HomeViewType.home;
-                  });
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
+    final currentLangData = _languages.firstWhere(
+      (l) => l['locale'] == context.locale,
+      orElse: () => _languages[0],
+    );
+
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          children: [
+            const SizedBox(height: 10),
+            // Header
+            Row(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _currentView = HomeViewType.home;
+                      _isLanguageExpanded = false; // Reset expansion when leaving settings
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.arrow_back_ios_new, size: 18, color: Colors.black87),
                   ),
-                  child: const Icon(Icons.arrow_back_ios_new, size: 20, color: Colors.black87),
                 ),
-              ),
-              const SizedBox(width: 20),
-              const Text(
-                'Настройки',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF3C4451),
+                const SizedBox(width: 20),
+                Text(
+                  'settings'.tr(),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF3C4451),
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 30),
-          
-          // Change Language
-          _buildSettingsItem(
-            imagePath: 'lib/assets/cl.png',
-            title: 'Сменить язык',
-            trailing: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Row(
-                children: [
-                  const Text('🇷🇺', style: TextStyle(fontSize: 16)),
-                  const SizedBox(width: 8),
-                  const Text('Русский', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Colors.black87)),
-                  const SizedBox(width: 4),
-                  const Icon(Icons.chevron_right, size: 18, color: Colors.grey),
-                ],
-              ),
+              ],
             ),
-          ),
-          
-          const SizedBox(height: 8),
-          
-          // About the App
-          _buildSettingsItem(
-            imagePath: 'lib/assets/ab.png',
-            title: 'О приложении',
-            trailing: const Icon(Icons.chevron_right, color: Colors.grey),
-          ),
-          
-          const SizedBox(height: 8),
-          
-          // Technical Support
-          _buildSettingsItem(
-            imagePath: 'lib/assets/tech.png',
-            title: 'Техническая поддержка',
-            trailing: const Icon(Icons.chevron_right, color: Colors.grey),
-          ),
-          
-          const SizedBox(height: 8),
-          
-          // Log Out
-          GestureDetector(
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text('Выйти'),
-                    content: const Text('Вы уверены, что хотите выйти из аккаунта?'),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text(
-                          'Отмена',
-                          style: TextStyle(color: Colors.black87),
-                        ),
+            const SizedBox(height: 30),
+            
+            // Change Language
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  _isLanguageExpanded = !_isLanguageExpanded;
+                });
+              },
+              child: _buildSettingsItem(
+                imagePath: 'lib/assets/cl.png',
+                title: 'change_language'.tr(),
+                trailing: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    children: [
+                      Text(currentLangData['flag']!, style: const TextStyle(fontSize: 16)),
+                      const SizedBox(width: 8),
+                      Text(
+                        currentLangData['name']!, 
+                        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Colors.black87)
                       ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop(); // Close dialog
-                          Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(builder: (context) => const LoginScreen()),
-                            (route) => false,
-                          );
-                        },
-                        child: const Text(
-                          'Выйти',
-                          style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-                        ),
+                      const SizedBox(width: 4),
+                      Icon(
+                        _isLanguageExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down, 
+                        size: 18, 
+                        color: Colors.grey
                       ),
                     ],
-                  );
-                },
-              );
-            },
-            child: _buildSettingsItem(
-              imagePath: 'lib/assets/log.png',
-              title: 'Выйти',
-              titleColor: Colors.red,
+                  ),
+                ),
+              ),
+            ),
+            
+            // Expanded Language List
+            if (_isLanguageExpanded)
+              Container(
+                margin: const EdgeInsets.only(top: 8),
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.04),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: _languages.map((lang) {
+                    final isSelected = lang['locale'] == context.locale;
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          context.setLocale(lang['locale']);
+                          _isLanguageExpanded = false; // Close after selection
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        color: Colors.transparent,
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 32,
+                              height: 32,
+                              alignment: Alignment.center,
+                              child: Text(lang['flag']!, style: const TextStyle(fontSize: 24)),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    lang['name']!,
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  Text(
+                                    lang['sub']!,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey[500],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (isSelected)
+                              Container(
+                                width: 20,
+                                height: 20,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: const Color(0xFFEB5757),
+                                    width: 5,
+                                  ),
+                                ),
+                              )
+                            else
+                              Container(
+                                width: 20,
+                                height: 20,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.grey[400]!,
+                                    width: 1,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            
+            const SizedBox(height: 8),
+            
+            // About the App
+            _buildSettingsItem(
+              imagePath: 'lib/assets/ab.png',
+              title: 'about_app'.tr(),
               trailing: const Icon(Icons.chevron_right, color: Colors.grey),
             ),
-          ),
-        ],
+            
+            const SizedBox(height: 8),
+            
+            // Technical Support
+            _buildSettingsItem(
+              imagePath: 'lib/assets/tech.png',
+              title: 'tech_support'.tr(),
+              trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+            ),
+            
+            const SizedBox(height: 8),
+            
+            // Log Out
+            GestureDetector(
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text('logout_confirmation_title'.tr()),
+                      content: Text('logout_confirmation'.tr()),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text(
+                            'cancel'.tr(),
+                            style: const TextStyle(color: Colors.black87),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop(); // Close dialog
+                            Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(builder: (context) => const LoginScreen()),
+                              (route) => false,
+                            );
+                          },
+                          child: Text(
+                            'logout'.tr(),
+                            style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              child: _buildSettingsItem(
+                imagePath: 'lib/assets/log.png',
+                title: 'logout'.tr(),
+                titleColor: Colors.red,
+                trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+              ),
+            ),
+            
+            // Extra padding at bottom
+            const SizedBox(height: 40),
+          ],
+        ),
       ),
+    );
+  }
+
+  void _showLanguageBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.55,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(24),
+                ),
+              ),
+              child: Column(
+                children: [
+                  const SizedBox(height: 16),
+                  
+                  // Header
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                             Image.asset('lib/assets/cl.png', width: 24, height: 24),
+                             const SizedBox(width: 12),
+                             Text(
+                              'change_language_title'.tr(), 
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ],
+                        ),
+                        
+                        // Selected Language Chip
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                            child: Row(
+                            children: [
+                              Text(
+                                _languages.firstWhere((l) => l['locale'] == context.locale)['flag']!, 
+                                style: const TextStyle(fontSize: 16)
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                _languages.firstWhere((l) => l['locale'] == context.locale)['sub']!, 
+                                style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Colors.black87)
+                              ),
+                              const SizedBox(width: 4),
+                              const Icon(Icons.keyboard_arrow_down, size: 18, color: Colors.grey),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Divider(height: 20),
+                  
+                  // List
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: _languages.length,
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      itemBuilder: (context, index) {
+                        final lang = _languages[index];
+                        final isSelected = lang['locale'] == context.locale;
+                        return GestureDetector(
+                            onTap: () {
+                                setState(() {
+                                    context.setLocale(lang['locale']);
+                                });
+                                setModalState(() {}); // Update modal UI if needed
+                                Future.delayed(const Duration(milliseconds: 150), () {
+                                  Navigator.pop(context);
+                                });
+                            },
+                            child: Container(
+                                margin: const EdgeInsets.only(bottom: 20),
+                                color: Colors.transparent, 
+                                child: Row(
+                                    children: [
+                                        Container(
+                                            width: 32,
+                                            height: 32,
+                                            alignment: Alignment.center,
+                                            child: Text(lang['flag']!, style: const TextStyle(fontSize: 24)),
+                                        ),
+                                        const SizedBox(width: 16),
+                                        Expanded(
+                                            child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                    Text(
+                                                        lang['name']!,
+                                                        style: const TextStyle(
+                                                            fontSize: 15,
+                                                            fontWeight: FontWeight.w500,
+                                                            color: Colors.black87,
+                                                        ),
+                                                    ),
+                                                    Text(
+                                                        lang['sub']!,
+                                                        style: TextStyle(
+                                                            fontSize: 12,
+                                                            color: Colors.grey[500],
+                                                        ),
+                                                    ),
+                                                ],
+                                            ),
+                                        ),
+                                        Container(
+                                            width: 20,
+                                            height: 20,
+                                            decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                    color: isSelected ? const Color(0xFFEB5757) : Colors.grey[400]!, // Red accent from image
+                                                    width: isSelected ? 5 : 1,
+                                                ),
+                                            ),
+                                        ),
+                                    ],
+                                ),
+                            ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+        );
+      },
     );
   }
 
@@ -244,19 +520,20 @@ class _HomeScreenState extends State<HomeScreen> {
                   });
                 },
                 child: Container(
-                  padding: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(8),
                   decoration: const BoxDecoration(
                     color: Colors.white,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.arrow_back_ios_new, size: 20, color: Colors.black87),
+                  child: const Icon(Icons.arrow_back_ios_new, size: 18, color: Colors.black87),
                 ),
               ),
               const SizedBox(width: 20),
-              const Text(
-                'Уведомления',
-                style: TextStyle(
-                  fontSize: 22,
+              const SizedBox(width: 20),
+               Text(
+                'notifications'.tr(),
+                style: const TextStyle(
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF3C4451),
                 ),
@@ -267,7 +544,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Expanded(
             child: Center(
               child: Text(
-                'У вас нет уведомлений',
+                'no_notifications'.tr(),
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.grey[600],
@@ -321,30 +598,30 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildGeolocationCard() {
-    return const StatusCard(
+    return StatusCard(
       imagePath: 'lib/assets/location.png',
-      title: 'Геолокация',
-      description: 'Геолокация передана',
+      title: 'geolocation'.tr(),
+      description: 'geolocation_desc'.tr(),
       showBadge: true,
-      badgeText: 'Передана: 31.01.2026 15:19',
+      badgeText: 'geolocation_sent_at'.tr(args: ['31.01.2026 15:19']),
       isCompleted: true,
     );
   }
 
   Widget _buildAuthenticationCard() {
-    return const StatusCard(
+    return StatusCard(
       imagePath: 'lib/assets/authen.png',
-      title: 'Аутентификация',
-      description: 'Проверка пройдена. Открыт доступ к личным данным и документам',
+      title: 'authentication'.tr(),
+      description: 'authentication_desc'.tr(),
       isCompleted: true,
     );
   }
 
   Widget _buildRegistrationCard() {
-    return const StatusCard(
+    return StatusCard(
       imagePath: 'lib/assets/diar.png',
-      title: 'Постановка на учет',
-      description: 'Вы состоите на учете',
+      title: 'registration'.tr(),
+      description: 'registration_desc'.tr(),
       isCompleted: true,
     );
   }
@@ -352,33 +629,35 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildPlaceOfStayCard() {
     return StatusCard(
       imagePath: 'lib/assets/locat.png',
-      title: 'Место сна и отдыха',
+      title: 'place_of_stay'.tr(),
       descriptionWidget: RichText(
-        text: const TextSpan(
-          style: TextStyle(color: Colors.black54, fontSize: 11, height: 1.3),
+        text: TextSpan(
+          style: const TextStyle(color: Colors.black54, fontSize: 11, height: 1.3),
           children: [
-            TextSpan(text: 'Населенный пункт:\n'),
-            TextSpan(text: 'г. Москва,\n', style: TextStyle(color: Color(0xFF3C4451), fontWeight: FontWeight.normal)),
-            TextSpan(text: 'проезд Электролитный, 3с7\n', style: TextStyle(color: Color(0xFF3C4451), fontWeight: FontWeight.normal)),
-            TextSpan(text: 'Улица: ', style: TextStyle(color: Colors.black54)),
-            TextSpan(text: 'проезд Электролитный\n', style: TextStyle(color: Color(0xFF3C4451), fontWeight: FontWeight.w600)),
-            TextSpan(text: 'Дом: ', style: TextStyle(color: Colors.black54)),
-            TextSpan(text: '3с7   ', style: TextStyle(color: Color(0xFF3C4451), fontWeight: FontWeight.w600)),
-            TextSpan(text: 'Квартира: ', style: TextStyle(color: Colors.black54)),
-            TextSpan(text: '321', style: TextStyle(color: Color(0xFF3C4451), fontWeight: FontWeight.w600)),
+            TextSpan(text: 'city_label'.tr() + '\n'),
+            const TextSpan(text: 'г. Москва,\n', style: TextStyle(color: Color(0xFF3C4451), fontWeight: FontWeight.normal)),
+            const TextSpan(text: 'проезд Электролитный, 3с7\n', style: TextStyle(color: Color(0xFF3C4451), fontWeight: FontWeight.normal)),
+            TextSpan(text: 'street_label'.tr() + ' ', style: const TextStyle(color: Colors.black54)),
+            const TextSpan(text: 'проезд Электролитный\n', style: TextStyle(color: Color(0xFF3C4451), fontWeight: FontWeight.w600)),
+            TextSpan(text: 'house_label'.tr() + ' ', style: const TextStyle(color: Colors.black54)),
+            const TextSpan(text: '3с7   ', style: TextStyle(color: Color(0xFF3C4451), fontWeight: FontWeight.w600)),
+            TextSpan(text: 'apartment_label'.tr() + ' ', style: const TextStyle(color: Colors.black54)),
+            const TextSpan(text: '321', style: TextStyle(color: Color(0xFF3C4451), fontWeight: FontWeight.w600)),
           ],
         ),
       ),
       isCompleted: true,
+      showEditAction: true,
     );
   }
 
   Widget _buildPhoneNumberCard() {
-    return const StatusCard(
+    return StatusCard(
       imagePath: 'lib/assets/call.png',
-      title: 'Номер телефона',
+      title: 'phone_number'.tr(),
       description: '+790998933489',
       isCompleted: true,
+      showEditAction: true,
     );
   }
 
@@ -417,26 +696,27 @@ class _StoryOverlay extends StatefulWidget {
 
 class _StoryOverlayState extends State<_StoryOverlay> {
   int _currentIndex = 0;
+  
   final List<_StoryItem> _stories = [
-    _StoryItem(
-      title: 'Выключайте VPN-сервисы \nпри использовании приложения  ',
-      imagePath: 'lib/assets/s11.png',
+     _StoryItem(
+      title: 'story_1'.tr(),
+      imagePath: 'lib/assets/story0.png',
     ),
     _StoryItem(
-      title: 'Проверьте настройки телефона,\nчтобы разрешить передачу геолокации',
-      imagePath: 'lib/assets/ssss.png',
+      title: 'story_2'.tr(),
+      imagePath: 'lib/assets/00.png',
     ),
     _StoryItem(
-      title: 'Заходите в \nприложение каждый день',
-      imagePath: 'lib/assets/ss2.png',
+      title: 'story_3'.tr(),
+      imagePath: 'lib/assets/000.png',
+    ),
+      _StoryItem(
+      title: "story_4".tr(),
+      imagePath: 'lib/assets/0000.png',
     ),
     _StoryItem( 
-      title: 'Зарегистрируйте свои документы',
-      imagePath: 'lib/assets/sss2.png',
-    ),
-    _StoryItem(
-      title: "Не отключайте \nPUSH-уведомления",
-      imagePath: 'lib/assets/ssss2.png',
+      title: 'story_5'.tr(),
+      imagePath: 'lib/assets/00000.png',
     ),
   ];
 
@@ -446,7 +726,7 @@ class _StoryOverlayState extends State<_StoryOverlay> {
         _currentIndex++;
       });
     } else {
-      Navigator.pop(context);
+      Navigator.of(context, rootNavigator: true).pop();
     }
   }
 
@@ -457,9 +737,10 @@ class _StoryOverlayState extends State<_StoryOverlay> {
       });
     }
   }
-
+  
   @override
   Widget build(BuildContext context) {
+  
     final story = _stories[_currentIndex];
 
     return Scaffold(
@@ -494,7 +775,7 @@ class _StoryOverlayState extends State<_StoryOverlay> {
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 22,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
                           height: 1.2,
                           decoration: TextDecoration.none,
@@ -505,71 +786,83 @@ class _StoryOverlayState extends State<_StoryOverlay> {
                 ),
               ),
             ),
-
-          // Invisible Gesture Areas for Navigation
-          // Close button area (top right)
-          Positioned(
-            top: 0,
-            right: 0,
-            child: SafeArea(
-              child: GestureDetector(
-                onTap: () => Navigator.pop(context),
-                child: Container(
-                  width: 80,
-                  height: 80,
-                  color: Colors.transparent,
-                ),
-              ),
-            ),
-          ),
-
-          // Back button area (bottom left)
-          if (_currentIndex > 0)
+            // Close Button (Top Right)
             Positioned(
-              bottom: 42,
-              left: 20,
-              child: GestureDetector(
-                onTap: _previousStory,
-                child: Container(
-                  width: 55,
-                  height: 55,
-                  color: Colors.transparent,
-                ),
-              ),
-            ),
-
-          // Next/Finish button area (bottom right)
-          Positioned(
-            bottom: 66,
-            right: 10,
-            child: GestureDetector(
-              onTap: _nextStory,
-              child: Container(
-                width: _currentIndex == 0 ? MediaQuery.of(context).size.width - 40 : MediaQuery.of(context).size.width - 100,
-                height: 55,
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                child: Center(
-                  child: Text(
-                    _currentIndex == _stories.length - 1 ? 'Завершить' : 'Далее',
-                    style: const TextStyle(
-                      color: Color(0xFF2C3440),
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      decoration: TextDecoration.none,
+              top: 30,
+              right: 30,
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 16, right: 20),
+                  child: GestureDetector(
+                    onTap: () => Navigator.of(context, rootNavigator: true).pop(),
+                    child: Container(
+                      width: 35,
+                      height: 35,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.close, color: Colors.black, size: 20),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
+            // Dynamic Bottom Navigation Bar
+            Positioned(
+              bottom: 50,
+              left: 20,
+              right: 20,
+              child: Row(
+                children: [
+                  // Back Button (only if not first story)
+                  if (_currentIndex > 0) ...[
+                    GestureDetector(
+                      onTap: _previousStory,
+                      child: Container(
+                        width: 52,
+                        height: 52,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.chevron_left, color: Colors.black, size: 28),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                  ],
+                  // Next / Close Button
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: _nextStory,
+                      child: Container(
+                        height: 52,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: Center(
+                          child: Text(
+                            _currentIndex == _stories.length - 1 ? 'Закрыть' : 'Далее',
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              decoration: TextDecoration.none,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           
           // Tap anywhere on right half to go next
           Positioned(
             top: 80,
-            bottom: 100,
+            bottom: 120, // Avoid overlapping bottom buttons
             right: 0,
             width: MediaQuery.of(context).size.width / 2,
             child: GestureDetector(
@@ -583,7 +876,7 @@ class _StoryOverlayState extends State<_StoryOverlay> {
           // Tap anywhere on left half to go back
           Positioned(
             top: 80,
-            bottom: 100,
+            bottom: 120, // Avoid overlapping bottom buttons
             left: 0,
             width: MediaQuery.of(context).size.width / 2,
             child: GestureDetector(
@@ -710,6 +1003,7 @@ class StatusCard extends StatelessWidget {
   final bool showBadge;
   final String? badgeText;
   final bool isCompleted;
+  final bool showEditAction;
 
   const StatusCard({
     super.key,
@@ -721,6 +1015,7 @@ class StatusCard extends StatelessWidget {
     this.showBadge = false,
     this.badgeText,
     this.isCompleted = false,
+    this.showEditAction = false,
   });
 
   @override
@@ -774,6 +1069,30 @@ class StatusCard extends StatelessWidget {
                                   ),
                                 ),
                               ),
+                              if (showEditAction) ...[
+                                const SizedBox(width: 8),
+                                Image.asset('lib/assets/editicon.png', width: 14, height: 14),
+                                const SizedBox(width: 4),
+                              Text(
+                                    'Change'.tr(),
+                                    style: const TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                if (isCompleted) ...[
+                                  const SizedBox(width: 8),
+                                  Container(
+                                    padding: const EdgeInsets.all(2),
+                                    decoration: const BoxDecoration(
+                                      color: Color(0xFF32BA7C),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(Icons.check, size: 12, color: Colors.white),
+                                  ),
+                                ],
+                              ],
                             ],
                           ),
                         ],
@@ -821,12 +1140,12 @@ class StatusCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                 ],
-                if (isCompleted)
+                if (isCompleted && !showEditAction)
                   Container(
                     padding: const EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF32BA7C),
-                      borderRadius: BorderRadius.circular(6),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF32BA7C),
+                      shape: BoxShape.circle,
                     ),
                     child: const Icon(Icons.check, size: 12, color: Colors.white),
                   ),

@@ -104,8 +104,19 @@ class ApiService {
         };
       }
 
+      // Get user ID from stored data
+      final userData = await getUserData();
+      final userId = userData?['id'];
+      
+      if (userId == null) {
+        return {
+          'success': false,
+          'message': 'User ID not found',
+        };
+      }
+
       final response = await http.get(
-        Uri.parse('$baseUrl/users/me'),
+        Uri.parse('$baseUrl/users/$userId'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
