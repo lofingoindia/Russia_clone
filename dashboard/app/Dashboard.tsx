@@ -1,5 +1,8 @@
+"use client";
+
 import React from 'react';
 import Sidebar from './Sidebar';
+import { useLanguage } from './context/LanguageContext';
 
 interface User {
     id: number;
@@ -32,6 +35,8 @@ const Dashboard = ({
     users: User[];
     adminInfo?: { name: string; role: string } | null;
 }) => {
+    const { t } = useLanguage();
+
     // Calculate stats from users data
     const totalUsers = users.length;
     const adminCount = users.filter(u => u.role === 'Admin').length;
@@ -44,6 +49,12 @@ const Dashboard = ({
         return acc;
     }, {} as Record<string, number>);
 
+    const months = [
+        t.dashboard.jan, t.dashboard.feb, t.dashboard.mar, t.dashboard.apr,
+        t.dashboard.may, t.dashboard.jun, t.dashboard.jul, t.dashboard.aug,
+        t.dashboard.sep, t.dashboard.oct, t.dashboard.nov, t.dashboard.dec
+    ];
+
     return (
         <div className="flex h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white font-sans selection:bg-indigo-100">
             <Sidebar activeTab="Dashboard" onTabChange={onTabChange} theme={theme} onThemeToggle={onThemeToggle} onLogout={onLogout} adminInfo={adminInfo} />
@@ -51,32 +62,32 @@ const Dashboard = ({
             <main className="flex-1 flex flex-col overflow-hidden">
                 <header className="h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-8">
                     <div>
-                        <h2 className="text-xl font-bold text-gray-900 dark:text-white">Dashboard Overview</h2>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Real-time analysis of your user base</p>
+                        <h2 className="text-xl font-bold text-gray-900 dark:text-white">{t.dashboard.overview}</h2>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">{t.dashboard.realTimeAnalysis}</p>
                     </div>
                     <div className="flex items-center space-x-4">
-                        <button 
-                            onClick={() => onTabChange("Users")} 
+                        <button
+                            onClick={() => onTabChange("Users")}
                             className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors cursor-default">
-                            Manage Users
+                            {t.dashboard.manageUsers}
                         </button>
                     </div>
                 </header>
 
                 <div className="flex-1 overflow-y-auto p-8 space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-                        <StatCard label="Total Users" value={totalUsers.toString()} trend="+2.5%" />
-                        <StatCard label="Administrators" value={adminCount.toString()} trend="System" />
-                        <StatCard label="With Documents" value={withDocs.toString()} trend={`${totalUsers > 0 ? Math.round((withDocs / totalUsers) * 100) : 0}%`} />
-                        <StatCard label="Account Health" value="100%" trend="Optimal" />
+                        <StatCard label={t.dashboard.totalUsers} value={totalUsers.toString()} trend="+2.5%" />
+                        <StatCard label={t.dashboard.administrators} value={adminCount.toString()} trend={t.dashboard.system} />
+                        <StatCard label={t.dashboard.withDocuments} value={withDocs.toString()} trend={`${totalUsers > 0 ? Math.round((withDocs / totalUsers) * 100) : 0}%`} />
+                        <StatCard label={t.dashboard.accountHealth} value="100%" trend={t.dashboard.optimal} />
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div className="lg:col-span-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm flex flex-col">
                             <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-                                <h3 className="font-semibold text-gray-900 dark:text-white">User Registration Growth</h3>
+                                <h3 className="font-semibold text-gray-900 dark:text-white">{t.dashboard.userGrowth}</h3>
                                 <div className="flex space-x-2">
-                                    <span className="text-xs bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 px-3 py-1 rounded-full font-medium">Live Data</span>
+                                    <span className="text-xs bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 px-3 py-1 rounded-full font-medium">{t.dashboard.liveData}</span>
                                 </div>
                             </div>
                             <div className="p-8 h-80 flex flex-col justify-end space-y-2">
@@ -87,42 +98,44 @@ const Dashboard = ({
                                     ))}
                                 </div>
                                 <div className="flex justify-between px-4 text-[10px] text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider">
-                                    <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
+                                    {months.map((month, i) => (
+                                        <span key={i}>{month}</span>
+                                    ))}
                                 </div>
                             </div>
                         </div>
 
                         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm flex flex-col">
                             <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-                                <h3 className="font-semibold text-gray-900 dark:text-white">Role Distribution</h3>
+                                <h3 className="font-semibold text-gray-900 dark:text-white">{t.dashboard.roleDistribution}</h3>
                             </div>
                             <div className="p-6 space-y-6">
                                 {Object.entries(roleStats).map(([role, count]) => (
                                     <CategoryItem
                                         key={role}
                                         label={role}
-                                        value={`${count} Users`}
+                                        value={`${count} ${t.dashboard.users}`}
                                         percentage={totalUsers > 0 ? (count / totalUsers) * 100 : 0}
                                     />
                                 ))}
-                                {totalUsers === 0 && <p className="text-sm text-gray-500 dark:text-gray-400">No users registered.</p>}
+                                {totalUsers === 0 && <p className="text-sm text-gray-500 dark:text-gray-400">{t.dashboard.noUsersRegistered}</p>}
                             </div>
                         </div>
                     </div>
 
                     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm">
                         <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-                            <h3 className="font-semibold text-gray-900 dark:text-white">Recently Added Users</h3>
-                            <button onClick={() => onTabChange("Users")} className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 cursor-default">See All →</button>
+                            <h3 className="font-semibold text-gray-900 dark:text-white">{t.dashboard.recentlyAdded}</h3>
+                            <button onClick={() => onTabChange("Users")} className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 cursor-default">{t.dashboard.seeAll} →</button>
                         </div>
                         <div className="overflow-x-auto">
                             <table className="w-full text-left">
                                 <thead>
                                     <tr className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
-                                        <th className="p-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th>
-                                        <th className="p-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Email</th>
-                                        <th className="p-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Role</th>
-                                        <th className="p-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                                        <th className="p-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{t.dashboard.name}</th>
+                                        <th className="p-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{t.login.email}</th>
+                                        <th className="p-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{t.dashboard.role}</th>
+                                        <th className="p-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{t.dashboard.status}</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -133,14 +146,14 @@ const Dashboard = ({
                                             <td className="p-4 text-sm text-gray-900 dark:text-white">{user.role}</td>
                                             <td className="p-4">
                                                 <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
-                                                    Active
+                                                    {t.common.active}
                                                 </span>
                                             </td>
                                         </tr>
                                     ))}
                                     {users.length === 0 && (
                                         <tr>
-                                            <td colSpan={4} className="p-10 text-center text-sm text-gray-500 dark:text-gray-400">No users found.</td>
+                                            <td colSpan={4} className="p-10 text-center text-sm text-gray-500 dark:text-gray-400">{t.dashboard.noUsersFound}</td>
                                         </tr>
                                     )}
                                 </tbody>
@@ -158,9 +171,8 @@ const StatCard = ({ label, value, trend, color = 'green' }: { label: string; val
         <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">{label}</p>
         <div className="flex items-end justify-between">
             <h3 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">{value}</h3>
-            <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${
-                color === 'green' 
-                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
+            <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${color === 'green'
+                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
                     : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
                 }`}>
                 {trend}

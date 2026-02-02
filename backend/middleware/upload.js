@@ -64,7 +64,8 @@ const uploadUserFiles = upload.fields([
     { name: 'profileImage', maxCount: 1 },
     { name: 'doc1', maxCount: 1 },
     { name: 'doc2', maxCount: 1 },
-    { name: 'doc3', maxCount: 10 } // Multiple files allowed
+    { name: 'doc3', maxCount: 10 }, // Multiple files allowed
+    { name: 'doc4', maxCount: 10 } // Multiple files allowed for Taxpayer Identification Number
 ]);
 
 // Error handler for multer

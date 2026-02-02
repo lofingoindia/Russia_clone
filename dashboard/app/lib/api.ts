@@ -141,6 +141,9 @@ export interface User {
     doc3: string | null;
     doc3Urls: string[] | null;
     doc3Names: string[] | null;
+    doc4: string | null;
+    doc4Urls: string[] | null;
+    doc4Names: string[] | null;
     is_active: number;
     created_at: string;
     updated_at: string;

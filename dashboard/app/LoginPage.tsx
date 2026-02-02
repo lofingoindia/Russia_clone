@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import { useLanguage } from './context/LanguageContext';
 
 interface LoginPageProps {
     onLogin: (email: string, password: string) => Promise<boolean>;
@@ -9,6 +10,7 @@ interface LoginPageProps {
 }
 
 const LoginPage = ({ onLogin, theme, onThemeToggle }: LoginPageProps) => {
+    const { t, language, setLanguage } = useLanguage();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -23,10 +25,10 @@ const LoginPage = ({ onLogin, theme, onThemeToggle }: LoginPageProps) => {
         try {
             const success = await onLogin(email, password);
             if (!success) {
-                setError('Invalid email or password');
+                setError(t.login.invalidCredentials);
             }
         } catch {
-            setError('Login failed. Please try again.');
+            setError(t.login.loginFailed);
         } finally {
             setIsLoading(false);
         }
@@ -34,8 +36,26 @@ const LoginPage = ({ onLogin, theme, onThemeToggle }: LoginPageProps) => {
 
     return (
         <div className="min-h-screen bg-[#D1DFFF] dark:bg-[#0F172A] flex items-center justify-center p-4 font-sans selection:bg-indigo-100">
-            {/* Theme Toggle Button - Floating */}
-            <div className="absolute top-8 right-8">
+            {/* Theme Toggle & Language Switcher */}
+            <div className="absolute top-8 right-8 flex items-center space-x-3">
+                {/* Language Switcher */}
+                <div className="flex items-center space-x-1 bg-surface-custom border border-border-custom rounded-sm px-2 py-2">
+                    <button
+                        onClick={() => setLanguage('en')}
+                        className={`flex items-center space-x-1.5 px-2 py-1 rounded text-xs font-bold transition-colors ${language === 'en' ? 'bg-indigo-600 text-white' : 'text-foreground hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+                    >
+                        <span>🇺🇸</span>
+                        <span>EN</span>
+                    </button>
+                    <button
+                        onClick={() => setLanguage('ru')}
+                        className={`flex items-center space-x-1.5 px-2 py-1 rounded text-xs font-bold transition-colors ${language === 'ru' ? 'bg-indigo-600 text-white' : 'text-foreground hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+                    >
+                        <span>🇷🇺</span>
+                        <span>RU</span>
+                    </button>
+                </div>
+                {/* Theme Toggle */}
                 <button
                     onClick={onThemeToggle}
                     className="flex items-center space-x-2 px-4 py-2 bg-surface-custom border border-border-custom rounded-sm cursor-default text-foreground"
@@ -45,7 +65,7 @@ const LoginPage = ({ onLogin, theme, onThemeToggle }: LoginPageProps) => {
                     ) : (
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-foreground"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
                     )}
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-foreground">{theme === 'light' ? 'Light' : 'Dark'}</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-foreground">{theme === 'light' ? t.common.light : t.common.dark}</span>
                 </button>
             </div>
 
@@ -65,28 +85,28 @@ const LoginPage = ({ onLogin, theme, onThemeToggle }: LoginPageProps) => {
                 <div className="w-full md:w-1/2 p-12 lg:p-16 flex flex-col justify-center">
                     <div className="max-w-[400px] w-full mx-auto">
                         <div className="text-center mb-10">
-                            <h2 className="text-[32px] font-bold text-foreground mb-2">Sign In</h2>
-                            <p className="text-[#64748B] dark:text-[#94A3B8] text-sm">Unlock you world.</p>
+                            <h2 className="text-[32px] font-bold text-foreground mb-2">{t.login.signIn}</h2>
+                            <p className="text-[#64748B] dark:text-[#94A3B8] text-sm">{t.login.unlockWorld}</p>
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="space-y-2">
                                 <label className="text-sm font-bold text-foreground">
-                                    <span className="text-red-500 mr-1">*</span>Email
+                                    <span className="text-red-500 mr-1">*</span>{t.login.email}
                                 </label>
                                 <input
                                     type="email"
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="Enter your email"
+                                    placeholder={t.login.enterEmail}
                                     className="w-full px-4 py-3.5 bg-background border border-[#E2E8F0] dark:border-[#1E293B] rounded-[10px] text-sm focus:outline-none focus:border-[#3B82F6] text-foreground placeholder-[#94A3B8]"
                                 />
                             </div>
 
                             <div className="space-y-2 relative">
                                 <label className="text-sm font-bold text-foreground">
-                                    <span className="text-red-500 mr-1">*</span>Password
+                                    <span className="text-red-500 mr-1">*</span>{t.login.password}
                                 </label>
                                 <div className="relative">
                                     <input
@@ -94,7 +114,7 @@ const LoginPage = ({ onLogin, theme, onThemeToggle }: LoginPageProps) => {
                                         required
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        placeholder="Enter your password"
+                                        placeholder={t.login.enterPassword}
                                         className="w-full px-4 py-3.5 bg-background border border-[#E2E8F0] dark:border-[#1E293B] rounded-[10px] text-sm focus:outline-none focus:border-[#3B82F6] text-foreground placeholder-[#94A3B8] pr-12"
                                     />
                                     <button
@@ -127,7 +147,7 @@ const LoginPage = ({ onLogin, theme, onThemeToggle }: LoginPageProps) => {
                                     disabled={isLoading}
                                     className="w-full py-3.5 bg-[#3B82F6] text-white text-sm font-bold rounded-[10px] border border-[#3B82F6] cursor-default disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    {isLoading ? 'Signing In...' : 'Sign In'}
+                                    {isLoading ? t.login.signingIn : t.login.signIn}
                                 </button>
 
                             </div>
@@ -135,10 +155,10 @@ const LoginPage = ({ onLogin, theme, onThemeToggle }: LoginPageProps) => {
 
                         {/* Credentials helper at the bottom of the form area */}
                         <div className="mt-8 pt-6 border-t border-border-custom text-center">
-                            <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-widest mb-3">Admin Credentials</p>
+                            <p className="text-[10px] font-bold text-[#64748B] uppercase tracking-widest mb-3">{t.login.adminCredentials}</p>
                             <div className="flex flex-col space-y-1 text-[11px] font-bold text-foreground">
-                                <span>Email: admin@russiaapp.com</span>
-                                <span>Pass: admin123</span>
+                                <span>{t.login.email}: admin@russiaapp.com</span>
+                                <span>{t.login.password}: admin123</span>
                             </div>
                         </div>
                     </div>

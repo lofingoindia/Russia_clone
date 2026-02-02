@@ -23,6 +23,9 @@ interface User {
   doc3: string | null;
   doc3Urls: string[] | null;
   doc3Names: string[] | null;
+  doc4: string | null;
+  doc4Urls: string[] | null;
+  doc4Names: string[] | null;
 }
 
 export default function Home() {
@@ -52,6 +55,9 @@ export default function Home() {
     doc3: apiUser.doc3,
     doc3Urls: apiUser.doc3Urls,
     doc3Names: apiUser.doc3Names,
+    doc4: apiUser.doc4,
+    doc4Urls: apiUser.doc4Urls,
+    doc4Names: apiUser.doc4Names,
   });
 
   // Fetch users from API
