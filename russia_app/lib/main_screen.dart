@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 import 'package:easy_localization/easy_localization.dart';
 import 'screens/home_screen.dart';
 import 'screens/profile_screen.dart';
@@ -288,21 +289,21 @@ class NotchPainter extends CustomPainter {
     // Top Left Corner
     path.quadraticBezierTo(0, 0, cornerRadius, 0);
     
-    // Line to start of notch (Sharp edge)
-    path.lineTo(centerX - notchRadius, 0);
+    // Calculate intersection of notch circle with top edge
+    // We assume the circle center is at (centerX, 20) to maintain bottom depth
+    double notchCenterY = 20.0;
+    double intersectionX = sqrt(notchRadius * notchRadius - notchCenterY * notchCenterY);
+
+    // Line to start of notch (curved in)
+    path.lineTo(centerX - intersectionX, 0);
     
-    // Vertical line down (Deep and Sharp)
-    path.lineTo(centerX - notchRadius, 20);
-    
-    // The Circular Notch (The "U")
+    // The Circular Notch (Full Circle wrap)
     path.arcToPoint(
-      Offset(centerX + notchRadius, 20),
+      Offset(centerX + intersectionX, 0),
       radius: Radius.circular(notchRadius),
       clockwise: false,
+      largeArc: true,
     );
-    
-    // Vertical line up (Sharp exit)
-    path.lineTo(centerX + notchRadius, 0);
     
     // Line to start of right corner
     path.lineTo(size.width - cornerRadius, 0);
