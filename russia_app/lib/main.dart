@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:russia_app/screens/login_screen.dart';
 import 'package:russia_app/main_screen.dart';
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: true,
         scaffoldBackgroundColor: Colors.white,
+        textTheme: GoogleFonts.interTextTheme(),
       ),
       home: const AuthChecker(),
     );

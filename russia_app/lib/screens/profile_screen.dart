@@ -116,7 +116,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 5),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -139,16 +139,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
               // User Info Card
               _buildUserInfoCard(),
               
-              const SizedBox(height: 12),
+              const SizedBox(height: 14),
               
               // Foreign Citizen Card
               _buildForeignCitizenCard(),
               
-              const SizedBox(height: 12),
+              const SizedBox(height: 14),
               
               // Personal Information Button
               _buildNavigationButton(
-                imagePath: 'lib/assets/pi.png',
+                imagePath: 'lib/assets/data.png',
                 title: 'personal_data'.tr(),
                 onTap: () {
                   setState(() {
@@ -157,11 +157,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 },
               ),
               
-              const SizedBox(height: 10),
+              const SizedBox(height: 14),
               
               // Documents Button
               _buildNavigationButton(
-                imagePath: 'lib/assets/docs.png',
+                imagePath: 'lib/assets/document.png',
                 title: 'documents'.tr(),
                 onTap: () {
                   setState(() {
@@ -231,7 +231,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 5),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -378,7 +378,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             // Header with back button
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
               child: Row(
                 children: [
                   GestureDetector(
@@ -419,7 +419,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             
             // Content
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 13),
+              padding: const EdgeInsets.symmetric(horizontal: 5),
               child: Column(
                 children: [
                   const SizedBox(height: 55),
@@ -428,7 +428,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.04),
@@ -453,6 +453,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       style: TextStyle(
                                         fontSize: 10,
                                         color: Colors.grey[600],
+                                        fontWeight: FontWeight.w600,
                                       ),
                                     ),
                                     const SizedBox(height: 2),
@@ -460,7 +461,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       '',
                                       style: TextStyle(
                                         fontSize: 12,
-                                        fontWeight: FontWeight.w600,
+                                        fontWeight: FontWeight.bold,
                                         color: Color(0xFF3C4451),
                                       ),
                                     ),
@@ -476,6 +477,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   style: TextStyle(
                                     fontSize: 10,
                                     color: Colors.grey[600],
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
                                 const SizedBox(height: 2),
@@ -507,6 +509,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       style: TextStyle(
                                         fontSize: 10,
                                         color: Colors.grey[600],
+                                        fontWeight: FontWeight.w600,
                                       ),
                                     ),
                                     const SizedBox(height: 2),
@@ -535,6 +538,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 style: TextStyle(
                                   fontSize: 10,
                                   color: Colors.grey[600],
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                               const SizedBox(height: 2),
@@ -560,7 +564,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.04),
@@ -591,6 +595,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               style: TextStyle(
                                 fontSize: 10,
                                 color: Colors.grey[600],
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                             const SizedBox(height: 2),
@@ -598,7 +603,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               '+79099893489',
                               style: TextStyle(
                                 fontSize: 12,
-                                fontWeight: FontWeight.w600,
+                                fontWeight: FontWeight.bold,
                                 color: Color(0xFF3C4451),
                               ),
                             ),
@@ -616,6 +621,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               style: TextStyle(
                                 fontSize: 10,
                                 color: Colors.grey[600],
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                             const SizedBox(height: 2),
@@ -715,7 +721,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     padding: const EdgeInsets.all(20), // Padding between outer card and inner border
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.1),
@@ -853,7 +859,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.04),
@@ -905,10 +911,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildUserInfoCard() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
@@ -928,8 +934,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Text(
                   'ФИО',
                   style: TextStyle(
-                    fontSize: 10,
-                    color: Colors.grey[600],
+                    fontSize: 13,
+                    color: Colors.black,
                     fontWeight: FontWeight.w400,
                   ),
                 ),
@@ -937,9 +943,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Text(
                   _userData?['name']?.toString().toUpperCase() ?? 'НЕ УКАЗАНО',
                   style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF3C4451),
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Гражданство',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  _userData?['citizenship'] ?? 'Киргизия',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
                   ),
                 ),
                 // const SizedBox(height: 6),
@@ -987,10 +1011,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildForeignCitizenCard() {
     return Container(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
@@ -1005,12 +1029,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const Text(
             'Карта иностранного гражданина',
             style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF3C4451),
+              fontSize: 13,
+              fontWeight: FontWeight.w400,
+              color: Colors.black,
             ),
           ),
-          const SizedBox(height: 2),
+          const SizedBox(height: 16),
           
           // KIG Number and Expiry Date
           Row(
@@ -1022,18 +1046,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Text(
                       'Номер КИГ',
                       style: TextStyle(
-                        fontSize: 10,
+                        fontSize: 12,
                         color: Colors.grey[600],
-                        fontWeight: FontWeight.w400,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                     const SizedBox(height: 2),
                     const Text(
-                      'AA1484021',
+                      'AA11365228',
                       style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF3C4451),
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold ,
+                        color: Colors.black,
                       ),
                     ),
                   ],
@@ -1046,18 +1070,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Text(
                       'Срок действия КИГ:',
                       style: TextStyle(
-                        fontSize: 10,
+                        fontSize: 12,
                         color: Colors.grey[600],
-                        fontWeight: FontWeight.w400,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                     const SizedBox(height: 2),
                     const Text(
                       '2030-12-29',
                       style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF3C4451),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.black,
                       ),
                     ),
                   ],
@@ -1097,10 +1121,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.04),
@@ -1114,18 +1138,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             Image.asset(
               imagePath,
-              width: 44,
-              height: 44,
+              width: 28,
+              height: 28,
               fit: BoxFit.contain,
             ),
-            const SizedBox(width: 2),
+            const SizedBox(width: 12),
             Expanded(
               child: Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF3C4451),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.black,
                 ),
               ),
             ),

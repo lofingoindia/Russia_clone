@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'login_screen.dart';
 
@@ -15,6 +16,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   HomeViewType _currentView = HomeViewType.home;
   bool _isLanguageExpanded = false;
+  bool _refreshingSuccess = false;
 
   final List<Map<String, dynamic>> _languages = [
     {'name': 'Русский', 'sub': 'Russian', 'flag': '🇷🇺', 'locale': const Locale('ru')},
@@ -32,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // Background components
           HomeBackground(
             imagePath: _currentView == HomeViewType.home 
-                ? 'lib/assets/gg.png' 
+                ? 'lib/assets/neww.png' 
                 : 'lib/assets/backy.png',
           ),
           
@@ -58,55 +60,165 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildHomeContent() {
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: HomeHeader(
-              onProfileTap: () {
-                _showStoryOverlay();
-              },
-              onSettingsTap: () {
-                setState(() {
-                  _currentView = HomeViewType.settings;
-                });
-              },
-              onNotificationsTap: () {
-                setState(() {
-                  _currentView = HomeViewType.notifications;
-                });
-              },
+    return Column(
+      children: [
+        const SizedBox(height: 10),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: HomeHeader(
+            onProfileTap: () {
+              _showStoryOverlay();
+            },
+            onSettingsTap: () {
+              setState(() {
+                _currentView = HomeViewType.settings;
+              });
+            },
+            onNotificationsTap: () {
+              setState(() {
+                _currentView = HomeViewType.notifications;
+              });
+            },
+          ),
+        ),
+        
+        Expanded(
+          child: CustomRefreshIndicator(
+            onRefresh: _onRefresh,
+            builder: (context, child, controller) {
+              return Stack(
+                children: [
+                  // Content with displacement
+                   AnimatedBuilder(
+                      animation: controller,
+                      builder: (context, _) {
+                        return Transform.translate(
+                          offset: Offset(0, 100.0 * controller.value),
+                          child: child,
+                        );
+                      }
+                   ),
+                   
+                   // Indicator - Positioned at the top of this Expanded area (below header)
+                   Positioned(
+                     top: 10,
+                     left: 0,
+                     right: 0,
+                     child: AnimatedBuilder(
+                       animation: controller,
+                       builder: (context, _) {
+                         final double value = controller.value;
+                         final bool isLoading = controller.isLoading;
+
+                          Widget content;
+                          if (isLoading) {
+                             if (_refreshingSuccess) {
+                               content = Row(
+                                 mainAxisAlignment: MainAxisAlignment.center,
+                                 children: [
+                                   const Icon(Icons.check, color: Color(0xFF909499), size: 24),
+                                   const SizedBox(width: 10),
+                                   const Text("Обновление завершено", style: TextStyle(color: Color(0xFF909499), fontSize: 13, fontWeight: FontWeight.w500)),
+                                 ],
+                               );
+                             } else {
+                               content = Row(
+                                 mainAxisAlignment: MainAxisAlignment.center,
+                                 children: [
+                                   const SizedBox(
+                                     width: 20, 
+                                     height: 20, 
+                                     child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFFEB5757))
+                                   ),
+                                   const SizedBox(width: 10),
+                                   const Text("Обновление...", style: TextStyle(color: Color(0xFF909499), fontSize: 13, fontWeight: FontWeight.w500)), 
+                                 ],
+                               );
+                             }
+                          } else if (value >= 1.0) { 
+                             content = Row(
+                               mainAxisAlignment: MainAxisAlignment.center,
+                               children: [
+                                 const Icon(Icons.refresh, color: Color(0xFF909499), size: 20),
+                                 const SizedBox(width: 10),
+                                 const Text("Отпустите, чтобы обновить", style: TextStyle(color: Color(0xFF909499), fontSize: 13, fontWeight: FontWeight.w500)),
+                               ],
+                             );
+                          } else {
+                             content = Row(
+                               mainAxisAlignment: MainAxisAlignment.center,
+                               children: [
+                                 const Icon(Icons.arrow_downward, color: Color(0xFF909499), size: 20),
+                                 const SizedBox(width: 10),
+                                 const Text("Потяните, чтобы обновить", style: TextStyle(color: Color(0xFF909499), fontSize: 13, fontWeight: FontWeight.w500)),
+                               ],
+                             );
+                          }
+                          
+                          return SizedBox(
+                            height: 60,
+                            child: Center(
+                              child: Opacity(
+                                opacity: value.clamp(0.0, 1.0),
+                                child: content,
+                              ),
+                            ),
+                          );
+                       }, 
+                     ),
+                   ),
+                ],
+              );
+            },
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 40), // Gap between Header and first card
+                    _buildGeolocationCard(),
+                    const SizedBox(height: 12),
+                    _buildAuthenticationCard(),
+                    const SizedBox(height: 12),
+                    _buildRegistrationCard(),
+                    const SizedBox(height: 12),
+                    _buildPlaceOfStayCard(),
+                    const SizedBox(height: 12),
+                    _buildPhoneNumberCard(),
+                    
+                    // Extra padding for bottom nav
+                    const SizedBox(height: 120),
+                  ],
+                ),
+              ),
             ),
           ),
-          const SizedBox(height: 25),
-          
-          // Status Cards
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Column(
-              children: [
-                _buildGeolocationCard(),
-                const SizedBox(height: 12),
-                _buildAuthenticationCard(),
-                const SizedBox(height: 12),
-                _buildRegistrationCard(),
-                const SizedBox(height: 12),
-                _buildPlaceOfStayCard(),
-                const SizedBox(height: 12),
-                _buildPhoneNumberCard(),
-              ],
-            ),
-          ),
-          
-          // Extra padding for bottom nav
-          const SizedBox(height: 120),
-        ],
-      ),
+        ),
+      ],
     );
+  }
+
+  Future<void> _onRefresh() async {
+    // Start Loading
+    setState(() {
+      _refreshingSuccess = false;
+    });
+    
+    // Simulate network request
+    await Future.delayed(const Duration(seconds: 2));
+    
+    if (mounted) {
+       // Show Success State
+       setState(() {
+         _refreshingSuccess = true;
+       });
+       
+       // Keep success message visible for a moment
+       await Future.delayed(const Duration(seconds: 1));
+       
+       // Note: Indicator will hide after this future completes
+    }
   }
 
   Widget _buildSettingsView() {
@@ -118,7 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 5),
         child: Column(
           children: [
             const SizedBox(height: 10),
@@ -138,7 +250,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: Colors.white,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.arrow_back_ios_new, size: 18, color: Colors.black87),
+                    child: const Icon(Icons.arrow_back_ios_new, size: 18, color: Color(0xFF3C4451)),
                   ),
                 ),
                 const SizedBox(width: 20),
@@ -176,7 +288,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(width: 8),
                       Text(
                         currentLangData['name']!, 
-                        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Colors.black87)
+                        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Color(0xFF3C4451))
                       ),
                       const SizedBox(width: 4),
                       Icon(
@@ -237,7 +349,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     style: const TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.w500,
-                                      color: Colors.black87,
+                                      color: Color(0xFF3C4451),
                                     ),
                                   ),
                                   Text(
@@ -318,7 +430,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           },
                           child: Text(
                             'cancel'.tr(),
-                            style: const TextStyle(color: Colors.black87),
+                            style: const TextStyle(color: Color(0xFF3C4451)),
                           ),
                         ),
                         TextButton(
@@ -391,7 +503,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.black87,
+                                color: Color(0xFF3C4451),
                               ),
                             ),
                           ],
@@ -413,7 +525,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               const SizedBox(width: 8),
                               Text(
                                 _languages.firstWhere((l) => l['locale'] == context.locale)['sub']!, 
-                                style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Colors.black87)
+                                style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Color(0xFF3C4451))
                               ),
                               const SizedBox(width: 4),
                               const Icon(Icons.keyboard_arrow_down, size: 18, color: Colors.grey),
@@ -464,7 +576,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         style: const TextStyle(
                                                             fontSize: 15,
                                                             fontWeight: FontWeight.w500,
-                                                            color: Colors.black87,
+                                                            color: Color(0xFF3C4451),
                                                         ),
                                                     ),
                                                     Text(
@@ -525,7 +637,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: Colors.white,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.arrow_back_ios_new, size: 18, color: Colors.black87),
+                  child: const Icon(Icons.arrow_back_ios_new, size: 18, color: Color(0xFF3C4451)),
                 ),
               ),
               const SizedBox(width: 20),
@@ -605,6 +717,7 @@ class _HomeScreenState extends State<HomeScreen> {
       showBadge: true,
       badgeText: 'geolocation_sent_at'.tr(args: ['31.01.2026 15:19']),
       isCompleted: true,
+      padding: const EdgeInsets.fromLTRB(14, 12, 16, 16),
     );
   }
 
@@ -630,21 +743,21 @@ class _HomeScreenState extends State<HomeScreen> {
     return StatusCard(
       imagePath: 'lib/assets/locat.png',
       title: 'place_of_stay'.tr(),
+      actionsAlignTop: true,
       descriptionWidget: RichText(
         text: TextSpan(
-          style: const TextStyle(color: Colors.black54, fontSize: 11, height: 1.3),
+          style: const TextStyle(color: Color(0xFF3C4451), fontSize: 11, height: 1.3),
           children: [
-            TextSpan(text: 'city_label'.tr() + '\n'),
-            const TextSpan(text: 'г. Москва,\n', style: TextStyle(color: Color(0xFF3C4451), fontWeight: FontWeight.normal)),
-            const TextSpan(text: 'проезд Электролитный, 3с7\n', style: TextStyle(color: Color(0xFF3C4451), fontWeight: FontWeight.normal)),
-            TextSpan(text: 'street_label'.tr() + ' ', style: const TextStyle(color: Colors.black54)),
-            const TextSpan(text: 'проезд Электролитный\n', style: TextStyle(color: Color(0xFF3C4451), fontWeight: FontWeight.w600)),
-            TextSpan(text: 'house_label'.tr() + ' ', style: const TextStyle(color: Colors.black54)),
-            const TextSpan(text: '3с7   ', style: TextStyle(color: Color(0xFF3C4451), fontWeight: FontWeight.w600)),
-            TextSpan(text: 'apartment_label'.tr() + ' ', style: const TextStyle(color: Colors.black54)),
-            const TextSpan(text: '321', style: TextStyle(color: Color(0xFF3C4451), fontWeight: FontWeight.w600)),
+            TextSpan(text: 'city_label'.tr() + '\n', style: const TextStyle(color: Color(0xFF909499), fontWeight: FontWeight.w500)),
+            const TextSpan(text: 'Москва, улица Генерала Тюленева, 23к1\n', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500)),
+            TextSpan(text: 'street_label'.tr() + ' ', style: const TextStyle(color: Color(0xFF909499), fontWeight: FontWeight.w500)),
+            const TextSpan(text: 'улица Генерала Тюленева\n', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500)),
+            TextSpan(text: 'house_label'.tr() + ' ', style: const TextStyle(color: Color(0xFF909499), fontWeight: FontWeight.w500)),
+            const TextSpan(text: '23к1   ', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500)),
+            TextSpan(text: 'apartment_label'.tr() + ' ', style: const TextStyle(color: Color(0xFF909499), fontWeight: FontWeight.w500)),
+            const TextSpan(text: '9', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500)),
           ],
-        ),
+        ),     
       ),
       isCompleted: true,
       showEditAction: true,
@@ -655,7 +768,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return StatusCard(
       imagePath: 'lib/assets/call.png',
       title: 'phone_number'.tr(),
-      description: '+790998933489',
+      description: '+7 926 666-02-23',
       isCompleted: true,
       showEditAction: true,
     );
@@ -914,7 +1027,7 @@ class HomeHeader extends StatelessWidget {
                 //   color: Colors.white,
                 // ),
                 child: Center(
-                  child: Image.asset('lib/assets/sts.png', width: 65  , height: 65),
+                  child: Image.asset('lib/assets/imp.png', width: 55  , height: 55),
                 ),
               ),
               Positioned(
@@ -936,27 +1049,39 @@ class HomeHeader extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 2),
         // User Info
-        const Expanded(
+        Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'FCC: AA1365228',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 0.5,
-                  color: Color(0xFF3C4451),
+              RichText(
+                text: const TextSpan(
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.black,
+                    letterSpacing: 0.5,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: 'FCC: ',
+                      style: TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                    TextSpan(
+                      text: 'AA1365228',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
                 ),
               ),
               Text(
                 'КУТЛУГМУРОД',
                 style: TextStyle(
                   fontSize: 14,
-                  color: Color(0xFF3C4451),
-                  letterSpacing: 1.0,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.black,
+                  
+                  letterSpacing: 0.5,
                 ),
               ),
             ],
@@ -967,23 +1092,37 @@ class HomeHeader extends StatelessWidget {
           onTap: onNotificationsTap,
           child: Container(
             padding: const EdgeInsets.all(8),
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               color: Colors.white,
               shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
-            child: Image.asset('lib/assets/notiif.png', width: 24, height: 24),
+            child: Image.asset('lib/assets/notiif.png', width: 20, height: 20),
           ),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 5),
         GestureDetector(
           onTap: onSettingsTap,
           child: Container(
             padding: const EdgeInsets.all(8),
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               color: Colors.white,
               shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
-            child: Image.asset('lib/assets/seting.png', width: 24, height: 24),
+            child: Image.asset('lib/assets/SET.png', width: 20, height: 20),
           ),
         ),
       ],
@@ -1001,6 +1140,8 @@ class StatusCard extends StatelessWidget {
   final String? badgeText;
   final bool isCompleted;
   final bool showEditAction;
+  final bool actionsAlignTop;
+  final EdgeInsetsGeometry? padding;
 
   const StatusCard({
     super.key,
@@ -1013,6 +1154,8 @@ class StatusCard extends StatelessWidget {
     this.badgeText,
     this.isCompleted = false,
     this.showEditAction = false,
+    this.actionsAlignTop = false,
+    this.padding,
   });
 
   @override
@@ -1020,7 +1163,7 @@ class StatusCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.06),
@@ -1032,98 +1175,84 @@ class StatusCard extends StatelessWidget {
       child: Stack(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(10, 8, 16, 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            padding: padding ?? const EdgeInsets.fromLTRB(14, 12, 16, 12),
+            child: Row(
+              crossAxisAlignment: actionsAlignTop ? CrossAxisAlignment.start : CrossAxisAlignment.center,
               children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    if (imagePath != null)
-                      Opacity(
-                        opacity: 0.6,
-                        child: Image.asset(imagePath!, width: 22, height: 22, fit: BoxFit.contain),
-                      )
-                    else if (icon != null)
-                      Opacity(
-                        opacity: 0.6,
-                        child: Icon(icon, color: Color(0xFF3C4451), size: 22),
-                      ),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  title,
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600,
-                                    color: Color(0xFF3C4451),
-                                  ),
-                                ),
+                          if (imagePath != null)
+                            Image.asset(imagePath!, width: 20, height: 20, fit: BoxFit.contain)
+                          else if (icon != null)
+                            Icon(icon, color: Colors.black, size: 20),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              title,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black,
                               ),
-                              if (showEditAction) ...[
-                                const SizedBox(width: 8),
-                                Image.asset('lib/assets/editicon.png', width: 14, height: 14),
-                                const SizedBox(width: 4),
-                              Text(
-                                    'Change'.tr(),
-                                    style: const TextStyle(
-                                      color: Colors.grey,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                if (isCompleted) ...[
-                                  const SizedBox(width: 8),
-                                  Container(
-                                    padding: const EdgeInsets.all(2),
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFF00C936),
-                                      borderRadius: BorderRadius.circular(5),
-                                    ),
-                                    child: const Icon(Icons.check, size: 12, color: Colors.white),
-                                  ),
-                                ],
-                              ],
-                            ],
+                            ),
                           ),
                         ],
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 8),
+                      descriptionWidget ??
+                          (description != null
+                              ? Text(
+                                  description!,
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 11,
+                                    height: 1.2,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                )
+                              : const SizedBox.shrink()),
+                    ],
+                  ),
                 ),
-                // No gap between title row and description for maximum compactness
-                const SizedBox(height: 2),
-                descriptionWidget ??
-                    (description != null
-                        ? Text(
-                            description!,
-                            style: const TextStyle(
-                              color: Color(0xFF3C4451),
-                              fontSize: 11,
-                              height: 1.2,
-                            ),
-                          )
-                        : const SizedBox.shrink()),
+                if (showEditAction) ...[
+                  const SizedBox(width: 8),
+                  Image.asset('lib/assets/editicon.png', width: 17, height: 20),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Change'.tr(),
+                    style: const TextStyle(
+                      color: Color(0xFF5A5E62),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  if (isCompleted) ...[
+                    const SizedBox(width: 8),
+                    Image.asset('lib/assets/tickk.png', width: 24, height: 24),
+                  ],
+                ] else if (isCompleted && !showBadge) ...[
+                  const SizedBox(width: 8),
+                  Image.asset('lib/assets/tickk.png', width: 24, height: 24),
+                ],
               ],
             ),
           ),
-          Positioned(
-            top: 8,
-            right: 8,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                if (showBadge && badgeText != null) ...[
+          if (showBadge && badgeText != null)
+            Positioned(
+              top: 8,
+              right: 8,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF00C936),
+                      color: const Color(0xFF02C739),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
@@ -1131,24 +1260,18 @@ class StatusCard extends StatelessWidget {
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 9,
+                        letterSpacing: 1.0,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  if (isCompleted) ...[
+                    const SizedBox(height: 7),
+                    Image.asset('lib/assets/tickk.png', width: 24, height: 24),
+                  ],
                 ],
-                if (isCompleted && !showEditAction)
-                  Container(
-                    padding: const EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF00C936),
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: const Icon(Icons.check, size: 12, color: Colors.white),
-                  ),
-              ],
+              ),
             ),
-          ),
         ],
       ),
     );

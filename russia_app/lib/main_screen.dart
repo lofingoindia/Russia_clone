@@ -91,7 +91,7 @@ class CustomBottomNavBar extends StatelessWidget {
                     icon: Icons.person,
                     label: 'profile'.tr(),
                     isActive: currentIndex == 0,
-                    activeColor: const Color(0xFF32BA7C),
+                    activeColor: const Color(0xFF02C739).withOpacity(0.5),
                   ),
                   
                   // Empty space for the center circle
@@ -100,11 +100,11 @@ class CustomBottomNavBar extends StatelessWidget {
                   // Services
                   _buildNavItem(
                     index: 2,
-                    imagePath: 'lib/assets/S.png',
+                    imagePath: 'lib/assets/ser.png',
                     icon: Icons.apps,
                     label: 'services'.tr(),
                     isActive: currentIndex == 2,
-                    activeColor: const Color(0xFF32BA7C),
+                    activeColor: const Color(0xFF02C739).withOpacity(0.5),
                   ),
                 ],
               ),
@@ -124,13 +124,13 @@ class CustomBottomNavBar extends StatelessWidget {
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: currentIndex == 1 
-                        ? const Color(0xFF32BA7C)
+                        ? const Color(0xFF02C739).withOpacity(0.5)
                         : const Color(0xFFE5E5E5),
                     width: 1.5,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF32BA7C).withOpacity(0.12),
+                      color: const Color(0xFF02C739).withOpacity(0.12),
                       blurRadius: 20,
                       spreadRadius: 2,
                     ),
@@ -147,7 +147,7 @@ class CustomBottomNavBar extends StatelessWidget {
                     ColorFiltered(
                       colorFilter: ColorFilter.mode(
                         currentIndex == 1 
-                            ? const Color(0xFF32BA7C)
+                            ? const Color(0xFF01C636).withOpacity(0.7)
                             : Color(0xFF3C4451).withOpacity(0.8),
                         BlendMode.srcIn,
                       ),
@@ -164,9 +164,7 @@ class CustomBottomNavBar extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
-                          color: currentIndex == 1 
-                              ? const Color(0xFF32BA7C) // Green when selected
-                              : Color(0xFF3C4451).withOpacity(0.8),
+                          color: Color(0xFF3C4451).withOpacity(0.8),
                         ),
                       ),
                     ),
@@ -259,7 +257,7 @@ class CustomBottomNavBar extends StatelessWidget {
               label,
               style: TextStyle(
                 fontSize: 9,
-                color: color,
+                color: Color(0xFF3C4451).withOpacity(0.8),
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
               ),
             ),
