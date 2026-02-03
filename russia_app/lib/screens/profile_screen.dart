@@ -942,43 +942,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     color: Color(0xFF3C4451),
                   ),
                 ),
-                const SizedBox(height: 6),
-                Text(
-                  'Email',
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: Colors.grey[600],
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  _userData?['email'] ?? 'Не указано',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF3C4451),
-                  ),
-                ),
+                // const SizedBox(height: 6),
+                // Text(
+                //   'Email',
+                //   style: TextStyle(
+                //     fontSize: 10,
+                //     color: Colors.grey[600],
+                //     fontWeight: FontWeight.w400,
+                //   ),
+                // ),
+                // const SizedBox(height: 2),
+                // Text(
+                //   _userData?['email'] ?? 'Не указано',
+                //   style: const TextStyle(
+                //     fontSize: 12,
+                //     fontWeight: FontWeight.w600,
+                //     color: Color(0xFF3C4451),
+                //   ),
+                // ),
                 if (_userData?['phone'] != null) ...[
-                  const SizedBox(height: 6),
-                  Text(
-                    'Телефон',
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: Colors.grey[600],
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    _userData?['phone'] ?? '',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF3C4451),
-                    ),
-                  ),
+                  // const SizedBox(height: 6),
+                  // Text(
+                  //   'Телефон',
+                  //   style: TextStyle(
+                  //     fontSize: 10,
+                  //     color: Colors.grey[600],
+                  //     fontWeight: FontWeight.w400,
+                  //   ),
+                  // ),
+                  // const SizedBox(height: 2),
+                  // Text(
+                  //   _userData?['phone'] ?? '',
+                  //   style: const TextStyle(
+                  //     fontSize: 12,
+                  //     fontWeight: FontWeight.w600,
+                  //     color: Color(0xFF3C4451),
+                  //   ),
+                  // ),
                 ],
               ],
             ),
