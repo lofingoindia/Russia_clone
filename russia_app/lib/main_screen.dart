@@ -126,7 +126,7 @@ class CustomBottomNavBar extends StatelessWidget {
                     color: currentIndex == 1 
                         ? const Color(0xFF32BA7C)
                         : const Color(0xFFE5E5E5),
-                    width: 2.5,
+                    width: 1.5,
                   ),
                   boxShadow: [
                     BoxShadow(
@@ -153,8 +153,8 @@ class CustomBottomNavBar extends StatelessWidget {
                       ),
                       child: Image.asset(
                         'lib/assets/home.png',
-                        width: 32,
-                        height: 32,
+                        width: 48,
+                        height: 48,
                       ),
                     ),
                     Transform.translate(

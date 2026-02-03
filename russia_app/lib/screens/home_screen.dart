@@ -914,7 +914,7 @@ class HomeHeader extends StatelessWidget {
                 //   color: Colors.white,
                 // ),
                 child: Center(
-                  child: Image.asset('lib/assets/st1.png', width: 65  , height: 65),
+                  child: Image.asset('lib/assets/sts.png', width: 65  , height: 65),
                 ),
               ),
               Positioned(
@@ -943,7 +943,7 @@ class HomeHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'КИГ: AA1484021',
+                'FCC: AA1365228',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -952,7 +952,7 @@ class HomeHeader extends StatelessWidget {
                 ),
               ),
               Text(
-                'УРОЗАЛИ',
+                'КУТЛУГМУРОД',
                 style: TextStyle(
                   fontSize: 14,
                   color: Color(0xFF3C4451),
@@ -971,7 +971,7 @@ class HomeHeader extends StatelessWidget {
               color: Colors.white,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.notifications_none_outlined, size: 24),
+            child: Image.asset('lib/assets/notiif.png', width: 24, height: 24),
           ),
         ),
         const SizedBox(width: 10),
@@ -983,7 +983,7 @@ class HomeHeader extends StatelessWidget {
               color: Colors.white,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.settings_outlined, size: 24),
+            child: Image.asset('lib/assets/seting.png', width: 24, height: 24),
           ),
         ),
       ],
@@ -1083,7 +1083,7 @@ class StatusCard extends StatelessWidget {
                                   Container(
                                     padding: const EdgeInsets.all(2),
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFF30CB6F),
+                                      color: const Color(0xFF00C936),
                                       borderRadius: BorderRadius.circular(5),
                                     ),
                                     child: const Icon(Icons.check, size: 12, color: Colors.white),
@@ -1123,7 +1123,7 @@ class StatusCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF30CB6F),
+                      color: const Color(0xFF00C936),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
@@ -1141,7 +1141,7 @@ class StatusCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(2),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF30CB6F),
+                      color: const Color(0xFF00C936),
                       borderRadius: BorderRadius.circular(5),
                     ),
                     child: const Icon(Icons.check, size: 12, color: Colors.white),
