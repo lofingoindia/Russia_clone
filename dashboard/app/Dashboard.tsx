@@ -33,7 +33,7 @@ const Dashboard = ({
     onThemeToggle: () => void;
     onLogout?: () => void;
     users: User[];
-    adminInfo?: { name: string; role: string } | null;
+    adminInfo?: { id: number; name: string; email: string; role: string } | null;
 }) => {
     const { t } = useLanguage();
 
@@ -172,8 +172,8 @@ const StatCard = ({ label, value, trend, color = 'green' }: { label: string; val
         <div className="flex items-end justify-between">
             <h3 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">{value}</h3>
             <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${color === 'green'
-                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                    : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
                 }`}>
                 {trend}
             </span>

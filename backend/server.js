@@ -6,6 +6,7 @@ require('dotenv').config();
 const { testConnection } = require('./config/database');
 const authRoutes = require('./routes/auth');
 const usersRoutes = require('./routes/users');
+const adminsRoutes = require('./routes/admins');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -43,6 +44,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', usersRoutes);
+app.use('/api/admins', adminsRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -88,7 +90,7 @@ app.use((err, req, res, next) => {
 const startServer = async () => {
     // Test database connection
     const dbConnected = await testConnection();
-    
+
     if (!dbConnected) {
         console.warn('⚠️  Starting server without database connection');
     }

@@ -44,7 +44,7 @@ const UsersPage = ({
     users: User[];
     setUsers: React.Dispatch<React.SetStateAction<User[]>>;
     refreshUsers: () => Promise<void>;
-    adminInfo?: { name: string; role: string } | null;
+    adminInfo?: { id: number; name: string; email: string; role: string } | null;
 }) => {
     const { t } = useLanguage();
     const [view, setView] = useState<'list' | 'form' | 'view'>('list');

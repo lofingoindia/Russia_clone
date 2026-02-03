@@ -21,11 +21,13 @@
         "active": "Active",
         "language": "Language",
         "english": "English",
-        "russian": "Russian"
+        "russian": "Russian",
+        "profile": "Profile"
     },
     "sidebar": {
         "dashboard": "Dashboard",
-        "users": "Users"
+        "users": "Users",
+        "profile": "Profile"
     },
     "login": {
         "signIn": "Sign In",
@@ -116,5 +118,26 @@
         "admin": "Admin",
         "manager": "Manager",
         "userRole": "User"
+    },
+    "profilePage": {
+        "profileSettings": "Profile Settings",
+        "manageAdmins": "Manage Administrators",
+        "personalInfo": "Personal Information",
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "changePassword": "Change Password",
+        "currentPassword": "Current Password",
+        "newPassword": "New Password",
+        "confirmPassword": "Confirm Password",
+        "updateProfile": "Update Profile",
+        "adminManagement": "Admin Management",
+        "addNewAdmin": "Add New Admin",
+        "editAdmin": "Edit Admin",
+        "deleteAdmin": "Delete Admin?",
+        "deleteAdminConfirmation": "Are you sure you want to delete this administrator?",
+        "passwordMustMatch": "Passwords must match",
+        "profileUpdated": "Profile updated successfully",
+        "passwordChanged": "Password changed successfully"
     }
 }

@@ -66,6 +66,11 @@ const Sidebar = ({ activeTab, onTabChange, theme, onThemeToggle, onLogout, admin
                     active={activeTab === 'Users'}
                     onClick={() => onTabChange?.('Users')}
                 />
+                <NavItem
+                    label={t.sidebar.profile}
+                    active={activeTab === 'Profile'}
+                    onClick={() => onTabChange?.('Profile')}
+                />
             </div>
 
             {/* Language Switcher - Simple Toggle Buttons */}
@@ -84,8 +89,8 @@ const Sidebar = ({ activeTab, onTabChange, theme, onThemeToggle, onLogout, admin
                     <div
                         onClick={() => handleLanguageChange('en')}
                         className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold cursor-pointer transition-all ${language === 'en'
-                                ? 'bg-indigo-600 text-white shadow-md'
-                                : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                            ? 'bg-indigo-600 text-white shadow-md'
+                            : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
                             }`}
                     >
                         <span>EN</span>
@@ -93,8 +98,8 @@ const Sidebar = ({ activeTab, onTabChange, theme, onThemeToggle, onLogout, admin
                     <div
                         onClick={() => handleLanguageChange('ru')}
                         className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold cursor-pointer transition-all ${language === 'ru'
-                                ? 'bg-indigo-600 text-white shadow-md'
-                                : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                            ? 'bg-indigo-600 text-white shadow-md'
+                            : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
                             }`}
                     >
                         <span>RU</span>

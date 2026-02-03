@@ -21,11 +21,13 @@
         "active": "Активен",
         "language": "Язык",
         "english": "Английский",
-        "russian": "Русский"
+        "russian": "Русский",
+        "profile": "Профиль"
     },
     "sidebar": {
         "dashboard": "Панель управления",
-        "users": "Пользователи"
+        "users": "Пользователи",
+        "profile": "Профиль"
     },
     "login": {
         "signIn": "Войти",
@@ -116,5 +118,26 @@
         "admin": "Администратор",
         "manager": "Менеджер",
         "userRole": "Пользователь"
+    },
+    "profilePage": {
+        "profileSettings": "Настройки профиля",
+        "manageAdmins": "Управление администраторами",
+        "personalInfo": "Личная информация",
+        "name": "Имя",
+        "email": "Эл. почта",
+        "role": "Роль",
+        "changePassword": "Сменить пароль",
+        "currentPassword": "Текущий пароль",
+        "newPassword": "Новый пароль",
+        "confirmPassword": "Подтвердите пароль",
+        "updateProfile": "Обновить профиль",
+        "adminManagement": "Управление администраторами",
+        "addNewAdmin": "Добавить администратора",
+        "editAdmin": "Редактировать админа",
+        "deleteAdmin": "Удалить администратора?",
+        "deleteAdminConfirmation": "Вы уверены, что хотите удалить этого администратора?",
+        "passwordMustMatch": "Пароли должны совпадать",
+        "profileUpdated": "Профиль обновлен",
+        "passwordChanged": "Пароль изменен"
     }
 }

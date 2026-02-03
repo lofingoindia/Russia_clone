@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Dashboard from "./Dashboard";
 import UsersPage from "./UsersPage";
+import ProfilePage from "./ProfilePage";
 import LoginPage from "./LoginPage";
 import { authAPI, usersAPI, getToken, getAdminInfo, User as APIUser } from "./lib/api";
 
@@ -35,7 +36,7 @@ export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
-  const [adminInfo, setAdminInfoState] = useState<{ name: string; role: string } | null>(null);
+  const [adminInfo, setAdminInfoState] = useState<{ id: number; name: string; email: string; role: string } | null>(null);
 
   // Convert API User to local User format
   const mapApiUser = (apiUser: APIUser): User => ({
@@ -114,7 +115,7 @@ export default function Home() {
     try {
       const response = await authAPI.login(email, password);
       if (response.success && response.data) {
-        const { admin } = response.data as { admin: { name: string; role: string } };
+        const { admin } = response.data as { admin: { id: number; name: string; email: string; role: string } };
         setIsLoggedIn(true);
         setAdminInfoState(admin);
         await fetchUsers();
@@ -167,7 +168,7 @@ export default function Home() {
             users={users}
             adminInfo={adminInfo}
           />
-        ) : (
+        ) : activeTab === "Users" ? (
           <UsersPage
             onTabChange={setActiveTab}
             theme={theme}
@@ -176,6 +177,14 @@ export default function Home() {
             users={users}
             setUsers={setUsers}
             refreshUsers={fetchUsers}
+            adminInfo={adminInfo}
+          />
+        ) : (
+          <ProfilePage
+            onTabChange={setActiveTab}
+            theme={theme}
+            onThemeToggle={toggleTheme}
+            onLogout={handleLogout}
             adminInfo={adminInfo}
           />
         )}

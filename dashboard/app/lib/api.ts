@@ -4,27 +4,27 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://cloneapp.mosrek
 // Token management
 export const getToken = (): string | null => {
     if (typeof window !== 'undefined') {
-        return localStorage.getItem('authToken');
+        return sessionStorage.getItem('authToken');
     }
     return null;
 };
 
 export const setToken = (token: string): void => {
     if (typeof window !== 'undefined') {
-        localStorage.setItem('authToken', token);
+        sessionStorage.setItem('authToken', token);
     }
 };
 
 export const removeToken = (): void => {
     if (typeof window !== 'undefined') {
-        localStorage.removeItem('authToken');
+        sessionStorage.removeItem('authToken');
     }
 };
 
 // Admin info management
 export const getAdminInfo = () => {
     if (typeof window !== 'undefined') {
-        const info = localStorage.getItem('adminInfo');
+        const info = sessionStorage.getItem('adminInfo');
         return info ? JSON.parse(info) : null;
     }
     return null;
@@ -32,13 +32,13 @@ export const getAdminInfo = () => {
 
 export const setAdminInfo = (admin: { id: number; name: string; email: string; role: string }): void => {
     if (typeof window !== 'undefined') {
-        localStorage.setItem('adminInfo', JSON.stringify(admin));
+        sessionStorage.setItem('adminInfo', JSON.stringify(admin));
     }
 };
 
 export const removeAdminInfo = (): void => {
     if (typeof window !== 'undefined') {
-        localStorage.removeItem('adminInfo');
+        sessionStorage.removeItem('adminInfo');
     }
 };
 
@@ -223,4 +223,46 @@ export const usersAPI = {
     },
 };
 
-export default { authAPI, usersAPI };
+export interface Admin {
+    id: number;
+    name: string;
+    email: string;
+    role: 'super_admin' | 'admin' | 'moderator';
+    is_active: number;
+    last_login: string | null;
+    created_at: string;
+    updated_at: string;
+}
+
+// Admins API
+export const adminsAPI = {
+    getAll: async (): Promise<{ success: boolean; data: Admin[] }> => {
+        const response = await apiRequest('/admins');
+        return response as { success: boolean; data: Admin[] };
+    },
+
+    create: async (data: any): Promise<{ success: boolean; data: Admin; message?: string }> => {
+        const response = await apiRequest('/admins', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+        return response as { success: boolean; data: Admin; message?: string };
+    },
+
+    update: async (id: number, data: any): Promise<{ success: boolean; message?: string }> => {
+        const response = await apiRequest(`/admins/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(data),
+        });
+        return response as { success: boolean; message?: string };
+    },
+
+    delete: async (id: number): Promise<{ success: boolean; message?: string }> => {
+        const response = await apiRequest(`/admins/${id}`, {
+            method: 'DELETE',
+        });
+        return response as { success: boolean; message?: string };
+    },
+};
+
+export default { authAPI, usersAPI, adminsAPI };
