@@ -118,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 12),
         child: Column(
           children: [
             const SizedBox(height: 10),
@@ -1082,9 +1082,9 @@ class StatusCard extends StatelessWidget {
                                   const SizedBox(width: 8),
                                   Container(
                                     padding: const EdgeInsets.all(2),
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xFF32BA7C),
-                                      shape: BoxShape.circle,
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF30CB6F),
+                                      borderRadius: BorderRadius.circular(5),
                                     ),
                                     child: const Icon(Icons.check, size: 12, color: Colors.white),
                                   ),
@@ -1123,7 +1123,7 @@ class StatusCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF32BA7C).withOpacity(0.8),
+                      color: const Color(0xFF30CB6F),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
@@ -1140,9 +1140,9 @@ class StatusCard extends StatelessWidget {
                 if (isCompleted && !showEditAction)
                   Container(
                     padding: const EdgeInsets.all(2),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF32BA7C),
-                      shape: BoxShape.circle,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF30CB6F),
+                      borderRadius: BorderRadius.circular(5),
                     ),
                     child: const Icon(Icons.check, size: 12, color: Colors.white),
                   ),

@@ -116,7 +116,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -378,7 +378,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             // Header with back button
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
               child: Row(
                 children: [
                   GestureDetector(
@@ -419,7 +419,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             
             // Content
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 13),
               child: Column(
                 children: [
                   const SizedBox(height: 55),
@@ -1010,7 +1010,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               color: Color(0xFF3C4451),
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 2),
           
           // KIG Number and Expiry Date
           Row(
@@ -1066,48 +1066,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ],
           ),
           
-          const SizedBox(height: 10),
-          
           // Card Image and QR Code
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(width: 20),
-              // Card Image Placeholder
-              Container(
-                width: 170,
-                height: 100,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.asset(
-                    'lib/assets/c.png',
-                    fit: BoxFit.cover,
-                  ),
+          // Combined Card and QR Image
+          Padding(
+            padding: const EdgeInsets.fromLTRB(10, 8, 10, 4),
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.asset(
+                  'lib/assets/cqd.png',
+                  fit: BoxFit.fitWidth,
                 ),
               ),
-              
-              const SizedBox(width: 20),
-
-              // QR Code
-              Container(
-                width: 110,
-                height: 150,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.asset(
-                    'lib/assets/qqr.png',
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         ],
       ),
