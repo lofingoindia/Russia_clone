@@ -50,7 +50,7 @@ const ProfilePage = ({
         name: '',
         email: '',
         password: '',
-        role: 'admin' as 'super_admin' | 'admin' | 'moderator',
+        role: 'super_admin' as 'super_admin' | 'admin' | 'moderator',
     });
 
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -144,10 +144,13 @@ const ProfilePage = ({
                 await adminsAPI.update(selectedAdmin.id, {
                     name: adminFormData.name,
                     email: adminFormData.email,
-                    role: adminFormData.role
+                    role: 'super_admin'
                 });
             } else {
-                await adminsAPI.create(adminFormData);
+                await adminsAPI.create({
+                    ...adminFormData,
+                    role: 'super_admin'
+                });
             }
 
             await fetchAdmins();
@@ -165,7 +168,7 @@ const ProfilePage = ({
             name: admin.name,
             email: admin.email,
             password: '',
-            role: admin.role,
+            role: 'super_admin',
         });
         setSelectedAdmin(admin);
         setIsEditingAdmin(true);
@@ -195,7 +198,7 @@ const ProfilePage = ({
             name: '',
             email: '',
             password: '',
-            role: 'admin',
+            role: 'super_admin',
         });
         setIsEditingAdmin(false);
         setSelectedAdmin(null);
@@ -437,18 +440,6 @@ const ProfilePage = ({
                                         />
                                     </div>
                                 )}
-                                <div className="space-y-1.5 text-left">
-                                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{t.profilePage.role}</label>
-                                    <select
-                                        value={adminFormData.role}
-                                        onChange={(e) => setAdminFormData({ ...adminFormData, role: e.target.value as any })}
-                                        className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
-                                    >
-                                        <option value="super_admin">Super Admin</option>
-                                        <option value="admin">Admin</option>
-                                        <option value="moderator">Moderator</option>
-                                    </select>
-                                </div>
                                 <div className="flex gap-3 pt-2">
                                     <button
                                         type="submit"
