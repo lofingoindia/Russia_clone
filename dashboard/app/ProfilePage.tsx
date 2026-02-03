@@ -280,15 +280,6 @@ const ProfilePage = ({
                                                 required
                                             />
                                         </div>
-                                        <div className="space-y-1.5">
-                                            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{t.profilePage.role}</label>
-                                            <input
-                                                type="text"
-                                                value={currentAdmin?.role || ''}
-                                                className="w-full px-4 py-2.5 bg-gray-100 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-500 cursor-not-allowed"
-                                                disabled
-                                            />
-                                        </div>
                                         <button
                                             type="submit"
                                             disabled={isSubmitting}
@@ -369,7 +360,6 @@ const ProfilePage = ({
                                                 <tr className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
                                                     <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">{t.profilePage.name}</th>
                                                     <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">{t.profilePage.email}</th>
-                                                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">{t.profilePage.role}</th>
                                                     <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">{t.usersPage.actions}</th>
                                                 </tr>
                                             </thead>
@@ -378,11 +368,6 @@ const ProfilePage = ({
                                                     <tr key={admin.id} className="hover:bg-gray-50 dark:hover:bg-gray-900/30 transition-colors">
                                                         <td className="px-6 py-4 text-sm font-medium">{admin.name}</td>
                                                         <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{admin.email}</td>
-                                                        <td className="px-6 py-4 text-sm">
-                                                            <span className="px-2 py-1 text-[10px] font-bold uppercase rounded-md bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400">
-                                                                {admin.role}
-                                                            </span>
-                                                        </td>
                                                         <td className="px-6 py-4 text-right space-x-3">
                                                             <button onClick={() => handleEditAdmin(admin)} className="text-sm font-semibold text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">{t.common.edit}</button>
                                                             {admin.id !== currentAdmin?.id && (
