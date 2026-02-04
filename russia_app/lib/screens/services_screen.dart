@@ -76,7 +76,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                 },
               ),
               
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
               _buildServiceCard(
                 imagePath: 'lib/assets/aa.png',
                 title: 'info_materials'.tr(),
@@ -86,7 +86,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                   });
                 },
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
               // Get Consultation Card
               _buildServiceCard(
                 imagePath: 'lib/assets/bb.png',
@@ -126,7 +126,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
@@ -140,37 +140,28 @@ class _ServicesScreenState extends State<ServicesScreen> {
         ),
         child: Row(
           children: [
-            // Image with background
-            Container(
-              width: 42,
-              height: 42,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.asset(
-                  imagePath,
-                  width: 42,
-                  height: 42,
-                  fit: BoxFit.cover,
-                ),
-              ),
+            // Image
+            Image.asset(
+              imagePath,
+              width: 52,
+              height: 52,
+              fit: BoxFit.contain,
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 15),
             // Title
             Expanded(
               child: Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
+                  fontSize: 15.5,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF333333),
+                  height: 1.2,
                 ),
               ),
             ),
             // Arrow
-            Icon(Icons.chevron_right, color: Colors.grey[400], size: 22),
+            Icon(Icons.chevron_right, color: Colors.grey[400], size: 24),
           ],
         ),
       ),
@@ -278,7 +269,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),

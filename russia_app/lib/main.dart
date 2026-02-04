@@ -56,7 +56,6 @@ class AuthChecker extends StatefulWidget {
 
 class _AuthCheckerState extends State<AuthChecker> {
   final ApiService _apiService = ApiService();
-  bool _isChecking = true;
 
   @override
   void initState() {
@@ -65,14 +64,11 @@ class _AuthCheckerState extends State<AuthChecker> {
   }
 
   Future<void> _checkAuthStatus() async {
-    await Future.delayed(const Duration(milliseconds: 500)); // Brief delay for smooth UX
+    // Show splash screen for at least 1.5 seconds
+    await Future.delayed(const Duration(milliseconds: 1500));
     final isLoggedIn = await _apiService.isLoggedIn();
     
     if (mounted) {
-      setState(() {
-        _isChecking = false;
-      });
-      
       if (isLoggedIn) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const MainScreen()),
@@ -87,9 +83,81 @@ class _AuthCheckerState extends State<AuthChecker> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: CircularProgressIndicator(),
+    return Scaffold(
+      body: Stack(
+        children: [
+          // Background Image
+          Positioned.fill(
+            child: Image.asset(
+              'lib/assets/splash.png',
+              fit: BoxFit.cover,
+            ),
+          ),
+          
+          // Animated Text
+          Align(
+            alignment: const Alignment(0, -0.5), // Position text slightly above center
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: TweenAnimationBuilder<double>(
+                tween: Tween<double>(begin: 0.0, end: 1.0),
+                duration: const Duration(milliseconds: 1000),
+                builder: (context, value, child) {
+                  return Opacity(
+                    opacity: value,
+                    child: Transform.translate(
+                      offset: Offset(0, 20 * (1 - value)),
+                      child: child,
+                    ),
+                  );
+                },
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'welcome_message'.tr(),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 21,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                        height: 1.2,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Image.asset(
+                      'lib/assets/sp.png',
+                      height: 100,
+                      fit: BoxFit.contain,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          
+          // Loader at the bottom
+          // Align(
+          //   alignment: Alignment.bottomCenter,
+          //   child: Column(
+          //     mainAxisSize: MainAxisSize.min,
+          //     children: [
+          //       SizedBox(
+          //         width: 32,
+          //         height: 32,
+          //         child: CircularProgressIndicator(
+          //           strokeWidth: 2,
+          //           valueColor: AlwaysStoppedAnimation<Color>(
+          //             Colors.white.withOpacity(0.8),
+          //           ),
+          //         ),
+          //       ),
+          //       const SizedBox(height: 80), // Keep it above the bottom edge
+          //     ],
+          //   ),
+          // ),
+        ],
       ),
     );
   }

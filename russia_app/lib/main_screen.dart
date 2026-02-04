@@ -13,13 +13,31 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  late PageController _pageController;
   int _currentIndex = 1; // Default to Home (Center)
 
-  final List<Widget> _screens = [
-    const ProfileScreen(),
-    const HomeScreen(),
-    const ServicesScreen(),
-  ];
+  late final List<Widget> _screens;
+
+  @override
+  void initState() {
+    super.initState();
+    _screens = [
+      const ProfileScreen(),
+      HomeScreen(key: HomeScreen.globalKey),
+      const ServicesScreen(),
+    ];
+    _pageController = PageController(initialPage: _currentIndex);
+  }
+
+
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  bool _isManualTransition = false;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +45,18 @@ class _MainScreenState extends State<MainScreen> {
       extendBody: true,
       body: Stack(
         children: [
-          _screens[_currentIndex],
+          PageView(
+            controller: _pageController,
+            onPageChanged: (index) {
+              if (!_isManualTransition) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              }
+            },
+            physics: const BouncingScrollPhysics(),
+            children: _screens,
+          ),
           Align(
             alignment: Alignment.bottomCenter,
             child: SafeArea(
@@ -35,8 +64,25 @@ class _MainScreenState extends State<MainScreen> {
               child: CustomBottomNavBar(
                 currentIndex: _currentIndex,
                 onTap: (index) {
+                  if (_currentIndex == index) {
+                    // If already on home, trigger refresh
+                    if (index == 1) {
+                      HomeScreen.globalKey.currentState?.triggerRefresh();
+                    }
+                    return;
+                  }
+                  
                   setState(() {
                     _currentIndex = index;
+                    _isManualTransition = true;
+                  });
+                  
+                  _pageController.animateToPage(
+                    index,
+                    duration: const Duration(milliseconds: 600), // Slightly longer for smoother feel
+                    curve: Curves.easeInOutCubic,
+                  ).then((_) {
+                    _isManualTransition = false;
                   });
                 },
               ),
@@ -123,9 +169,7 @@ class CustomBottomNavBar extends StatelessWidget {
                   color: Colors.white,
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: currentIndex == 1 
-                        ? const Color(0xFF02C739).withOpacity(0.5)
-                        : const Color(0xFFE5E5E5),
+                    color: const Color(0xFF02C739).withOpacity(0.5),
                     width: 1.5,
                   ),
                   boxShadow: [
@@ -144,28 +188,30 @@ class CustomBottomNavBar extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ColorFiltered(
-                      colorFilter: ColorFilter.mode(
-                        currentIndex == 1 
-                            ? const Color(0xFF01C636).withOpacity(0.7)
-                            : Color(0xFF3C4451).withOpacity(0.8),
-                        BlendMode.srcIn,
-                      ),
-                      child: Image.asset(
-                        'lib/assets/home.png',
-                        width: 48,
-                        height: 48,
-                      ),
-                    ),
-                    Transform.translate(
-                      offset: const Offset(0, -10),
-                      child: Text(
-                        'home'.tr(),
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF3C4451).withOpacity(0.8),
-                        ),
+                    currentIndex == 1 
+                        ? ColorFiltered(
+                            colorFilter: const ColorFilter.mode(
+                              Color(0xFF01C636),
+                              BlendMode.srcIn,
+                            ),
+                            child: Image.asset(
+                              'lib/assets/homy.png',
+                              width: 22,
+                              height: 22,
+                            ),
+                          )
+                        : Image.asset(
+                            'lib/assets/homy.png',
+                            width: 22,
+                            height: 22,
+                          ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'home'.tr(),
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF3C4451).withOpacity(0.8),
                       ),
                     ),
                   ],

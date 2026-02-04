@@ -56,7 +56,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
           // Background Image
           Positioned.fill(
             child: Image.asset(
-              'lib/assets/splsh screen.png',
+              'lib/assets/splash.png',
               fit: BoxFit.cover,
             ),
           ),
@@ -69,22 +69,26 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               opacity: _fadeAnimation,
               child: SlideTransition(
                 position: _slideAnimation,
-                child: Text(
-                  'welcome_message'.tr(),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white, // Assuming dark background or overlay needed
-                    height: 1.2,
-                    // shadows: [
-                    //   Shadow(
-                    //     blurRadius: 10.0,
-                    //     color: Colors.black45,
-                    //     offset: Offset(2.0, 2.0),
-                    //   ),
-                    // ],
-                  ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'welcome_message'.tr(),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                        height: 1.2,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Image.asset(
+                      'lib/assets/sp.png',
+                      height: 100,
+                      fit: BoxFit.contain,
+                    ),
+                  ],
                 ),
               ),
             ),

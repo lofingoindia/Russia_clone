@@ -9,14 +9,79 @@ enum HomeViewType { home, settings, notifications }
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
+  static final GlobalKey<HomeScreenState> globalKey = GlobalKey<HomeScreenState>();
+
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<HomeScreen> createState() => HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+typedef _HomeScreenState = HomeScreenState;
+
+class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
   HomeViewType _currentView = HomeViewType.home;
   bool _isLanguageExpanded = false;
   bool _refreshingSuccess = false;
+  bool _isManualRefreshing = false;
+  int _manualRefreshState = 0; // 0: loading, 1: success
+  
+  late AnimationController _manualRefreshAnimController;
+  late Animation<double> _manualDisplacementAnimation;
+  
+  @override
+  void initState() {
+    super.initState();
+    _manualRefreshAnimController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+    _manualDisplacementAnimation = Tween<double>(begin: 0, end: 50).animate(
+      CurvedAnimation(parent: _manualRefreshAnimController, curve: Curves.easeOut),
+    );
+  }
+  
+  @override
+  void dispose() {
+    _manualRefreshAnimController.dispose();
+    super.dispose();
+  }
+
+  /// Trigger refresh externally (e.g., when home button tapped while already on home)
+  Future<void> triggerRefresh() async {
+    if (_currentView != HomeViewType.home) {
+      setState(() {
+        _currentView = HomeViewType.home;
+      });
+      return;
+    }
+    
+    // Show manual refresh overlay with same notifications and animation
+    setState(() {
+      _isManualRefreshing = true;
+      _manualRefreshState = 0;
+    });
+    
+    // Animate content down
+    await _manualRefreshAnimController.forward();
+    
+    // Simulate network request
+    await Future.delayed(const Duration(seconds: 2));
+    
+    if (mounted) {
+      setState(() {
+        _manualRefreshState = 1;
+      });
+      
+      await Future.delayed(const Duration(seconds: 1));
+      
+      if (mounted) {
+        // Animate content back up
+        await _manualRefreshAnimController.reverse();
+        setState(() {
+          _isManualRefreshing = false;
+        });
+      }
+    }
+  }
 
   final List<Map<String, dynamic>> _languages = [
     {'name': 'Русский', 'sub': 'Russian', 'flag': '🇷🇺', 'locale': const Locale('ru')},
@@ -60,48 +125,43 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildHomeContent() {
-    return Column(
+    return Stack(
       children: [
-        const SizedBox(height: 10),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: HomeHeader(
-            onProfileTap: () {
-              _showStoryOverlay();
-            },
-            onSettingsTap: () {
-              setState(() {
-                _currentView = HomeViewType.settings;
-              });
-            },
-            onNotificationsTap: () {
-              setState(() {
-                _currentView = HomeViewType.notifications;
-              });
-            },
-          ),
-        ),
-        
-        Expanded(
+        // Scrollable content takes full screen
+        Positioned.fill(
           child: CustomRefreshIndicator(
             onRefresh: _onRefresh,
             builder: (context, child, controller) {
               return Stack(
                 children: [
-                  // Content with displacement
-                   AnimatedBuilder(
-                      animation: controller,
-                      builder: (context, _) {
-                        return Transform.translate(
-                          offset: Offset(0, 100.0 * controller.value),
-                          child: child,
-                        );
-                      }
+                   // Content with displacement and clipping at the gap
+                   Positioned(
+                     top: 110,
+                     left: 0,
+                     right: 0,
+                     bottom: 0,
+                     child: ClipRect(
+                       child: AnimatedBuilder(
+                          animation: Listenable.merge([controller, _manualRefreshAnimController]),
+                          builder: (context, _) {
+                            // Add a little padding while loading (displacement = 50.0)
+                            double displacement = controller.isLoading ? 50.0 : (80.0 * controller.value);
+                            // Add manual refresh displacement
+                            if (_isManualRefreshing) {
+                              displacement = _manualDisplacementAnimation.value;
+                            }
+                            return Transform.translate(
+                              offset: Offset(0, displacement),
+                              child: child,
+                            );
+                          }
+                       ),
+                     ),
                    ),
                    
-                   // Indicator - Positioned at the top of this Expanded area (below header)
+                   // Indicator - Positioned below the header area
                    Positioned(
-                     top: 10,
+                     top: 90, // Start below the sticky header
                      left: 0,
                      right: 0,
                      child: AnimatedBuilder(
@@ -172,11 +232,12 @@ class _HomeScreenState extends State<HomeScreen> {
             },
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+              // Allow content to bleed through under the header
+              clipBehavior: Clip.none,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 5),
+                padding: const EdgeInsets.fromLTRB(5, 18, 5, 120), // 110px (Positioned) + 18px = 128px total gap
                 child: Column(
                   children: [
-                    const SizedBox(height: 40), // Gap between Header and first card
                     _buildGeolocationCard(),
                     const SizedBox(height: 12),
                     _buildAuthenticationCard(),
@@ -186,15 +247,72 @@ class _HomeScreenState extends State<HomeScreen> {
                     _buildPlaceOfStayCard(),
                     const SizedBox(height: 12),
                     _buildPhoneNumberCard(),
-                    
-                    // Extra padding for bottom nav
-                    const SizedBox(height: 120),
                   ],
                 ),
               ),
             ),
           ),
         ),
+        
+        // Sticky Header - Positioned at the top on top of the list
+        Positioned(
+          top: 10,
+          left: 10,
+          right: 10,
+          child: HomeHeader(
+            onProfileTap: () {
+              _showStoryOverlay();
+            },
+            onSettingsTap: () {
+              setState(() {
+                _currentView = HomeViewType.settings;
+              });
+            },
+            onNotificationsTap: () {
+              setState(() {
+                _currentView = HomeViewType.notifications;
+              });
+            },
+          ),
+        ),
+        
+        // Manual refresh overlay (when home button tapped)
+        if (_isManualRefreshing)
+          Positioned(
+            top: 90,
+            left: 0,
+            right: 0,
+            child: AnimatedOpacity(
+              opacity: 1.0,
+              duration: const Duration(milliseconds: 200),
+              child: SizedBox(
+                height: 60,
+                child: Center(
+                  child: _manualRefreshState == 1
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(Icons.check, color: Color(0xFF909499), size: 24),
+                            SizedBox(width: 10),
+                            Text("Обновление завершено", style: TextStyle(color: Color(0xFF909499), fontSize: 13, fontWeight: FontWeight.w500)),
+                          ],
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            SizedBox(
+                              width: 20, 
+                              height: 20, 
+                              child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFFEB5757))
+                            ),
+                            SizedBox(width: 10),
+                            Text("Обновление...", style: TextStyle(color: Color(0xFF909499), fontSize: 13, fontWeight: FontWeight.w500)), 
+                          ],
+                        ),
+                ),
+              ),
+            ),
+          ),
       ],
     );
   }
@@ -421,6 +539,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(24),
+                          topRight: Radius.circular(50),
+                          bottomLeft: Radius.circular(24),
+                          bottomRight: Radius.circular(24),
+                        ),
+                      ),
+                      backgroundColor: Colors.white,
                       title: Text('logout_confirmation_title'.tr()),
                       content: Text('logout_confirmation'.tr()),
                       actions: [
@@ -710,67 +837,568 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildGeolocationCard() {
-    return StatusCard(
-      imagePath: 'lib/assets/location.png',
-      title: 'geolocation'.tr(),
-      description: 'geolocation_desc'.tr(),
-      showBadge: true,
-      badgeText: 'geolocation_sent_at'.tr(args: ['31.01.2026 15:19']),
-      isCompleted: true,
-      padding: const EdgeInsets.fromLTRB(14, 12, 16, 16),
+    return GestureDetector(
+      onTap: () {
+        showDialog(
+          context: context,
+          barrierDismissible: true,
+          builder: (BuildContext context) {
+            return Dialog(
+              backgroundColor: Colors.white,
+              insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(60),
+                  bottomLeft: Radius.circular(24),
+                  bottomRight: Radius.circular(24),
+                ),
+              ),
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(24, 20, 24, 28),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Геолокация',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Последняя геолокация передана:\n03.02.2026 18:34',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF3C4451),
+                        height: 1.4,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF3C4451),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: const Text(
+                          'Закрыть',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+      child: StatusCard(
+        imagePath: 'lib/assets/location.png',
+        title: 'geolocation'.tr(),
+        description: 'geolocation_desc'.tr(),
+        showBadge: true,
+        badgeText: 'geolocation_sent_at'.tr(args: ['31.01.2026 15:19']),
+        isCompleted: true,
+        padding: const EdgeInsets.fromLTRB(14, 12, 16, 16),
+      ),
     );
   }
 
   Widget _buildAuthenticationCard() {
-    return StatusCard(
-      imagePath: 'lib/assets/authen.png',
-      title: 'authentication'.tr(),
-      description: 'authentication_desc'.tr(),
-      isCompleted: true,
+    return GestureDetector(
+      onTap: () {
+        showDialog(
+          context: context,
+          barrierDismissible: true,
+          builder: (BuildContext context) {
+            return Dialog(
+              backgroundColor: Colors.white,
+              insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(60),
+                  bottomLeft: Radius.circular(24),
+                  bottomRight: Radius.circular(24),
+                ),
+              ),
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(24, 20, 24, 28),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Аутентификация',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Вы успешно прошли процедуру аутентификации. Открыт доступ к личным данным и документам в Профиле',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF3C4451),
+                        height: 1.4,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF3C4451),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: const Text(
+                          'Закрыть',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+      child: StatusCard(
+        imagePath: 'lib/assets/authen.png',
+        title: 'authentication'.tr(),
+        description: 'authentication_desc'.tr(),
+        isCompleted: true,
+      ),
     );
   }
 
   Widget _buildRegistrationCard() {
-    return StatusCard(
-      imagePath: 'lib/assets/diar.png',
-      title: 'registration'.tr(),
-      description: 'registration_desc'.tr(),
-      isCompleted: true,
+    return GestureDetector(
+      onTap: () {
+        showDialog(
+          context: context,
+          barrierDismissible: true,
+          builder: (BuildContext context) {
+            return Dialog(
+              backgroundColor: Colors.white,
+              insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(60),
+                  bottomLeft: Radius.circular(24),
+                  bottomRight: Radius.circular(24),
+                ),
+              ),
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(24, 20, 24, 28),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Постановка на учет',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Вы состоите на учете в ГБУ «Миграционный центр».',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF3C4451),
+                        height: 1.3,
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    const Text(
+                      'Дата действия постановки на учет:\n01.09.2029',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF3C4451),
+                        height: 1.3,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF3C4451),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: const Text(
+                          'Закрыть',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+      child: StatusCard(
+        imagePath: 'lib/assets/diar.png',
+        title: 'registration'.tr(),
+        description: 'registration_desc'.tr(),
+        isCompleted: true,
+      ),
     );
   }
 
   Widget _buildPlaceOfStayCard() {
-    return StatusCard(
-      imagePath: 'lib/assets/locat.png',
-      title: 'place_of_stay'.tr(),
-      actionsAlignTop: true,
-      descriptionWidget: RichText(
-        text: TextSpan(
-          style: const TextStyle(color: Color(0xFF3C4451), fontSize: 11, height: 1.3),
-          children: [
-            TextSpan(text: 'city_label'.tr() + '\n', style: const TextStyle(color: Color(0xFF909499), fontWeight: FontWeight.w500)),
-            const TextSpan(text: 'Москва, улица Генерала Тюленева, 23к1\n', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500)),
-            TextSpan(text: 'street_label'.tr() + ' ', style: const TextStyle(color: Color(0xFF909499), fontWeight: FontWeight.w500)),
-            const TextSpan(text: 'улица Генерала Тюленева\n', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500)),
-            TextSpan(text: 'house_label'.tr() + ' ', style: const TextStyle(color: Color(0xFF909499), fontWeight: FontWeight.w500)),
-            const TextSpan(text: '23к1   ', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500)),
-            TextSpan(text: 'apartment_label'.tr() + ' ', style: const TextStyle(color: Color(0xFF909499), fontWeight: FontWeight.w500)),
-            const TextSpan(text: '9', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500)),
-          ],
-        ),     
+    return GestureDetector(
+      onTap: () {
+        showDialog(
+          context: context,
+          barrierDismissible: true,
+          builder: (BuildContext context) {
+            return Dialog(
+              backgroundColor: Colors.white,
+              insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(60),
+                  bottomLeft: Radius.circular(16),
+                  bottomRight: Radius.circular(16),
+                ),
+              ),
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(24, 20, 24, 28),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Место сна и отдыха',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Населенный пункт:',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF909499),
+                            ),
+                          ),
+                    const Text(
+                      'Москва, улица Генерала Тюленева,23к1',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF3C4451),
+                            ),
+                          ),
+                    const SizedBox(height: 6),
+                    RichText(
+                      text: const TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'Улица: ',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF909499),
+                            ),
+                          ),
+                          TextSpan(
+                            text: 'улица Генерала Тюленева',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF3C4451),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    // const Text(
+                    //   'Улица: улица Генерала Тюленева',
+                    //   style: TextStyle(
+                    //     fontSize: 15,
+                    //     fontWeight: FontWeight.w600,
+                    //     color: Color(0xFF909499),
+                    //   ),
+                    // ),
+                    Row(
+                      children: [
+                        const Text(
+                          'Дом: ',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF909499),
+                          ),
+                        ),
+                        const Text(
+                          '23к1    ',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF3C4451),
+                          ),
+                        ),
+                        const Text(
+                          'Квартира: ',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF909499),
+                          ),
+                        ),
+                        const Text(
+                          '9',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF3C4451),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    RichText(
+                      text: const TextSpan(
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Color(0xFF3C4451),
+                        ),
+                        children: [
+                          TextSpan(
+                            text: 'Изменить',
+                            style: TextStyle(
+                              decoration: TextDecoration.underline,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          TextSpan(text: ' место сна и отдыха ?'),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF3C4451),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: const Text(
+                          'Закрыть',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+      child: StatusCard(
+        imagePath: 'lib/assets/locat.png',
+        title: 'place_of_stay'.tr(),
+        actionsAlignTop: true,
+        descriptionWidget: RichText(
+          text: TextSpan(
+            style: const TextStyle(color: Color(0xFF3C4451), fontSize: 11, height: 1.3),
+            children: [
+              TextSpan(text: 'city_label'.tr() + '\n', style: const TextStyle(color: Color(0xFF909499), fontWeight: FontWeight.w500)),
+              const TextSpan(text: 'Москва, улица Генерала Тюленева,23к1\n', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500)),
+              TextSpan(text: 'street_label'.tr() + ' ', style: const TextStyle(color: Color(0xFF909499), fontWeight: FontWeight.w500)),
+              const TextSpan(text: 'улица Генерала Тюленева\n', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500)),
+              TextSpan(text: 'house_label'.tr() + ' ', style: const TextStyle(color: Color(0xFF909499), fontWeight: FontWeight.w500)),
+              const TextSpan(text: '23к1   ', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500)),
+              TextSpan(text: 'apartment_label'.tr() + ' ', style: const TextStyle(color: Color(0xFF909499), fontWeight: FontWeight.w500)),
+              const TextSpan(text: '9', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500)),
+            ],
+          ),     
+        ),
+        isCompleted: true,
+        showEditAction: true,
       ),
-      isCompleted: true,
-      showEditAction: true,
     );
   }
 
   Widget _buildPhoneNumberCard() {
-    return StatusCard(
-      imagePath: 'lib/assets/call.png',
-      title: 'phone_number'.tr(),
-      description: '+7 926 666-02-23',
-      isCompleted: true,
-      showEditAction: true,
+    return GestureDetector(
+      onTap: () {
+        showDialog(
+          context: context,
+          barrierDismissible: true,
+          builder: (BuildContext context) {
+            return Dialog(
+              backgroundColor: Colors.white,
+              insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(60),
+                  bottomLeft: Radius.circular(24),
+                  bottomRight: Radius.circular(24),
+                ),
+              ),
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(24, 20, 24, 28),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Номер телефона',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Вы успешно указали свой номер телефона. Желаете его изменить?',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF3C4451),
+                        height: 1.3,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          // Action for change could go here
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF6BD99C),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: const Text(
+                          'Изменить',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF3C4451),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF3C4451),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: const Text(
+                          'Закрыть',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+      child: StatusCard(
+        imagePath: 'lib/assets/call.png',
+        title: 'phone_number'.tr(),
+        description: '+7 926 666-02-23',
+        isCompleted: true,
+        showEditAction: true,
+      ),
     );
   }
 
@@ -1220,9 +1848,9 @@ class StatusCard extends StatelessWidget {
                   ),
                 ),
                 if (showEditAction) ...[
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 12),
                   Image.asset('lib/assets/editicon.png', width: 17, height: 20),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 6),
                   Text(
                     'Change'.tr(),
                     style: const TextStyle(
@@ -1231,13 +1859,14 @@ class StatusCard extends StatelessWidget {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  if (isCompleted) ...[
-                    const SizedBox(width: 8),
-                    Image.asset('lib/assets/tickk.png', width: 24, height: 24),
-                  ],
-                ] else if (isCompleted && !showBadge) ...[
-                  const SizedBox(width: 8),
-                  Image.asset('lib/assets/tickk.png', width: 24, height: 24),
+                ],
+                if (isCompleted && !showBadge) ...[
+                  const SizedBox(width: 12),
+                  SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: Image.asset('lib/assets/tickk.png', width: 24, height: 24),
+                  ),
                 ],
               ],
             ),
@@ -1245,7 +1874,7 @@ class StatusCard extends StatelessWidget {
           if (showBadge && badgeText != null)
             Positioned(
               top: 8,
-              right: 8,
+              right: 16,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
@@ -1267,7 +1896,11 @@ class StatusCard extends StatelessWidget {
                   ),
                   if (isCompleted) ...[
                     const SizedBox(height: 7),
-                    Image.asset('lib/assets/tickk.png', width: 24, height: 24),
+                    SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: Image.asset('lib/assets/tickk.png', width: 24, height: 24),
+                    ),
                   ],
                 ],
               ),

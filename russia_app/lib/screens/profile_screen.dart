@@ -134,17 +134,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               
-              const SizedBox(height: 20),
+              const SizedBox(height: 15),
               
               // User Info Card
               _buildUserInfoCard(),
               
-              const SizedBox(height: 14),
+              const SizedBox(height: 10),
               
               // Foreign Citizen Card
               _buildForeignCitizenCard(),
               
-              const SizedBox(height: 14),
+              const SizedBox(height: 10),
               
               // Personal Information Button
               _buildNavigationButton(
@@ -157,7 +157,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 },
               ),
               
-              const SizedBox(height: 14),
+              const SizedBox(height: 10),
               
               // Documents Button
               _buildNavigationButton(
@@ -253,9 +253,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
+                            color: Colors.black.withOpacity(0.08),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
                           ),
                         ],
                       ),
@@ -298,7 +298,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 },
               ),
               
-              const SizedBox(height: 16),
+              const SizedBox(height: 8),
               
               // Fingerprint and Photo Registration Card
               _buildDocumentCard(
@@ -320,7 +320,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 },
               ),
               
-              const SizedBox(height: 16),
+              const SizedBox(height: 8),
 
               // Taxpayer Identification Number (INN) Card
               _buildDocumentCard(
@@ -342,7 +342,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 },
               ),
               
-              const SizedBox(height: 16),
+              const SizedBox(height: 8),
               
               // Migration Card
               _buildDocumentCard(
@@ -389,9 +389,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     },
                     child: Container(
                       padding: const EdgeInsets.all(8),
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.08),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
                       child: const Icon(
                         Icons.arrow_back_ios_new,
@@ -422,10 +429,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 5),
               child: Column(
                 children: [
-                  const SizedBox(height: 55),
+                  const SizedBox(height: 30),
                   // Personal Information Card
                   Container(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
@@ -494,7 +501,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ],
                         ),
                         
-                        const SizedBox(height: 6),
+                        const SizedBox(height: 4),
                         
                         // Date of Birth and Gender Row
                         Row(
@@ -527,7 +534,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ],
                         ),
                         
-                        const SizedBox(height: 6),
+                        const SizedBox(height: 4),
                         
                         // Place of Birth
                         Column(
@@ -556,12 +563,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                   
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 8),
                   
                   // Contact Details Card
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
@@ -584,7 +591,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             color: Colors.grey[700],
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 4),
                         
                         // Phone Number
                         Column(
@@ -610,7 +617,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ],
                         ),
                         
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 4),
                         
                         // Additional Number
                         Column(
@@ -676,9 +683,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
+                          color: Colors.black.withOpacity(0.08),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
                         ),
                       ],
                     ),
@@ -856,10 +863,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(8),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.04),
@@ -893,10 +900,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Expanded(
               child: Text(
                 title,
+                maxLines: 5,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  fontSize: 12,
+                  fontSize: 13.5,
                   fontWeight: FontWeight.w600,
                   color: Color(0xFF3C4451),
+                  height: 1.2,
                 ),
               ),
             ),
@@ -911,7 +921,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildUserInfoCard() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -934,7 +944,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Text(
                   'ФИО',
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: 14,
                     color: Colors.black,
                     fontWeight: FontWeight.w400,
                   ),
@@ -943,16 +953,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Text(
                   _userData?['name']?.toString().toUpperCase() ?? 'НЕ УКАЗАНО',
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: 15.5,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 6),
                 Text(
                   'Гражданство',
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: 14,
                     color: Colors.black,
                     fontWeight: FontWeight.w400,
                   ),
@@ -961,7 +971,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Text(
                   _userData?['citizenship'] ?? 'Киргизия',
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: 15.5,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
@@ -1011,7 +1021,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildForeignCitizenCard() {
     return Container(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -1029,12 +1039,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const Text(
             'Карта иностранного гражданина',
             style: TextStyle(
-              fontSize: 13,
+              fontSize: 14,
               fontWeight: FontWeight.w400,
               color: Colors.black,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 10),
           
           // KIG Number and Expiry Date
           Row(
@@ -1046,7 +1056,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Text(
                       'Номер КИГ',
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 13.5,
                         color: Colors.grey[600],
                         fontWeight: FontWeight.w500,
                       ),
@@ -1055,7 +1065,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const Text(
                       'AA11365228',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 15.5,
                         fontWeight: FontWeight.bold ,
                         color: Colors.black,
                       ),
@@ -1070,7 +1080,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Text(
                       'Срок действия КИГ:',
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 13.5,
                         color: Colors.grey[600],
                         fontWeight: FontWeight.w500,
                       ),
@@ -1079,7 +1089,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const Text(
                       '2030-12-29',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 15.5,
                         fontWeight: FontWeight.w900,
                         color: Colors.black,
                       ),
@@ -1093,7 +1103,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           // Card Image and QR Code
           // Combined Card and QR Image
           Padding(
-            padding: const EdgeInsets.fromLTRB(10, 8, 10, 4),
+            padding: const EdgeInsets.fromLTRB(10, 12, 10, 4),
             child: Container(
               width: double.infinity,
               decoration: BoxDecoration(
@@ -1121,7 +1131,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
@@ -1147,7 +1157,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 13,
+                  fontSize: 14.5,
                   fontWeight: FontWeight.w400,
                   color: Colors.black,
                 ),
