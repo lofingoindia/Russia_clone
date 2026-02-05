@@ -135,8 +135,8 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
               return Stack(
                 children: [
                    // Content with displacement and clipping at the gap
-                   Positioned(
-                     top: 110,
+                    Positioned(
+                      top: 97,
                      left: 0,
                      right: 0,
                      bottom: 0,
@@ -161,7 +161,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                    
                    // Indicator - Positioned below the header area
                    Positioned(
-                     top: 90, // Start below the sticky header
+                     top: 80, // Start below the sticky header
                      left: 0,
                      right: 0,
                      child: AnimatedBuilder(
@@ -243,9 +243,9 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                     _buildAuthenticationCard(),
                     const SizedBox(height: 12),
                     _buildRegistrationCard(),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 10),
                     _buildPlaceOfStayCard(),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 10),
                     _buildPhoneNumberCard(),
                   ],
                 ),
@@ -279,7 +279,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
         // Manual refresh overlay (when home button tapped)
         if (_isManualRefreshing)
           Positioned(
-            top: 90,
+            top: 80,
             left: 0,
             right: 0,
             child: AnimatedOpacity(
@@ -915,9 +915,9 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
         title: 'geolocation'.tr(),
         description: 'geolocation_desc'.tr(),
         showBadge: true,
-        badgeText: 'geolocation_sent_at'.tr(args: ['31.01.2026 15:19']),
+        badgeText: 'geolocation_sent_at'.tr(args: ['04.02.2026 16:51']),
         isCompleted: true,
-        padding: const EdgeInsets.fromLTRB(14, 12, 16, 16),
+        height: 81,
       ),
     );
   }
@@ -958,8 +958,8 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                     const Text(
                       'Вы успешно прошли процедуру аутентификации. Открыт доступ к личным данным и документам в Профиле',
                       style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
                         color: Color(0xFF3C4451),
                         height: 1.4,
                       ),
@@ -1001,6 +1001,8 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
         title: 'authentication'.tr(),
         description: 'authentication_desc'.tr(),
         isCompleted: true,
+        centerTick: true,
+        height: 83,
       ),
     );
   }
@@ -1041,8 +1043,8 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                     const Text(
                       'Вы состоите на учете в ГБУ «Миграционный центр».',
                       style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
                         color: Color(0xFF3C4451),
                         height: 1.3,
                       ),
@@ -1051,8 +1053,8 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                     const Text(
                       'Дата действия постановки на учет:\n01.09.2029',
                       style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
                         color: Color(0xFF3C4451),
                         height: 1.3,
                       ),
@@ -1094,6 +1096,8 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
         title: 'registration'.tr(),
         description: 'registration_desc'.tr(),
         isCompleted: true,
+        centerTick: true,
+        height: 67,
       ),
     );
   }
@@ -1134,16 +1138,16 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                     const Text(
                       'Населенный пункт:',
                             style: TextStyle(
-                              fontSize: 13,
+                              fontSize: 14,
                               fontWeight: FontWeight.w600,
                               color: Color(0xFF909499),
                             ),
                           ),
                     const Text(
-                      'Москва, улица Генерала Тюленева,23к1',
+                      'Москва,улица Генерала Тюленева,23к1',
                             style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
                               color: Color(0xFF3C4451),
                             ),
                           ),
@@ -1154,16 +1158,16 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                           TextSpan(
                             text: 'Улица: ',
                             style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
                               color: Color(0xFF909499),
                             ),
                           ),
                           TextSpan(
                             text: 'улица Генерала Тюленева',
                             style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
                               color: Color(0xFF3C4451),
                             ),
                           ),
@@ -1184,32 +1188,32 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                         const Text(
                           'Дом: ',
                           style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
                             color: Color(0xFF909499),
                           ),
                         ),
                         const Text(
                           '23к1    ',
                           style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
                             color: Color(0xFF3C4451),
                           ),
                         ),
                         const Text(
                           'Квартира: ',
                           style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
                             color: Color(0xFF909499),
                           ),
                         ),
                         const Text(
                           '9',
                           style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
                             color: Color(0xFF3C4451),
                           ),
                         ),
@@ -1219,7 +1223,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                     RichText(
                       text: const TextSpan(
                         style: TextStyle(
-                          fontSize: 15,
+                          fontSize: 16,
                           color: Color(0xFF3C4451),
                         ),
                         children: [
@@ -1270,23 +1274,78 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
         imagePath: 'lib/assets/locat.png',
         title: 'place_of_stay'.tr(),
         actionsAlignTop: true,
-        descriptionWidget: RichText(
-          text: TextSpan(
-            style: const TextStyle(color: Color(0xFF3C4451), fontSize: 12, height: 1.3),
-            children: [
-              TextSpan(text: 'city_label'.tr() + '\n', style: const TextStyle(color: Color(0xFF909499), fontWeight: FontWeight.w500)),
-              const TextSpan(text: 'Москва, улица Генерала Тюленева,23к1\n', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500)),
-              TextSpan(text: 'street_label'.tr() + ' ', style: const TextStyle(color: Color(0xFF909499), fontWeight: FontWeight.w500)),
-              const TextSpan(text: 'улица Генерала Тюленева\n', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500)),
-              TextSpan(text: 'house_label'.tr() + ' ', style: const TextStyle(color: Color(0xFF909499), fontWeight: FontWeight.w500)),
-              const TextSpan(text: '23к1   ', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500)),
-              TextSpan(text: 'apartment_label'.tr() + ' ', style: const TextStyle(color: Color(0xFF909499), fontWeight: FontWeight.w500)),
-              const TextSpan(text: '9', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500)),
-            ],
-          ),     
+        descriptionWidget: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'city_label'.tr(),
+              style: const TextStyle(
+                color: Color(0xFF909499),
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const Text(
+              'Москва, улица Генерала Тюленева, 23к1',
+              style: const TextStyle(
+                color: Color(0xFF333333),
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+                height: 1.2,
+              ),
+            ),
+            const SizedBox(height: 4),
+            RichText(
+              text: TextSpan(
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  height: 1.3,
+                ),
+                children: [
+                  TextSpan(
+                    text: 'street_label'.tr() + ' ',
+                    style: const TextStyle(color: Color(0xFF909499), fontSize: 14),
+                  ),
+                  const TextSpan(
+                    text: 'улица Генерала Тюленева',
+                    style: TextStyle(color: Color(0xFF333333)),
+                  ),
+                ],
+              ),
+            ),
+            RichText(
+              text: TextSpan(
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  height: 1.3,
+                ),
+                children: [
+                  TextSpan(
+                    text: 'house_label'.tr() + ' ',
+                    style: const TextStyle(color: Color(0xFF909499), fontSize: 14),
+                  ),
+                  const TextSpan(
+                    text: '23к1    ',
+                    style: TextStyle(color: Color(0xFF333333)),
+                  ),
+                  TextSpan(
+                    text: 'apartment_label'.tr() + ' ',
+                    style: const TextStyle(color: Color(0xFF909499), fontSize: 14),
+                  ),
+                  const TextSpan(
+                    text: '9',
+                    style: TextStyle(color: Color(0xFF333333)),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
         isCompleted: true,
         showEditAction: true,
+        height: 139,
       ),
     );
   }
@@ -1327,8 +1386,8 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                     const Text(
                       'Вы успешно указали свой номер телефона. Желаете его изменить?',
                       style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
                         color: Color(0xFF3C4451),
                         height: 1.3,
                       ),
@@ -1395,9 +1454,18 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
       child: StatusCard(
         imagePath: 'lib/assets/call.png',
         title: 'phone_number'.tr(),
-        description: '+7 926 666-02-23',
+        descriptionWidget: const Text(
+          '+7 926 666-02-23',
+          style: TextStyle(
+            color: Color(0xFF333333),
+            fontSize: 15,
+            fontWeight: FontWeight.w500,
+            letterSpacing: 0.5,
+          ),
+        ),
         isCompleted: true,
         showEditAction: true,
+        height: 67,
       ),
     );
   }
@@ -1770,6 +1838,8 @@ class StatusCard extends StatelessWidget {
   final bool showEditAction;
   final bool actionsAlignTop;
   final EdgeInsetsGeometry? padding;
+  final double? height;
+  final bool centerTick;
 
   const StatusCard({
     super.key,
@@ -1784,128 +1854,143 @@ class StatusCard extends StatelessWidget {
     this.showEditAction = false,
     this.actionsAlignTop = false,
     this.padding,
+    this.height,
+    this.centerTick = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Stack(
-        children: [
-          Padding(
-            padding: padding ?? const EdgeInsets.fromLTRB(14, 12, 16, 12),
-            child: Row(
-              crossAxisAlignment: actionsAlignTop ? CrossAxisAlignment.start : CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+    return Center(
+      child: Container(
+        width: 406,
+        height: height ?? 85,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.06),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Stack(
+          alignment: Alignment.centerRight,
+          children: [
+            Padding(
+              padding: padding ?? EdgeInsets.fromLTRB(14, 0, centerTick ? 45 : 16, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Header Row: Icon, Title, and Top-aligned Actions
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          if (imagePath != null)
-                            Image.asset(imagePath!, width: 20, height: 20, fit: BoxFit.contain)
-                          else if (icon != null)
-                            Icon(icon, color: Colors.black, size: 20),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              title,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black,
-                              ),
-                            ),
+                      if (imagePath != null)
+                        Image.asset(imagePath!, width: 22, height: 22, fit: BoxFit.contain)
+                      else if (icon != null)
+                        Icon(icon, color: Colors.black, size: 22),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          title,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.black,
                           ),
-                        ],
+                        ),
                       ),
-                      const SizedBox(height: 8),
-                      descriptionWidget ??
-                          (description != null
-                              ? Text(
-                                  description!,
+                      // Header Actions (Badge or Edit + optional Tick)
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (showBadge && badgeText != null)
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF02C739),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                badgeText!,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            )
+                          else if (showEditAction)
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Image.asset('lib/assets/editicon.png', width: 20, height: 23),
+                                const SizedBox(width: 6),
+                                Text(
+                                  'Change'.tr(),
                                   style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 12,
-                                    height: 1.2,
+                                    color: Color(0xFF5A5E62),
+                                    fontSize: 13,
                                     fontWeight: FontWeight.w500,
                                   ),
-                                )
-                              : const SizedBox.shrink()),
+                                ),
+                              ],
+                            ),
+                          if (isCompleted && showEditAction) ...[
+                            const SizedBox(width: 10),
+                            SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: Image.asset('lib/assets/tickk.png', width: 24, height: 24),
+                            ),
+                          ],
+                        ],
+                      ),
                     ],
                   ),
-                ),
-                if (showEditAction) ...[
-                  const SizedBox(width: 12),
-                  Image.asset('lib/assets/editicon.png', width: 20, height: 23),
-                  const SizedBox(width: 6),
-                  Text(
-                    'Change'.tr(),
-                    style: const TextStyle(
-                      color: Color(0xFF5A5E62),
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-                if (isCompleted && !showBadge) ...[
-                  const SizedBox(width: 12),
-                  SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: Image.asset('lib/assets/tickk.png', width: 24, height: 24),
-                  ),
-                ],
-              ],
-            ),
-          ),
-          if (showBadge && badgeText != null)
-            Positioned(
-              top: 8,
-              right: 16,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF02C739),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      badgeText!,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        letterSpacing: 1.0,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                  if (isCompleted) ...[
-                    const SizedBox(height: 7),
-                    SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: Image.asset('lib/assets/tickk.png', width: 24, height: 24),
+
+                  // Description Row: Content and optional bottom-aligned Tick
+                  if (descriptionWidget != null || description != null) ...[
+                    const SizedBox(height: 2),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: descriptionWidget ??
+                              Text(
+                                description!,
+                                style: const TextStyle(
+                                  color: Color(0xFF333333),
+                                  fontSize: 15,
+                                  height: 1.3,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                        ),
+                        if (isCompleted && !showEditAction && !centerTick) ...[
+                          const SizedBox(width: 12),
+                          SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: Image.asset('lib/assets/tickk.png', width: 24, height: 24),
+                          ),
+                        ],
+                      ],
                     ),
                   ],
                 ],
               ),
             ),
-        ],
+            if (isCompleted && centerTick)
+              Positioned(
+                right: 16,
+                child: Image.asset('lib/assets/tickk.png', width: 24, height: 24),
+              ),
+          ],
+        ),
       ),
     );
   }

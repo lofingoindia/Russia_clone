@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'package:flutter/services.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'screens/home_screen.dart';
 import 'screens/profile_screen.dart';
@@ -41,6 +42,12 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Set system navigation bar color to white
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      systemNavigationBarColor: Colors.black,
+      systemNavigationBarIconBrightness: Brightness.light,
+    ));
+
     return Scaffold(
       extendBody: true,
       body: Stack(
@@ -59,33 +66,41 @@ class _MainScreenState extends State<MainScreen> {
           ),
           Align(
             alignment: Alignment.bottomCenter,
-            child: SafeArea(
-              bottom: true,
-              child: CustomBottomNavBar(
-                currentIndex: _currentIndex,
-                onTap: (index) {
-                  if (_currentIndex == index) {
-                    // If already on home, trigger refresh
-                    if (index == 1) {
-                      HomeScreen.globalKey.currentState?.triggerRefresh();
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CustomBottomNavBar(
+                  currentIndex: _currentIndex,
+                  onTap: (index) {
+                    if (_currentIndex == index) {
+                      // If already on home, trigger refresh
+                      if (index == 1) {
+                        HomeScreen.globalKey.currentState?.triggerRefresh();
+                      }
+                      return;
                     }
-                    return;
-                  }
-                  
-                  setState(() {
-                    _currentIndex = index;
-                    _isManualTransition = true;
-                  });
-                  
-                  _pageController.animateToPage(
-                    index,
-                    duration: const Duration(milliseconds: 600), // Slightly longer for smoother feel
-                    curve: Curves.easeInOutCubic,
-                  ).then((_) {
-                    _isManualTransition = false;
-                  });
-                },
-              ),
+                    
+                    setState(() {
+                      _currentIndex = index;
+                      _isManualTransition = true;
+                    });
+                    
+                    _pageController.animateToPage(
+                      index,
+                      duration: const Duration(milliseconds: 600),
+                      curve: Curves.easeInOutCubic,
+                    ).then((_) {
+                      _isManualTransition = false;
+                    });
+                  },
+                ),
+                // Solid background for the bottom safe area (home indicator area)
+                Container(
+                  height: MediaQuery.of(context).padding.bottom,
+                  color: Colors.white,
+                  width: double.infinity,
+                ),
+              ],
             ),
           ),
         ],
@@ -107,10 +122,10 @@ class CustomBottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double barHeight = 75;
-    final double circleSize = 75;
+    final double circleSize = 78;
 
     return Container(
-      height: 100, // Total height to accommodate the circle and shadow
+      height: 110, // Sufficient for 78x78 circle
       width: double.infinity,
       child: Stack(
         alignment: Alignment.bottomCenter,
@@ -122,12 +137,10 @@ class CustomBottomNavBar extends StatelessWidget {
           ),
           
           // Navigation Items
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8), // Adjust to center items vertically in bar
-            child: Container(
-              height: 60,
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Row(
+          Container(
+            height: barHeight,
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   // Profile
@@ -137,7 +150,7 @@ class CustomBottomNavBar extends StatelessWidget {
                     icon: Icons.person,
                     label: 'profile'.tr(),
                     isActive: currentIndex == 0,
-                    activeColor: const Color(0xFF02C739).withOpacity(0.5),
+                    activeColor: const Color(0xFF02C739),
                   ),
                   
                   // Empty space for the center circle
@@ -150,16 +163,15 @@ class CustomBottomNavBar extends StatelessWidget {
                     icon: Icons.apps,
                     label: 'services'.tr(),
                     isActive: currentIndex == 2,
-                    activeColor: const Color(0xFF02C739).withOpacity(0.5),
+                    activeColor: const Color(0xFF02C739),
                   ),
                 ],
               ),
             ),
-          ),
           
           // Center Circle (Home)
           Positioned(
-            top: 8,
+            top: 10,
             child: GestureDetector(
               onTap: () => onTap(1),
               child: Container(
@@ -169,7 +181,7 @@ class CustomBottomNavBar extends StatelessWidget {
                   color: Colors.white,
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: const Color(0xFF02C739).withOpacity(0.5),
+                    color: const Color(0xFF02C739),
                     width: 1.5,
                   ),
                   boxShadow: [
@@ -180,8 +192,8 @@ class CustomBottomNavBar extends StatelessWidget {
                     ),
                     BoxShadow(
                       color: Colors.black.withOpacity(0.06),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
                     ),
                   ],
                 ),
@@ -189,29 +201,32 @@ class CustomBottomNavBar extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     currentIndex == 1 
-                        ? ColorFiltered(
-                            colorFilter: const ColorFilter.mode(
-                              Color(0xFF01C636),
-                              BlendMode.srcIn,
-                            ),
+                        ? Opacity(
+                            opacity: 0.5,
+                            child: ColorFiltered(
+                              colorFilter: const ColorFilter.mode(
+                                Color(0xFF01C636),
+                                BlendMode.srcIn,
+                              ),
                             child: Image.asset(
-                              'lib/assets/homy.png',
-                              width: 22,
-                              height: 22,
-                            ),
+                                'lib/assets/homy.png',
+                                width: 24,
+                                height: 24,
+                              ),
+                              ),
                           )
                         : Image.asset(
                             'lib/assets/homy.png',
-                            width: 22,
-                            height: 22,
+                            width: 24,
+                            height: 24,
                           ),
                     const SizedBox(height: 4),
                     Text(
                       'home'.tr(),
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF3C4451).withOpacity(0.8),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
                       ),
                     ),
                   ],
@@ -270,26 +285,30 @@ class CustomBottomNavBar extends StatelessWidget {
     required bool isActive,
     required Color activeColor,
   }) {
-    final color = isActive ? activeColor : Color(0xFF3C4451).withOpacity(0.8);
+    final color = isActive ? activeColor : const Color(0xFF3C4451);
     return GestureDetector(
       onTap: () => onTap(index),
       behavior: HitTestBehavior.opaque,
       child: Container(
         width: 70,
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
           children: [
             iconWidget ?? (imagePath != null 
-                ? ColorFiltered(
-                    colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
-                    child: Image.asset(
-                      imagePath,
-                      width: 17,
-                      height: 17,
-                      errorBuilder: (context, error, stackTrace) => Icon(
-                        icon ?? Icons.error,
-                        color: color,
-                        size: 17,
+                ? Opacity(
+                    opacity: isActive ? 0.5 : 1.0,
+                    child: ColorFiltered(
+                      colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+                      child: Image.asset(
+                        imagePath,
+                        width: 17,
+                        height: 17,
+                        errorBuilder: (context, error, stackTrace) => Icon(
+                          icon ?? Icons.error,
+                          color: color,
+                          size: 17,
+                        ),
                       ),
                     ),
                   )
@@ -301,10 +320,10 @@ class CustomBottomNavBar extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               label,
-              style: TextStyle(
-                fontSize: 9,
-                color: Color(0xFF3C4451).withOpacity(0.8),
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+              style: const TextStyle(
+                fontSize: 12,
+                color: Colors.black,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],
@@ -322,7 +341,6 @@ class NotchPainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     Path path = Path();
-    double notchRadius = 41;
     double centerX = size.width / 2;
     double cornerRadius = 30.0; // Rounded top corners
     
@@ -334,8 +352,9 @@ class NotchPainter extends CustomPainter {
     path.quadraticBezierTo(0, 0, cornerRadius, 0);
     
     // Calculate intersection of notch circle with top edge
-    // We assume the circle center is at (centerX, 20) to maintain bottom depth
-    double notchCenterY = 20.0;
+    // We assume the circle center is at (centerX, 15) to maintain bottom depth
+    double notchCenterY = 15.0; // Aligned with the circle's center at top: 10
+    double notchRadius = 41.5; // Adjusted for a 78x78 circle (radius 39) with a small gap
     double intersectionX = sqrt(notchRadius * notchRadius - notchCenterY * notchCenterY);
 
     // Line to start of notch (curved in)

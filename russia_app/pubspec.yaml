@@ -40,13 +40,16 @@ flutter:
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "lib/assets/logo.png"
+  image_path: "lib/assets/logoo.png"
   min_sdk_android: 21 
   remove_alpha_ios: true
 
 flutter_native_splash:
   color: "#ffffff"
-  image: "lib/assets/logo_padded.png"
+  image: "lib/assets/logoo_padded_v2.png"
+  android_gravity: center
+  ios_content_mode: center
+  fullscreen: false
   android_12:
-    image: "lib/assets/logo_padded.png"
+    image: "lib/assets/logoo_padded_v2.png"
     color: "#ffffff"

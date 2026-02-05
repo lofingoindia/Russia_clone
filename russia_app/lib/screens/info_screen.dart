@@ -97,7 +97,7 @@ class InfoScreen extends StatelessWidget {
             
             // Transparent clickable area over the image button
             Positioned(
-              bottom: 30,
+              bottom: 55,
               left: 20,
               right: 20,
               height: 50,
