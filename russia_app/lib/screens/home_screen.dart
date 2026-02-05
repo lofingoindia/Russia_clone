@@ -1272,7 +1272,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
         actionsAlignTop: true,
         descriptionWidget: RichText(
           text: TextSpan(
-            style: const TextStyle(color: Color(0xFF3C4451), fontSize: 11, height: 1.3),
+            style: const TextStyle(color: Color(0xFF3C4451), fontSize: 12, height: 1.3),
             children: [
               TextSpan(text: 'city_label'.tr() + '\n', style: const TextStyle(color: Color(0xFF909499), fontWeight: FontWeight.w500)),
               const TextSpan(text: 'Москва, улица Генерала Тюленева,23к1\n', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500)),
@@ -1823,7 +1823,7 @@ class StatusCard extends StatelessWidget {
                             child: Text(
                               title,
                               style: const TextStyle(
-                                fontSize: 13,
+                                fontSize: 14,
                                 fontWeight: FontWeight.w600,
                                 color: Colors.black,
                               ),
@@ -1838,7 +1838,7 @@ class StatusCard extends StatelessWidget {
                                   description!,
                                   style: const TextStyle(
                                     color: Colors.black,
-                                    fontSize: 11,
+                                    fontSize: 12,
                                     height: 1.2,
                                     fontWeight: FontWeight.w500,
                                   ),
@@ -1849,13 +1849,13 @@ class StatusCard extends StatelessWidget {
                 ),
                 if (showEditAction) ...[
                   const SizedBox(width: 12),
-                  Image.asset('lib/assets/editicon.png', width: 17, height: 20),
+                  Image.asset('lib/assets/editicon.png', width: 20, height: 23),
                   const SizedBox(width: 6),
                   Text(
                     'Change'.tr(),
                     style: const TextStyle(
                       color: Color(0xFF5A5E62),
-                      fontSize: 12,
+                      fontSize: 13,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -1888,7 +1888,7 @@ class StatusCard extends StatelessWidget {
                       badgeText!,
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 9,
+                        fontSize: 10,
                         letterSpacing: 1.0,
                         fontWeight: FontWeight.w500,
                       ),
