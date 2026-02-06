@@ -49,21 +49,21 @@ class _ServicesScreenState extends State<ServicesScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
               
               // Header
               Center(
                 child: Text(
                   'services'.tr(),
                   style: TextStyle(
-                    fontSize: 15,
+                    fontSize: 21,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,
                   ),
                 ),
               ),
               
-              const SizedBox(height: 24),
+              const SizedBox(height: 17),
               
               // Q&A Card
               _buildServiceCard(
@@ -76,7 +76,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                 },
               ),
               
-              const SizedBox(height: 12),
+              const SizedBox(height: 15),
               _buildServiceCard(
                 imagePath: 'lib/assets/aa.png',
                 title: 'info_materials'.tr(),
@@ -86,7 +86,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                   });
                 },
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 17),
               // Get Consultation Card
               _buildServiceCard(
                 imagePath: 'lib/assets/bb.png',
@@ -125,44 +125,58 @@ class _ServicesScreenState extends State<ServicesScreen> {
   }) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            // Image
-            Image.asset(
-              imagePath,
-              width: 52,
-              height: 52,
-              fit: BoxFit.contain,
-            ),
-            const SizedBox(width: 15),
-            // Title
-            Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 15.5,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xFF333333),
-                  height: 1.2,
-                ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            // Figma: W 3438, H 813. We'll use a width ratio for mobile screens.
+            final double cardWidth = MediaQuery.of(context).size.width - 16; // 8+8 padding
+            final double figmaRatio = 813 / 3438;
+            final double cardHeight = cardWidth * figmaRatio;
+            return Container(
+              width: cardWidth,
+              height: cardHeight,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.10),
+                    blurRadius: 16,
+                    spreadRadius: 1,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
               ),
-            ),
-            // Arrow
-            Icon(Icons.chevron_right, color: Colors.grey[400], size: 24),
-          ],
+              child: Row(
+                children: [
+                  // Image
+                  Image.asset(
+                    imagePath,
+                    width: 64,
+                    height: 64,
+                    fit: BoxFit.contain,
+                  ),
+                  const SizedBox(width: 15),
+                  // Title
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                        height: 1.2,
+                      ),
+                    ),
+                  ),
+                  // Arrow
+                  Icon(Icons.chevron_right, color: const Color.fromARGB(255, 75, 75, 75), size: 30),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );
@@ -268,45 +282,65 @@ class _ServicesScreenState extends State<ServicesScreen> {
   }) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            // Number
-            Text(
-              '$number.',
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final double cardWidth = MediaQuery.of(context).size.width - 16;
+            final double figmaRatio = 813 / 3438;
+            final double cardHeight = cardWidth * figmaRatio;
+            return Container(
+              width: cardWidth,
+              height: cardHeight,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.10),
+                    blurRadius: 16,
+                    spreadRadius: 1,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(width: 12),
-            // Title
-            Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
+              child: Row(
+                children: [
+                  // Number
+                  Text(
+                    '$number.',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  // Image (optional, if you want to show an image for materials, otherwise skip this block)
+                  // Image.asset(
+                  //   'lib/assets/your_image.png',
+                  //   width: 64,
+                  //   height: 64,
+                  //   fit: BoxFit.contain,
+                  // ),
+                  // Title
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                  // Arrow
+                  Icon(Icons.chevron_right, color: Colors.black, size: 30),
+                ],
               ),
-            ),
-            // Arrow
-            Icon(Icons.chevron_right, color: Colors.grey[400], size: 22),
-          ],
+            );
+          },
         ),
       ),
     );

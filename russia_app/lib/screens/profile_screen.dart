@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../services/api_service.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../services/api_service.dart';
 import 'login_screen.dart';
@@ -85,6 +84,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -116,20 +117,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 15),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 20),
+              const SizedBox(height: 22),
               
               // Header
               Center(
                 child: Text(
                   'profile'.tr(),
                   style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF3C4451),
+                    fontSize: 22,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.black,
                   ),
                 ),
               ),
@@ -139,16 +140,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
               // User Info Card
               _buildUserInfoCard(),
               
-              const SizedBox(height: 10),
+              const SizedBox(height: 20),
               
               // Foreign Citizen Card
               _buildForeignCitizenCard(),
               
-              const SizedBox(height: 10),
+              const SizedBox(height: 20),
               
               // Personal Information Button
               _buildNavigationButton(
-                imagePath: 'lib/assets/data.png',
+                imagePath: 'lib/assets/t.png',
                 title: 'personal_data'.tr(),
                 onTap: () {
                   setState(() {
@@ -157,11 +158,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 },
               ),
               
-              const SizedBox(height: 10),
+              const SizedBox(height: 20),
               
               // Documents Button
               _buildNavigationButton(
-                imagePath: 'lib/assets/document.png',
+                imagePath: 'lib/assets/tt.png',
                 title: 'documents'.tr(),
                 onTap: () {
                   setState(() {
@@ -171,8 +172,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               
               const SizedBox(height: 10),
-              
-              // Logout Button
+
+              // // Logout Button
               // GestureDetector(
               //   onTap: _handleLogout,
               //   child: Container(
@@ -204,9 +205,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               //           ),
               //         ),
               //         const SizedBox(width: 12),
-              //         const Text(
-              //           'Выйти из аккаунта',
-              //           style: TextStyle(
+              //         Text(
+              //           'logout'.tr(),
+              //           style: const TextStyle(
               //             fontSize: 14,
               //             fontWeight: FontWeight.w600,
               //             color: Colors.red,
@@ -231,7 +232,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 15),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -378,7 +379,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             // Header with back button
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
               child: Row(
                 children: [
                   GestureDetector(
@@ -388,7 +389,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       });
                     },
                     child: Container(
-                      padding: const EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(15),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
@@ -402,8 +403,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       child: const Icon(
                         Icons.arrow_back_ios_new,
-                        color: Color(0xFF3C4451),
-                        size: 16,
+                        color: Colors.black,
+                        size: 25,
                       ),
                     ),
                   ),
@@ -412,30 +413,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: Text(
                         'personal_data'.tr(),
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF3C4451),
+                          color: Colors.black,
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 120), // Balance the back button
+                  const SizedBox(width: 170), // Balance the back button
                 ],
               ),
             ),
             
             // Content
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Column(
                 children: [
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 20),
                   // Personal Information Card
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(10),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.04),
@@ -458,83 +459,110 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     Text(
                                       'full_name'.tr(),
                                       style: TextStyle(
-                                        fontSize: 10,
+                                        fontSize: 15,
                                         color: Colors.grey[600],
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
                                     const SizedBox(height: 2),
-                                    const Text(
-                                      '',
-                                      style: TextStyle(
-                                        fontSize: 12,
+                                    Text(
+                                      _userData?['name']?.toString() ?? '-',
+                                      style: const TextStyle(
+                                        fontSize: 16,
                                         fontWeight: FontWeight.bold,
-                                        color: Color(0xFF3C4451),
+                                        color: Colors.black,
                                       ),
                                     ),
                                 ],
                               ),
                             ),
-                            const SizedBox(width: 15),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text(
-                                  'gender'.tr(),
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    color: Colors.grey[600],
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  'male'.tr(),
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    color: Color(0xFF3C4451),
-                                  ),
-                                ),
-                              ],
-                            ),
+                            // const SizedBox(width: 15),
+                            // Column(
+                            //   crossAxisAlignment: CrossAxisAlignment.end,
+                            //   children: [
+                            //     Text(
+                            //       'gender'.tr(),
+                            //       style: TextStyle(
+                            //         fontSize: 10,
+                            //         color: Colors.grey[600],
+                            //         fontWeight: FontWeight.w600,
+                            //       ),
+                            //     ),
+                            //     const SizedBox(height: 2),
+                            //     Text(
+                            //       'static_gender_value'.tr(),
+                            //       style: TextStyle(
+                            //         fontSize: 12,
+                            //         fontWeight: FontWeight.w600,
+                            //         color: Color(0xFF3C4451),
+                            //       ),
+                            //     ),
+                            //   ],
+                            // ),
                           ],
                         ),
                         
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 10),
                         
-                        // Date of Birth and Gender Row
+                        // Date of Birth and Gender Row (tighter spacing)
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Expanded(
+                            Flexible(
+                              flex: 3,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                    Text(
-                                      'dob'.tr(),
-                                      style: TextStyle(
-                                        fontSize: 10,
-                                        color: Colors.grey[600],
-                                        fontWeight: FontWeight.w600,
-                                      ),
+                                  Text(
+                                    'dob'.tr(),
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.grey[600],
+                                      fontWeight: FontWeight.w600,
                                     ),
-                                    const SizedBox(height: 2),
-                                    const Text(
-                                      '2000-12-06',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
-                                        color: Color(0xFF3C4451),
-                                      ),
+                                  ),
+                                  const SizedBox(height: 5),
+                                  Text(
+                                    'static_dob_value'.tr(),
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black,
                                     ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 45),
+                            Flexible(
+                              flex: 2,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'gender'.tr(),
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.grey[600],
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 5),
+                                  Text(
+                                    'static_gender_value'.tr(),
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
                           ],
                         ),
                         
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 10),
                         
                         // Place of Birth
                         Column(
@@ -543,18 +571,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               Text(
                                 'pob'.tr(),
                                 style: TextStyle(
-                                  fontSize: 10,
+                                  fontSize: 15,
                                   color: Colors.grey[600],
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                'country_uzbekistan'.tr(),
+                                'static_pob_value'.tr(),
                                 style: TextStyle(
-                                  fontSize: 12,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.w600,
-                                  color: Color(0xFF3C4451),
+                                  color: Colors.black,
                                 ),
                               ),
                           ],
@@ -563,15 +591,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                   
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 14),
                   
                   // Contact Details Card
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(10),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.04),
@@ -586,12 +614,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Text(
                           'contact_data'.tr(),
                           style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.grey[700],
+                            fontSize: 16,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.black,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 8),
                         
                         // Phone Number
                         Column(
@@ -600,18 +628,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Text(
                               'phone_number'.tr(),
                               style: TextStyle(
-                                fontSize: 10,
+                                fontSize: 15,
                                 color: Colors.grey[600],
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
                             const SizedBox(height: 2),
-                            const Text(
-                              '+79099893489',
-                              style: TextStyle(
-                                fontSize: 12,
+                            Text(
+                              _userData?['phone']?.toString() ?? '-',
+                              style: const TextStyle(
+                                fontSize: 16, 
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF3C4451),
+                                color: Colors.black,
                               ),
                             ),
                           ],
@@ -620,28 +648,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         const SizedBox(height: 4),
                         
                         // Additional Number
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'additional_number'.tr(),
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: Colors.grey[600],
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            const Text(
-                              '',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF3C4451),
-                              ),
-                            ),
-                          ],
-                        ),
+                        // Column(
+                        //   crossAxisAlignment: CrossAxisAlignment.start,
+                        //   children: [
+                        //     Text(
+                        //       'additional_number'.tr(),
+                        //       style: TextStyle(
+                        //         fontSize: 10,
+                        //         color: Colors.grey[600],
+                        //         fontWeight: FontWeight.w600,
+                        //       ),
+                        //     ),
+                        //     const SizedBox(height: 2),
+                        //     // Text(
+                        //     //   _userData?['additional_phone']?.toString() ?? _userData?['alt_phone']?.toString() ?? '-',
+                        //     //   style: const TextStyle(
+                        //     //     fontSize: 12,
+                        //     //     fontWeight: FontWeight.w600,
+                        //     //     color: Color(0xFF3C4451),
+                        //     //   ),
+                        //     // ),
+                        //   ],
+                        // ),
                       ],
                     ),
                   ),
@@ -921,10 +949,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildUserInfoCard() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
@@ -944,7 +972,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Text(
                   'ФИО',
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 16,
                     color: Colors.black,
                     fontWeight: FontWeight.w400,
                   ),
@@ -953,16 +981,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Text(
                   _userData?['name']?.toString().toUpperCase() ?? 'НЕ УКАЗАНО',
                   style: const TextStyle(
-                    fontSize: 15.5,
+                    fontSize: 17.5,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 12),
                 Text(
                   'Гражданство',
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 16,
                     color: Colors.black,
                     fontWeight: FontWeight.w400,
                   ),
@@ -971,7 +999,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Text(
                   _userData?['citizenship'] ?? 'Киргизия',
                   style: const TextStyle(
-                    fontSize: 15.5,
+                    fontSize: 17.5,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
@@ -1021,10 +1049,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildForeignCitizenCard() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 24),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
@@ -1039,12 +1067,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const Text(
             'Карта иностранного гражданина',
             style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
               color: Colors.black,
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 16),
           
           // KIG Number and Expiry Date
           Row(
@@ -1056,8 +1084,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Text(
                       'Номер КИГ',
                       style: TextStyle(
-                        fontSize: 13.5,
-                        color: Colors.grey[600],
+                        fontSize: 15.5,
+                        color: Colors.black,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -1065,7 +1093,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const Text(
                       'AA11365228',
                       style: TextStyle(
-                        fontSize: 15.5,
+                        fontSize: 17.5,
                         fontWeight: FontWeight.bold ,
                         color: Colors.black,
                       ),
@@ -1080,8 +1108,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Text(
                       'Срок действия КИГ:',
                       style: TextStyle(
-                        fontSize: 13.5,
-                        color: Colors.grey[600],
+                        fontSize: 15.5,
+                        color: Colors.black,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -1089,7 +1117,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const Text(
                       '2030-12-29',
                       style: TextStyle(
-                        fontSize: 15.5,
+                        fontSize: 17.5,
                         fontWeight: FontWeight.w900,
                         color: Colors.black,
                       ),
@@ -1103,7 +1131,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           // Card Image and QR Code
           // Combined Card and QR Image
           Padding(
-            padding: const EdgeInsets.fromLTRB(10, 12, 10, 4),
+            padding: const EdgeInsets.fromLTRB(6, 22, 6, 2),
             child: Container(
               width: double.infinity,
               decoration: BoxDecoration(
@@ -1112,11 +1140,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: Image.asset(
-                  'lib/assets/cqd.png',
+                  'lib/assets/dqc.png',
                   fit: BoxFit.fitWidth,
                 ),
               ),
-            ),
+            ), 
           ),
         ],
       ),
@@ -1131,7 +1159,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 18),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
@@ -1148,8 +1176,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             Image.asset(
               imagePath,
-              width: 28,
-              height: 28,
+              width: 30,
+              height: 30,
               fit: BoxFit.contain,
             ),
             const SizedBox(width: 12),
@@ -1157,17 +1185,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 14.5,
-                  fontWeight: FontWeight.w400,
+                  fontSize: 18.5,
+                  fontWeight: FontWeight.w500,
                   color: Colors.black,
                 ),
               ),
             ),
-            const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 16),
+            const Icon(Icons.arrow_forward_ios, color: Color.fromARGB(255, 91, 91, 91), size: 18),
           ],
         ),
       ),
-    );
+    ); 
   }
 }
 

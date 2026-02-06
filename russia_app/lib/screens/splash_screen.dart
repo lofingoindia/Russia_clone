@@ -56,7 +56,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
           // Background Image
           Positioned.fill(
             child: Image.asset(
-              'lib/assets/splash.png',
+              'lib/assets/lash.png',
               fit: BoxFit.cover,
             ),
           ),
@@ -64,7 +64,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
           // Animated Text
           // Positioning text above the center (assuming horse logo is central)
           Align(
-            alignment: const Alignment(0, -0.5), // Adjusted to move text higher
+            alignment: const Alignment(0, -0.3), // Adjusted to move text higher
             child: FadeTransition(
               opacity: _fadeAnimation,
               child: SlideTransition(
@@ -76,16 +76,17 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                       'welcome_message'.tr(),
                       textAlign: TextAlign.center,
                       style: const TextStyle(
-                        fontSize: 22,
+                        fontSize: 30,
                         fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                        height: 1.2,
+                        color: Colors.black,
+                        height: 1.4,
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 60),
                     Image.asset(
-                      'lib/assets/sp.png',
-                      height: 100,
+                      'lib/assets/ash.png',
+                      height: 95,
+                      width: 100,
                       fit: BoxFit.contain,
                     ),
                   ],

@@ -22,103 +22,86 @@ class InfoScreen extends StatelessWidget {
         ),
         child: Stack(
           children: [
-
-            
-            // Text Content Overlay
             SafeArea(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 10),
-                  Text(
-                    'users_title'.tr(),
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                  const SizedBox(height: 24),
+                  // Title
+                  const Text(
+                    'Пользователям',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w900,
                       color: Color(0xFF3C4451),
+                      letterSpacing: 0.5,
+                      shadows: [
+                        Shadow(
+                          offset: Offset(0, 1),
+                          blurRadius: 1,
+                          color: Colors.black26,
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 70),
+                  // Image (replace with your asset)
                   Image.asset(
                     'lib/assets/us.png',
-                    height: 220,
+                    height: 300,
                     fit: BoxFit.contain,
                   ),
-                  const SizedBox(height: 20),
-                  
+                  const SizedBox(height: 80),
                   // Info list
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildInfoRow('lib/assets/l.png', 'info_daily'.tr()),
-                        const SizedBox(height: 6),
-                        _buildInfoRow('lib/assets/pl.png', 'info_geo'.tr()),
-                        const SizedBox(height: 6),
-                        _buildInfoRow('lib/assets/v.png', 'info_vpn'.tr()),
-                        const SizedBox(height: 6),
-                        _buildInfoRow('lib/assets/no.png', 'info_push'.tr()),
-                      ],  
+                        _buildInfoRow('lib/assets/1.png', 'info_daily'.tr()),
+                        const SizedBox(height: 16),
+                        _buildInfoRow('lib/assets/2.png', 'info_geo'.tr(), iconHeight: 24),
+                        const SizedBox(height: 16),
+                        _buildInfoRow('lib/assets/3.png', 'info_vpn'.tr()),
+                        const SizedBox(height: 16),
+                        _buildInfoRowWithRichText('lib/assets/4.png', 'info_push'.tr(), 'info_push_link'.tr()),
+                      ],
                     ),
                   ),
-                  
-                  // const Spacer(),
-                  const SizedBox(height: 160),
-                  // Footer
-                  Text(
-                    'info_footer'.tr(),
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Color(0xFF3C4451),
-                      height: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset('lib/assets/call.png', width: 24, height: 24, fit: BoxFit.contain),
-                      SizedBox(width: 10),
-                      Text(
-                        '+7 (499) 530-56-88',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF3C4451),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 90), // Space for the button in f.png
+                  const Spacer(),
+                  const SizedBox(height: 16),
                 ],
               ),
             ),
-            
-            // Transparent clickable area over the image button
+            // Button
             Positioned(
-              bottom: 55,
-              left: 20,
-              right: 20,
-              height: 50,
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => const MainScreen()),
-                  );
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Color(0xFF3C4451),
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    'close'.tr(),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+              bottom: 70,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: SizedBox(
+                  width: 334,
+                  height: 61,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(builder: (context) => const MainScreen()),
+                      );
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      alignment: Alignment.center,
+                      child: const Text(
+                        'Закрыть',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -130,26 +113,25 @@ class InfoScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(String imagePath, String text, {double iconSize = 24}) {
+  Widget _buildInfoRow(String imagePath, String text, {double iconSize = 32, double? iconHeight}) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Opacity(
-          opacity: 0.8,
-          child: Image.asset(
-            imagePath,
-            width: iconSize,
-            height: iconSize,
-            fit: BoxFit.contain,
-          ),
+        Image.asset(
+          imagePath,
+          width: iconSize,
+          height: iconHeight ?? 30,
+          fit: BoxFit.contain,
         ),
-        const SizedBox(width: 20),
+        const SizedBox(width: 14),
         Expanded(
           child: Text(
             text,
             style: const TextStyle(
-              fontSize: 13,
-              color: Color(0xFF3C4451),
-              fontWeight: FontWeight.normal,
+              fontSize: 18,
+              color: Colors.black,
+              fontWeight: FontWeight.w900,
+              height: 1.3,
             ),
           ),
         ),
@@ -157,26 +139,45 @@ class InfoScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRowWithIcon(IconData icon, String text, {double iconSize = 28}) {
+  Widget _buildInfoRowWithRichText(String imagePath, String text, String link, {double iconSize = 22}) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Icon(
-          icon,
-          color: const Color(0xFF3C4451),
-          size: iconSize,
+        Image.asset(
+          imagePath,
+          width: 32,
+          height: 32,
+          fit: BoxFit.contain,
         ),
-        const SizedBox(width: 20),
+        const SizedBox(width: 14),
         Expanded(
-          child: Text(
-            text,
-            style: const TextStyle(
-              fontSize: 13,
-              color: Color(0xFF3C4451),
-              fontWeight: FontWeight.normal,
+          child: RichText(
+            text: TextSpan(
+              style: const TextStyle(
+                fontSize: 18,
+                color: Colors.black,
+                fontWeight: FontWeight.w600,
+                height: 1.3,
+              ),
+              children: [
+                TextSpan(
+                  text: text,
+                ),
+                TextSpan(
+                  text: '\n' + link,
+                  style: const TextStyle(
+                    decoration: TextDecoration.underline,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
       ],
     );
   }
+
+// ...existing code...
 }
