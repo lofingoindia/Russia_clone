@@ -394,10 +394,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         color: Colors.white,
                         shape: BoxShape.circle,
                         boxShadow: [
+                          // Slightly stronger main shadow for depth
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.08),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
+                            color: Colors.black.withOpacity(0.12),
+                            blurRadius: 12,
+                            spreadRadius: 1,
+                            offset: const Offset(0, 6),
+                          ),
+                          // Soft secondary shadow to smooth the edges
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.02),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
                           ),
                         ],
                       ),
