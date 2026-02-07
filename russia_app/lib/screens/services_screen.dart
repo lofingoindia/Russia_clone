@@ -49,26 +49,27 @@ class _ServicesScreenState extends State<ServicesScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
               
               // Header
               Center(
                 child: Text(
                   'services'.tr(),
                   style: TextStyle(
-                    fontSize: 21,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w900,
                     color: Colors.black87,
                   ),
                 ),
               ),
               
-              const SizedBox(height: 17),
+              const SizedBox(height: 16),
               
               // Q&A Card
               _buildServiceCard(
                 imagePath: 'lib/assets/faq.png',
                 title: 'qa'.tr(),
+                heightMultiplier: 1,
                 onTap: () {
                   setState(() {
                     _showQA = true;
@@ -80,6 +81,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
               _buildServiceCard(
                 imagePath: 'lib/assets/aa.png',
                 title: 'info_materials'.tr(),
+                heightMultiplier: 1,
                 onTap: () {
                   setState(() {
                     _showInformationalMaterials = true;
@@ -91,6 +93,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
               _buildServiceCard(
                 imagePath: 'lib/assets/bb.png',
                 title: 'get_consultation'.tr(),
+                heightMultiplier: 1,
                 onTap: () {
                   _showConsultationDialog(context);
                 },
@@ -122,6 +125,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
     required String imagePath,
     required String title,
     required VoidCallback onTap,
+    double heightMultiplier = 1.0,
   }) {
     return GestureDetector(
       onTap: onTap,
@@ -129,14 +133,14 @@ class _ServicesScreenState extends State<ServicesScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 8),
         child: LayoutBuilder(
           builder: (context, constraints) {
-            // Figma: W 3438, H 813. We'll use a width ratio for mobile screens.
+            // Figma: W 3438, H 848. We'll use a width ratio for mobile screens.
             final double cardWidth = MediaQuery.of(context).size.width - 16; // 8+8 padding
-            final double figmaRatio = 813 / 3438;
-            final double cardHeight = cardWidth * figmaRatio;
+            final double figmaRatio = 850 / 3438;
+            final double cardHeight = cardWidth * figmaRatio * heightMultiplier;
             return Container(
               width: cardWidth,
               height: cardHeight,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 14),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
@@ -164,7 +168,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                     child: Text(
                       title,
                       style: const TextStyle(
-                        fontSize: 18,
+                        fontSize: 15,
                         fontWeight: FontWeight.w500,
                         color: Colors.black,
                         height: 1.2,
@@ -172,7 +176,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                     ),
                   ),
                   // Arrow
-                  Icon(Icons.chevron_right, color: const Color.fromARGB(255, 75, 75, 75), size: 30),
+                  Icon(Icons.chevron_right, color: const Color.fromARGB(255, 75, 75, 75), size: 26),
                 ],
               ),
             );
@@ -236,14 +240,14 @@ class _ServicesScreenState extends State<ServicesScreen> {
                       child: Text(
                         'info_materials'.tr(),
                         style: TextStyle(
-                          fontSize: 15,
+                          fontSize: 14,
                           fontWeight: FontWeight.bold,
                           color: Colors.black87,
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 40), // Balance the back button
+                  const SizedBox(width: 110), // Balance the back button
                 ],
               ),
               
@@ -287,12 +291,12 @@ class _ServicesScreenState extends State<ServicesScreen> {
         child: LayoutBuilder(
           builder: (context, constraints) {
             final double cardWidth = MediaQuery.of(context).size.width - 16;
-            final double figmaRatio = 813 / 3438;
+            final double figmaRatio = 580 / 3438;
             final double cardHeight = cardWidth * figmaRatio;
             return Container(
               width: cardWidth,
               height: cardHeight,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
@@ -311,7 +315,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                   Text(
                     '$number.',
                     style: const TextStyle(
-                      fontSize: 16,
+                      fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: Colors.black,
                     ),
@@ -329,14 +333,14 @@ class _ServicesScreenState extends State<ServicesScreen> {
                     child: Text(
                       title,
                       style: const TextStyle(
-                        fontSize: 15,
+                        fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: Colors.black,
                       ),
                     ),
                   ),
                   // Arrow
-                  Icon(Icons.chevron_right, color: Colors.black, size: 30),
+                  Icon(Icons.chevron_right, color: Colors.black, size: 24),
                 ],
               ),
             );

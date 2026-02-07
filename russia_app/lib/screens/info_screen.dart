@@ -44,14 +44,14 @@ class InfoScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 70),
+                  const SizedBox(height: 50),
                   // Image (replace with your asset)
                   Image.asset(
                     'lib/assets/us.png',
-                    height: 300,
+                    height:   255,
                     fit: BoxFit.contain,
                   ),
-                  const SizedBox(height: 80),
+                  const SizedBox(height: 70),
                   // Info list
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -75,13 +75,13 @@ class InfoScreen extends StatelessWidget {
             ),
             // Button
             Positioned(
-              bottom: 70,
+              bottom: 20,
               left: 0,
               right: 0,
               child: Center(
                 child: SizedBox(
-                  width: 334,
-                  height: 61,
+                  width: 300,
+                  height: 51,
                   child: GestureDetector(
                     onTap: () {
                       Navigator.of(context).pushReplacement(
@@ -113,14 +113,14 @@ class InfoScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(String imagePath, String text, {double iconSize = 32, double? iconHeight}) {
+  Widget _buildInfoRow(String imagePath, String text, {double iconSize = 30, double? iconHeight}) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Image.asset(
           imagePath,
           width: iconSize,
-          height: iconHeight ?? 30,
+          height: iconHeight ?? 24,
           fit: BoxFit.contain,
         ),
         const SizedBox(width: 14),
@@ -128,10 +128,10 @@ class InfoScreen extends StatelessWidget {
           child: Text(
             text,
             style: const TextStyle(
-              fontSize: 18,
+              fontSize: 14,
               color: Colors.black,
               fontWeight: FontWeight.w900,
-              height: 1.3,
+              height: 1.2,
             ),
           ),
         ),
@@ -145,8 +145,8 @@ class InfoScreen extends StatelessWidget {
       children: [
         Image.asset(
           imagePath,
-          width: 32,
-          height: 32,
+          width: 28,
+          height: 28,
           fit: BoxFit.contain,
         ),
         const SizedBox(width: 14),
@@ -154,7 +154,7 @@ class InfoScreen extends StatelessWidget {
           child: RichText(
             text: TextSpan(
               style: const TextStyle(
-                fontSize: 18,
+                fontSize: 15,
                 color: Colors.black,
                 fontWeight: FontWeight.w600,
                 height: 1.3,

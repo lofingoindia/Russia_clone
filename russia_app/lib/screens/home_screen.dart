@@ -3,13 +3,13 @@ import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'login_screen.dart';
 
-
 enum HomeViewType { home, settings, notifications }
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
-  static final GlobalKey<HomeScreenState> globalKey = GlobalKey<HomeScreenState>();
+  static final GlobalKey<HomeScreenState> globalKey =
+      GlobalKey<HomeScreenState>();
 
   @override
   State<HomeScreen> createState() => HomeScreenState();
@@ -17,16 +17,17 @@ class HomeScreen extends StatefulWidget {
 
 typedef _HomeScreenState = HomeScreenState;
 
-class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
+class HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   HomeViewType _currentView = HomeViewType.home;
   bool _isLanguageExpanded = false;
   bool _refreshingSuccess = false;
   bool _isManualRefreshing = false;
   int _manualRefreshState = 0; // 0: loading, 1: success
-  
+
   late AnimationController _manualRefreshAnimController;
   late Animation<double> _manualDisplacementAnimation;
-  
+
   @override
   void initState() {
     super.initState();
@@ -35,10 +36,13 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
       duration: const Duration(milliseconds: 300),
     );
     _manualDisplacementAnimation = Tween<double>(begin: 0, end: 50).animate(
-      CurvedAnimation(parent: _manualRefreshAnimController, curve: Curves.easeOut),
+      CurvedAnimation(
+        parent: _manualRefreshAnimController,
+        curve: Curves.easeOut,
+      ),
     );
   }
-  
+
   @override
   void dispose() {
     _manualRefreshAnimController.dispose();
@@ -53,26 +57,26 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
       });
       return;
     }
-    
+
     // Show manual refresh overlay with same notifications and animation
     setState(() {
       _isManualRefreshing = true;
       _manualRefreshState = 0;
     });
-    
+
     // Animate content down
     await _manualRefreshAnimController.forward();
-    
+
     // Simulate network request
     await Future.delayed(const Duration(seconds: 2));
-    
+
     if (mounted) {
       setState(() {
         _manualRefreshState = 1;
       });
-      
+
       await Future.delayed(const Duration(seconds: 1));
-      
+
       if (mounted) {
         // Animate content back up
         await _manualRefreshAnimController.reverse();
@@ -84,10 +88,30 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
   }
 
   final List<Map<String, dynamic>> _languages = [
-    {'name': 'Русский', 'sub': 'Russian', 'flag': '🇷🇺', 'locale': const Locale('ru')},
-    {'name': "O'zbek", 'sub': 'Uzbek', 'flag': '🇺🇿', 'locale': const Locale('uz')},
-    {'name': 'Кыргызча', 'sub': 'Kyrgyz', 'flag': '🇰🇬', 'locale': const Locale('ky')},
-    {'name': 'English', 'sub': 'English', 'flag': '🇬🇧', 'locale': const Locale('en')},
+    {
+      'name': 'Русский',
+      'sub': 'Russian',
+      'flag': 'lib/assets/rus.png',
+      'locale': const Locale('ru'),
+    },
+    {
+      'name': "O'zbek",
+      'sub': 'Uzbek',
+      'flag': 'lib/assets/uzbek.jpg',
+      'locale': const Locale('uz'),
+    },
+    {
+      'name': 'Кыргызча',
+      'sub': 'Kyrgyz',
+      'flag': 'lib/assets/kry.png',
+      'locale': const Locale('ky'),
+    },
+    {
+      'name': 'English',
+      'sub': 'English',
+      'flag': 'lib/assets/eng.png',
+      'locale': const Locale('en'),
+    },
   ];
 
   @override
@@ -98,15 +122,13 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
         children: [
           // Background components
           HomeBackground(
-            imagePath: _currentView == HomeViewType.home 
-                ? 'lib/assets/neww.png' 
+            imagePath: _currentView == HomeViewType.home
+                ? 'lib/assets/neww.png'
                 : 'lib/assets/backy.png',
           ),
-          
+
           // Foreground content
-          SafeArea(
-            child: _buildCurrentView(),
-          ),
+          SafeArea(child: _buildCurrentView()),
         ],
       ),
     );
@@ -134,108 +156,163 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
             builder: (context, child, controller) {
               return Stack(
                 children: [
-                   // Content with displacement and clipping at the gap
-                    Positioned(
-                      top: 97,
-                     left: 0,
-                     right: 0,
-                     bottom: 0,
-                     child: ClipRect(
-                       child: AnimatedBuilder(
-                          animation: Listenable.merge([controller, _manualRefreshAnimController]),
-                          builder: (context, _) {
-                            // Add a little padding while loading (displacement = 50.0)
-                            double displacement = controller.isLoading ? 50.0 : (80.0 * controller.value);
-                            // Add manual refresh displacement
-                            if (_isManualRefreshing) {
-                              displacement = _manualDisplacementAnimation.value;
-                            }
-                            return Transform.translate(
-                              offset: Offset(0, displacement),
-                              child: child,
+                  // Content with displacement and clipping at the gap
+                  Positioned(
+                    top: 97,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: ClipRect(
+                      child: AnimatedBuilder(
+                        animation: Listenable.merge([
+                          controller,
+                          _manualRefreshAnimController,
+                        ]),
+                        builder: (context, _) {
+                          // Add a little padding while loading (displacement = 50.0)
+                          double displacement = controller.isLoading
+                              ? 50.0
+                              : (80.0 * controller.value);
+                          // Add manual refresh displacement
+                          if (_isManualRefreshing) {
+                            displacement = _manualDisplacementAnimation.value;
+                          }
+                          return Transform.translate(
+                            offset: Offset(0, displacement),
+                            child: child,
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+
+                  // Indicator - Positioned below the header area
+                  Positioned(
+                    top: 80, // Start below the sticky header
+                    left: 0,
+                    right: 0,
+                    child: AnimatedBuilder(
+                      animation: controller,
+                      builder: (context, _) {
+                        final double value = controller.value;
+                        final bool isLoading = controller.isLoading;
+
+                        Widget content;
+                        if (isLoading) {
+                          if (_refreshingSuccess) {
+                            content = Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  Icons.check,
+                                  color: Color(0xFF909499),
+                                  size: 24,
+                                ),
+                                const SizedBox(width: 10),
+                                const Text(
+                                  "Обновление завершено",
+                                  style: TextStyle(
+                                    color: Color(0xFF909499),
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            );
+                          } else {
+                            content = Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Color(0xFFEB5757),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                const Text(
+                                  "Обновление...",
+                                  style: TextStyle(
+                                    color: Color(0xFF909499),
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
                             );
                           }
-                       ),
-                     ),
-                   ),
-                   
-                   // Indicator - Positioned below the header area
-                   Positioned(
-                     top: 80, // Start below the sticky header
-                     left: 0,
-                     right: 0,
-                     child: AnimatedBuilder(
-                       animation: controller,
-                       builder: (context, _) {
-                         final double value = controller.value;
-                         final bool isLoading = controller.isLoading;
-
-                          Widget content;
-                          if (isLoading) {
-                             if (_refreshingSuccess) {
-                               content = Row(
-                                 mainAxisAlignment: MainAxisAlignment.center,
-                                 children: [
-                                   const Icon(Icons.check, color: Color(0xFF909499), size: 24),
-                                   const SizedBox(width: 10),
-                                   const Text("Обновление завершено", style: TextStyle(color: Color(0xFF909499), fontSize: 13, fontWeight: FontWeight.w500)),
-                                 ],
-                               );
-                             } else {
-                               content = Row(
-                                 mainAxisAlignment: MainAxisAlignment.center,
-                                 children: [
-                                   const SizedBox(
-                                     width: 20, 
-                                     height: 20, 
-                                     child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFFEB5757))
-                                   ),
-                                   const SizedBox(width: 10),
-                                   const Text("Обновление...", style: TextStyle(color: Color(0xFF909499), fontSize: 13, fontWeight: FontWeight.w500)), 
-                                 ],
-                               );
-                             }
-                          } else if (value >= 1.0) { 
-                             content = Row(
-                               mainAxisAlignment: MainAxisAlignment.center,
-                               children: [
-                                 const Icon(Icons.refresh, color: Color(0xFF909499), size: 20),
-                                 const SizedBox(width: 10),
-                                 const Text("Отпустите, чтобы обновить", style: TextStyle(color: Color(0xFF909499), fontSize: 13, fontWeight: FontWeight.w500)),
-                               ],
-                             );
-                          } else {
-                             content = Row(
-                               mainAxisAlignment: MainAxisAlignment.center,
-                               children: [
-                                 const Icon(Icons.arrow_downward, color: Color(0xFF909499), size: 20),
-                                 const SizedBox(width: 10),
-                                 const Text("Потяните, чтобы обновить", style: TextStyle(color: Color(0xFF909499), fontSize: 13, fontWeight: FontWeight.w500)),
-                               ],
-                             );
-                          }
-                          
-                          return SizedBox(
-                            height: 60,
-                            child: Center(
-                              child: Opacity(
-                                opacity: value.clamp(0.0, 1.0),
-                                child: content,
+                        } else if (value >= 1.0) {
+                          content = Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.refresh,
+                                color: Color(0xFF909499),
+                                size: 20,
                               ),
-                            ),
+                              const SizedBox(width: 10),
+                              const Text(
+                                "Отпустите, чтобы обновить",
+                                style: TextStyle(
+                                  color: Color(0xFF909499),
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
                           );
-                       }, 
-                     ),
-                   ),
+                        } else {
+                          content = Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.arrow_downward,
+                                color: Color(0xFF909499),
+                                size: 20,
+                              ),
+                              const SizedBox(width: 10),
+                              const Text(
+                                "Потяните, чтобы обновить",
+                                style: TextStyle(
+                                  color: Color(0xFF909499),
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          );
+                        }
+
+                        return SizedBox(
+                          height: 60,
+                          child: Center(
+                            child: Opacity(
+                              opacity: value.clamp(0.0, 1.0),
+                              child: content,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                 ],
               );
             },
             child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+              physics: const AlwaysScrollableScrollPhysics(
+                parent: BouncingScrollPhysics(),
+              ),
               // Allow content to bleed through under the header
               clipBehavior: Clip.none,
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(5, 18, 5, 120), // 110px (Positioned) + 18px = 128px total gap
+                padding: const EdgeInsets.fromLTRB(
+                  5,
+                  18,
+                  5,
+                  120,
+                ), // 110px (Positioned) + 18px = 128px total gap
                 child: Column(
                   children: [
                     _buildGeolocationCard(),
@@ -253,7 +330,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
             ),
           ),
         ),
-        
+
         // Sticky Header - Positioned at the top on top of the list
         Positioned(
           top: 10,
@@ -275,7 +352,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
             },
           ),
         ),
-        
+
         // Manual refresh overlay (when home button tapped)
         if (_isManualRefreshing)
           Positioned(
@@ -292,21 +369,42 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                       ? Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: const [
-                            Icon(Icons.check, color: Color(0xFF909499), size: 24),
+                            Icon(
+                              Icons.check,
+                              color: Color(0xFF909499),
+                              size: 24,
+                            ),
                             SizedBox(width: 10),
-                            Text("Обновление завершено", style: TextStyle(color: Color(0xFF909499), fontSize: 13, fontWeight: FontWeight.w500)),
+                            Text(
+                              "Обновление завершено",
+                              style: TextStyle(
+                                color: Color(0xFF909499),
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                           ],
                         )
                       : Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: const [
                             SizedBox(
-                              width: 20, 
-                              height: 20, 
-                              child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFFEB5757))
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Color(0xFFEB5757),
+                              ),
                             ),
                             SizedBox(width: 10),
-                            Text("Обновление...", style: TextStyle(color: Color(0xFF909499), fontSize: 13, fontWeight: FontWeight.w500)), 
+                            Text(
+                              "Обновление...",
+                              style: TextStyle(
+                                color: Color(0xFF909499),
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                           ],
                         ),
                 ),
@@ -322,20 +420,20 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
     setState(() {
       _refreshingSuccess = false;
     });
-    
+
     // Simulate network request
     await Future.delayed(const Duration(seconds: 2));
-    
+
     if (mounted) {
-       // Show Success State
-       setState(() {
-         _refreshingSuccess = true;
-       });
-       
-       // Keep success message visible for a moment
-       await Future.delayed(const Duration(seconds: 1));
-       
-       // Note: Indicator will hide after this future completes
+      // Show Success State
+      setState(() {
+        _refreshingSuccess = true;
+      });
+
+      // Keep success message visible for a moment
+      await Future.delayed(const Duration(seconds: 1));
+
+      // Note: Indicator will hide after this future completes
     }
   }
 
@@ -348,7 +446,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 15),
         child: Column(
           children: [
             const SizedBox(height: 10),
@@ -359,31 +457,43 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                   onTap: () {
                     setState(() {
                       _currentView = HomeViewType.home;
-                      _isLanguageExpanded = false; // Reset expansion when leaving settings
+                      _isLanguageExpanded =
+                          false; // Reset expansion when leaving settings
                     });
                   },
                   child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: const BoxDecoration(
+                    padding: const EdgeInsets.all(15),
+                    decoration: BoxDecoration(
                       color: Colors.white,
                       shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
-                    child: const Icon(Icons.arrow_back_ios_new, size: 18, color: Color(0xFF3C4451)),
+                    child: const Icon(
+                      Icons.arrow_back_ios_new,
+                      size: 20,
+                      color: Colors.black,
+                    ),
                   ),
                 ),
-                const SizedBox(width: 20),
+                const SizedBox(width: 15),
                 Text(
                   'settings'.tr(),
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF3C4451),
+                    color: Colors.black,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 30),
-            
+            const SizedBox(height: 20),
+
             // Change Language
             GestureDetector(
               onTap: () {
@@ -395,39 +505,65 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                 imagePath: 'lib/assets/cl.png',
                 title: 'change_language'.tr(),
                 trailing: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.grey[100],
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
                     children: [
-                      Text(currentLangData['flag']!, style: const TextStyle(fontSize: 16)),
+                      // Circular flag button (zoomed)
+                      ClipOval(
+                        child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: OverflowBox(
+                            maxWidth: 20 * 1.6,
+                            maxHeight: 20 * 1.6,
+                            alignment: Alignment.center,
+                            child: Image.asset(
+                              currentLangData['flag']!,
+                              fit: BoxFit.cover,
+                              width: 20 * 1.6,
+                              height: 20 * 1.6,
+                            ),
+                          ),
+                        ),
+                      ),
                       const SizedBox(width: 8),
                       Text(
-                        currentLangData['name']!, 
-                        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Color(0xFF3C4451))
+                        currentLangData['name']!,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                          color: Color(0xFF3C4451),
+                        ),
                       ),
                       const SizedBox(width: 4),
                       Icon(
-                        _isLanguageExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down, 
-                        size: 18, 
-                        color: Colors.grey
+                        _isLanguageExpanded
+                            ? Icons.keyboard_arrow_up
+                            : Icons.keyboard_arrow_down,
+                        size: 18,
+                        color: Colors.grey,
                       ),
                     ],
                   ),
                 ),
               ),
             ),
-            
+
             // Expanded Language List
             if (_isLanguageExpanded)
               Container(
                 margin: const EdgeInsets.only(top: 8),
-                padding: const EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: 6),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(10),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.04),
@@ -447,17 +583,32 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                         });
                       },
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
                         color: Colors.transparent,
                         child: Row(
                           children: [
-                            Container(
-                              width: 32,
-                              height: 32,
-                              alignment: Alignment.center,
-                              child: Text(lang['flag']!, style: const TextStyle(fontSize: 24)),
+                            // Circular list flag (zoomed)
+                            ClipOval(
+                              child: SizedBox(
+                                width: 32,
+                                height: 32,
+                                child: OverflowBox(
+                                  maxWidth: 32 * 1.6,
+                                  maxHeight: 32 * 1.6,
+                                  alignment: Alignment.center,
+                                  child: Image.asset(
+                                    lang['flag']!,
+                                    fit: BoxFit.cover,
+                                    width: 32 * 1.6,
+                                    height: 32 * 1.6,
+                                  ),
+                                ),
+                              ),
                             ),
-                            const SizedBox(width: 16),
+                            const SizedBox(width: 14),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -465,16 +616,20 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                                   Text(
                                     lang['name']!,
                                     style: const TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w500,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
                                       color: Color(0xFF3C4451),
+                                      height: 1.2,
                                     ),
                                   ),
+                                  const SizedBox(height: 2),
                                   Text(
                                     lang['sub']!,
                                     style: TextStyle(
-                                      fontSize: 12,
+                                      fontSize: 11,
                                       color: Colors.grey[500],
+                                      fontWeight: FontWeight.w400,
+                                      height: 1.2,
                                     ),
                                   ),
                                 ],
@@ -482,25 +637,25 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                             ),
                             if (isSelected)
                               Container(
-                                width: 20,
-                                height: 20,
+                                width: 22,
+                                height: 22,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   border: Border.all(
                                     color: const Color(0xFFEB5757),
-                                    width: 5,
+                                    width: 6,
                                   ),
                                 ),
                               )
                             else
                               Container(
-                                width: 20,
-                                height: 20,
+                                width: 22,
+                                height: 22,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                    color: Colors.grey[400]!,
-                                    width: 1,
+                                    color: const Color.fromARGB(255, 148, 147, 147)!,
+                                    width: 1.5,
                                   ),
                                 ),
                               ),
@@ -511,81 +666,88 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                   }).toList(),
                 ),
               ),
-            
+
             const SizedBox(height: 8),
-            
-            // About the App
-            _buildSettingsItem(
-              imagePath: 'lib/assets/ab.png',
-              title: 'about_app'.tr(),
-              trailing: const Icon(Icons.chevron_right, color: Colors.grey),
-            ),
-            
-            const SizedBox(height: 8),
-            
-            // Technical Support
-            _buildSettingsItem(
-              imagePath: 'lib/assets/tech.png',
-              title: 'tech_support'.tr(),
-              trailing: const Icon(Icons.chevron_right, color: Colors.grey),
-            ),
-            
-            const SizedBox(height: 8),
-            
-            // Log Out
-            GestureDetector(
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(24),
-                          topRight: Radius.circular(50),
-                          bottomLeft: Radius.circular(24),
-                          bottomRight: Radius.circular(24),
-                        ),
-                      ),
-                      backgroundColor: Colors.white,
-                      title: Text('logout_confirmation_title'.tr()),
-                      content: Text('logout_confirmation'.tr()),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Text(
-                            'cancel'.tr(),
-                            style: const TextStyle(color: Color(0xFF3C4451)),
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop(); // Close dialog
-                            Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(builder: (context) => const LoginScreen()),
-                              (route) => false,
-                            );
-                          },
-                          child: Text(
-                            'logout'.tr(),
-                            style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-              child: _buildSettingsItem(
-                imagePath: 'lib/assets/log.png',
-                title: 'logout'.tr(),
-                titleColor: Colors.red,
+
+            // Hide other sections when language list is expanded
+            if (!_isLanguageExpanded) ...[
+              // About the App
+              _buildSettingsItem(
+                imagePath: 'lib/assets/ab.png',
+                title: 'about_app'.tr(),
                 trailing: const Icon(Icons.chevron_right, color: Colors.grey),
               ),
-            ),
-            
+
+              const SizedBox(height: 8),
+
+              // Technical Support
+              _buildSettingsItem(
+                imagePath: 'lib/assets/tech.png',
+                title: 'tech_support'.tr(),
+                trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+              ),
+
+              const SizedBox(height: 8),
+
+              // Log Out
+              GestureDetector(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(24),
+                            topRight: Radius.circular(50),
+                            bottomLeft: Radius.circular(24),
+                            bottomRight: Radius.circular(24),
+                          ),
+                        ),
+                        backgroundColor: Colors.white,
+                        title: Text('logout_confirmation_title'.tr()),
+                        content: Text('logout_confirmation'.tr()),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text(
+                              'cancel'.tr(),
+                              style: const TextStyle(color: Color(0xFF3C4451)),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop(); // Close dialog
+                              Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                  builder: (context) => const LoginScreen(),
+                                ),
+                                (route) => false,
+                              );
+                            },
+                            child: Text(
+                              'logout'.tr(),
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                child: _buildSettingsItem(
+                  imagePath: 'lib/assets/log.png',
+                  title: 'logout'.tr(),
+                  titleColor: Colors.red,
+                  trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+                ),
+              ),
+            ], // Close the if (!_isLanguageExpanded) spread operator
             // Extra padding at bottom
             const SizedBox(height: 40),
           ],
@@ -614,19 +776,26 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
               child: Column(
                 children: [
                   const SizedBox(height: 16),
-                  
+
                   // Header
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Row(
                           children: [
-                             Image.asset('lib/assets/cl.png', width: 24, height: 24),
-                             const SizedBox(width: 12),
-                             Text(
-                              'change_language_title'.tr(), 
+                            Image.asset(
+                              'lib/assets/cl.png',
+                              width: 24,
+                              height: 24,
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              'change_language_title'.tr(),
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -635,27 +804,42 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                             ),
                           ],
                         ),
-                        
+
                         // Selected Language Chip
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.grey[100],
                             borderRadius: BorderRadius.circular(20),
                           ),
-                            child: Row(
+                          child: Row(
                             children: [
                               Text(
-                                _languages.firstWhere((l) => l['locale'] == context.locale)['flag']!, 
-                                style: const TextStyle(fontSize: 16)
+                                _languages.firstWhere(
+                                  (l) => l['locale'] == context.locale,
+                                )['flag']!,
+                                style: const TextStyle(fontSize: 16),
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                _languages.firstWhere((l) => l['locale'] == context.locale)['sub']!, 
-                                style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Color(0xFF3C4451))
+                                _languages.firstWhere(
+                                  (l) => l['locale'] == context.locale,
+                                )['sub']!,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 13,
+                                  color: Color(0xFF3C4451),
+                                ),
                               ),
                               const SizedBox(width: 4),
-                              const Icon(Icons.keyboard_arrow_down, size: 18, color: Colors.grey),
+                              const Icon(
+                                Icons.keyboard_arrow_down,
+                                size: 18,
+                                color: Colors.grey,
+                              ),
                             ],
                           ),
                         ),
@@ -663,7 +847,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                     ),
                   ),
                   const Divider(height: 20),
-                  
+
                   // List
                   Expanded(
                     child: ListView.builder(
@@ -673,63 +857,73 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                         final lang = _languages[index];
                         final isSelected = lang['locale'] == context.locale;
                         return GestureDetector(
-                            onTap: () {
-                                setState(() {
-                                    context.setLocale(lang['locale']);
-                                });
-                                setModalState(() {}); // Update modal UI if needed
-                                Future.delayed(const Duration(milliseconds: 150), () {
-                                  Navigator.pop(context);
-                                });
-                            },
-                            child: Container(
-                                margin: const EdgeInsets.only(bottom: 20),
-                                color: Colors.transparent, 
-                                child: Row(
-                                    children: [
-                                        Container(
-                                            width: 32,
-                                            height: 32,
-                                            alignment: Alignment.center,
-                                            child: Text(lang['flag']!, style: const TextStyle(fontSize: 24)),
-                                        ),
-                                        const SizedBox(width: 16),
-                                        Expanded(
-                                            child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                    Text(
-                                                        lang['name']!,
-                                                        style: const TextStyle(
-                                                            fontSize: 15,
-                                                            fontWeight: FontWeight.w500,
-                                                            color: Color(0xFF3C4451),
-                                                        ),
-                                                    ),
-                                                    Text(
-                                                        lang['sub']!,
-                                                        style: TextStyle(
-                                                            fontSize: 12,
-                                                            color: Colors.grey[500],
-                                                        ),
-                                                    ),
-                                                ],
-                                            ),
-                                        ),
-                                        Container(
-                                            width: 20,
-                                            height: 20,
-                                            decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                border: Border.all(
-                                                    color: isSelected ? const Color(0xFFEB5757) : Colors.grey[400]!, // Red accent from image
-                                                    width: isSelected ? 5 : 1,
-                                                ),
-                                            ),
-                                        ),
-                                    ],
+                          onTap: () {
+                            setState(() {
+                              context.setLocale(lang['locale']);
+                            });
+                            setModalState(() {}); // Update modal UI if needed
+                            Future.delayed(
+                              const Duration(milliseconds: 150),
+                              () {
+                                Navigator.pop(context);
+                              },
+                            );
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.only(bottom: 20),
+                            color: Colors.transparent,
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 32,
+                                  height: 32,
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    lang['flag']!,
+                                    style: const TextStyle(fontSize: 24),
+                                  ),
                                 ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        lang['name']!,
+                                        style: const TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w500,
+                                          color: Color(0xFF3C4451),
+                                        ),
+                                      ),
+                                      Text(
+                                        lang['sub']!,
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey[500],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  width: 20,
+                                  height: 20,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: isSelected
+                                          ? const Color(0xFFEB5757)
+                                          : Colors
+                                                .grey[400]!, // Red accent from image
+                                      width: isSelected ? 5 : 1,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
+                          ),
                         );
                       },
                     ),
@@ -737,7 +931,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                 ],
               ),
             );
-          }
+          },
         );
       },
     );
@@ -764,12 +958,16 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                     color: Colors.white,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.arrow_back_ios_new, size: 18, color: Color(0xFF3C4451)),
+                  child: const Icon(
+                    Icons.arrow_back_ios_new,
+                    size: 18,
+                    color: Color(0xFF3C4451),
+                  ),
                 ),
               ),
               const SizedBox(width: 20),
               const SizedBox(width: 20),
-               Text(
+              Text(
                 'notifications'.tr(),
                 style: const TextStyle(
                   fontSize: 18,
@@ -779,7 +977,7 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
               ),
             ],
           ),
-          
+
           Expanded(
             child: Center(
               child: Text(
@@ -804,33 +1002,33 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
     Color titleColor = const Color(0xFF3C4451),
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(10),
         boxShadow: [
-            BoxShadow(
+          BoxShadow(
             color: Colors.black.withOpacity(0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
-            ),
+          ),
         ],
       ),
       child: Row(
         children: [
-            Image.asset(imagePath, width: 38, height: 38, fit: BoxFit.contain),
-            const SizedBox(width: 16),
-            Expanded(
+          Image.asset(imagePath, width: 44, height: 44, fit: BoxFit.contain),
+          const SizedBox(width: 8),
+          Expanded(
             child: Text(
-                title,
-                style: TextStyle(
-                fontSize: 14,
+              title,
+              style: TextStyle(
+                fontSize: 15,
                 fontWeight: FontWeight.w600,
                 color: titleColor,
-                ),
+              ),
             ),
-            ),
-            if (trailing != null) trailing,
+          ),
+          if (trailing != null) trailing,
         ],
       ),
     );
@@ -1137,20 +1335,20 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                     const SizedBox(height: 16),
                     const Text(
                       'Населенный пункт:',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF909499),
-                            ),
-                          ),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF909499),
+                      ),
+                    ),
                     const Text(
                       'Москва,улица Генерала Тюленева,23к1',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xFF3C4451),
-                            ),
-                          ),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF3C4451),
+                      ),
+                    ),
                     const SizedBox(height: 6),
                     RichText(
                       text: const TextSpan(
@@ -1305,7 +1503,10 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                 children: [
                   TextSpan(
                     text: 'street_label'.tr() + ' ',
-                    style: const TextStyle(color: Color(0xFF909499), fontSize: 14),
+                    style: const TextStyle(
+                      color: Color(0xFF909499),
+                      fontSize: 14,
+                    ),
                   ),
                   const TextSpan(
                     text: 'улица Генерала Тюленева',
@@ -1324,7 +1525,10 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                 children: [
                   TextSpan(
                     text: 'house_label'.tr() + ' ',
-                    style: const TextStyle(color: Color(0xFF909499), fontSize: 14),
+                    style: const TextStyle(
+                      color: Color(0xFF909499),
+                      fontSize: 14,
+                    ),
                   ),
                   const TextSpan(
                     text: '23к1    ',
@@ -1332,7 +1536,10 @@ class HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMi
                   ),
                   TextSpan(
                     text: 'apartment_label'.tr() + ' ',
-                    style: const TextStyle(color: Color(0xFF909499), fontSize: 14),
+                    style: const TextStyle(
+                      color: Color(0xFF909499),
+                      fontSize: 14,
+                    ),
                   ),
                   const TextSpan(
                     text: '9',
@@ -1490,10 +1697,7 @@ class _StoryItem {
   final String title;
   final String imagePath;
 
-  _StoryItem({
-    required this.title,
-    required this.imagePath,
-  });
+  _StoryItem({required this.title, required this.imagePath});
 }
 
 class _StoryOverlay extends StatefulWidget {
@@ -1505,28 +1709,13 @@ class _StoryOverlay extends StatefulWidget {
 
 class _StoryOverlayState extends State<_StoryOverlay> {
   int _currentIndex = 0;
-  
+
   final List<_StoryItem> _stories = [
-     _StoryItem(
-      title: 'story_1'.tr(),
-      imagePath: 'lib/assets/story0.png',
-    ),
-    _StoryItem(
-      title: 'story_2'.tr(),
-      imagePath: 'lib/assets/00.png',
-    ),
-    _StoryItem(
-      title: 'story_3'.tr(),
-      imagePath: 'lib/assets/000.png',
-    ),
-      _StoryItem(
-      title: "story_4".tr(),
-      imagePath: 'lib/assets/0000.png',
-    ),
-    _StoryItem( 
-      title: 'story_5'.tr(),
-      imagePath: 'lib/assets/00000.png',
-    ),
+    _StoryItem(title: 'story_1'.tr(), imagePath: 'lib/assets/story0.png'),
+    _StoryItem(title: 'story_2'.tr(), imagePath: 'lib/assets/00.png'),
+    _StoryItem(title: 'story_3'.tr(), imagePath: 'lib/assets/000.png'),
+    _StoryItem(title: "story_4".tr(), imagePath: 'lib/assets/0000.png'),
+    _StoryItem(title: 'story_5'.tr(), imagePath: 'lib/assets/00000.png'),
   ];
 
   void _nextStory() {
@@ -1546,10 +1735,9 @@ class _StoryOverlayState extends State<_StoryOverlay> {
       });
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
-  
     final story = _stories[_currentIndex];
 
     return Scaffold(
@@ -1561,13 +1749,10 @@ class _StoryOverlayState extends State<_StoryOverlay> {
             Positioned.fill(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 20),
-                child: Image.asset(
-                  story.imagePath,
-                  fit: BoxFit.contain,
-                ),
+                child: Image.asset(story.imagePath, fit: BoxFit.contain),
               ),
             ),
-  
+
             // Text overlay layer - centered on full screen
             Positioned.fill(
               child: SafeArea(
@@ -1609,7 +1794,11 @@ class _StoryOverlayState extends State<_StoryOverlay> {
                       color: Colors.white,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.close, color: Colors.black, size: 20),
+                    child: const Icon(
+                      Icons.close,
+                      color: Colors.black,
+                      size: 20,
+                    ),
                   ),
                 ),
               ),
@@ -1632,7 +1821,11 @@ class _StoryOverlayState extends State<_StoryOverlay> {
                           color: Colors.white,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.chevron_left, color: Colors.black, size: 28),
+                        child: const Icon(
+                          Icons.chevron_left,
+                          color: Colors.black,
+                          size: 28,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -1649,7 +1842,9 @@ class _StoryOverlayState extends State<_StoryOverlay> {
                         ),
                         child: Center(
                           child: Text(
-                            _currentIndex == _stories.length - 1 ? 'Закрыть' : 'Далее',
+                            _currentIndex == _stories.length - 1
+                                ? 'Закрыть'
+                                : 'Далее',
                             style: const TextStyle(
                               color: Colors.black,
                               fontSize: 16,
@@ -1664,46 +1859,47 @@ class _StoryOverlayState extends State<_StoryOverlay> {
                 ],
               ),
             ),
-          
-          // Tap anywhere on right half to go next
-          Positioned(
-            top: 80,
-            bottom: 120, // Avoid overlapping bottom buttons
-            right: 0,
-            width: MediaQuery.of(context).size.width / 2,
-            child: GestureDetector(
-              onTap: _nextStory,
-              child: Container(
-                color: Colors.transparent,
+
+            // Tap anywhere on right half to go next
+            Positioned(
+              top: 80,
+              bottom: 120, // Avoid overlapping bottom buttons
+              right: 0,
+              width: MediaQuery.of(context).size.width / 2,
+              child: GestureDetector(
+                onTap: _nextStory,
+                child: Container(color: Colors.transparent),
               ),
             ),
-          ),
-          
-          // Tap anywhere on left half to go back
-          Positioned(
-            top: 80,
-            bottom: 120, // Avoid overlapping bottom buttons
-            left: 0,
-            width: MediaQuery.of(context).size.width / 2,
-            child: GestureDetector(
-              onTap: _previousStory,
-              child: Container(
-                color: Colors.transparent,
+
+            // Tap anywhere on left half to go back
+            Positioned(
+              top: 80,
+              bottom: 120, // Avoid overlapping bottom buttons
+              left: 0,
+              width: MediaQuery.of(context).size.width / 2,
+              child: GestureDetector(
+                onTap: _previousStory,
+                child: Container(color: Colors.transparent),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 }
 
 class HomeHeader extends StatelessWidget {
   final VoidCallback? onSettingsTap;
   final VoidCallback? onNotificationsTap;
   final VoidCallback? onProfileTap;
-  const HomeHeader({super.key, this.onSettingsTap, this.onNotificationsTap, this.onProfileTap});
+  const HomeHeader({
+    super.key,
+    this.onSettingsTap,
+    this.onNotificationsTap,
+    this.onProfileTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1723,7 +1919,11 @@ class HomeHeader extends StatelessWidget {
                 //   color: Colors.white,
                 // ),
                 child: Center(
-                  child: Image.asset('lib/assets/imp.png', width: 55  , height: 55),
+                  child: Image.asset(
+                    'lib/assets/imp.png',
+                    width: 55,
+                    height: 55,
+                  ),
                 ),
               ),
               Positioned(
@@ -1776,7 +1976,7 @@ class HomeHeader extends StatelessWidget {
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
                   color: Colors.black,
-                  
+
                   letterSpacing: 0.5,
                 ),
               ),
@@ -1879,7 +2079,9 @@ class StatusCard extends StatelessWidget {
           alignment: Alignment.centerRight,
           children: [
             Padding(
-              padding: padding ?? EdgeInsets.fromLTRB(14, 0, centerTick ? 45 : 16, 0),
+              padding:
+                  padding ??
+                  EdgeInsets.fromLTRB(14, 0, centerTick ? 45 : 16, 0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -1889,7 +2091,12 @@ class StatusCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       if (imagePath != null)
-                        Image.asset(imagePath!, width: 22, height: 22, fit: BoxFit.contain)
+                        Image.asset(
+                          imagePath!,
+                          width: 22,
+                          height: 22,
+                          fit: BoxFit.contain,
+                        )
                       else if (icon != null)
                         Icon(icon, color: Colors.black, size: 22),
                       const SizedBox(width: 8),
@@ -1909,7 +2116,10 @@ class StatusCard extends StatelessWidget {
                         children: [
                           if (showBadge && badgeText != null)
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
                                 color: const Color(0xFF02C739),
                                 borderRadius: BorderRadius.circular(20),
@@ -1927,7 +2137,11 @@ class StatusCard extends StatelessWidget {
                             Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Image.asset('lib/assets/editicon.png', width: 20, height: 23),
+                                Image.asset(
+                                  'lib/assets/editicon.png',
+                                  width: 20,
+                                  height: 23,
+                                ),
                                 const SizedBox(width: 6),
                                 Text(
                                   'Change'.tr(),
@@ -1944,7 +2158,11 @@ class StatusCard extends StatelessWidget {
                             SizedBox(
                               width: 24,
                               height: 24,
-                              child: Image.asset('lib/assets/tickk.png', width: 24, height: 24),
+                              child: Image.asset(
+                                'lib/assets/tickk.png',
+                                width: 24,
+                                height: 24,
+                              ),
                             ),
                           ],
                         ],
@@ -1959,7 +2177,8 @@ class StatusCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Expanded(
-                          child: descriptionWidget ??
+                          child:
+                              descriptionWidget ??
                               Text(
                                 description!,
                                 style: const TextStyle(
@@ -1975,7 +2194,11 @@ class StatusCard extends StatelessWidget {
                           SizedBox(
                             width: 24,
                             height: 24,
-                            child: Image.asset('lib/assets/tickk.png', width: 24, height: 24),
+                            child: Image.asset(
+                              'lib/assets/tickk.png',
+                              width: 24,
+                              height: 24,
+                            ),
                           ),
                         ],
                       ],
@@ -1987,7 +2210,11 @@ class StatusCard extends StatelessWidget {
             if (isCompleted && centerTick)
               Positioned(
                 right: 16,
-                child: Image.asset('lib/assets/tickk.png', width: 24, height: 24),
+                child: Image.asset(
+                  'lib/assets/tickk.png',
+                  width: 24,
+                  height: 24,
+                ),
               ),
           ],
         ),
@@ -2005,10 +2232,7 @@ class HomeBackground extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: double.infinity,
-      child: Image.asset(
-        imagePath,
-        fit: BoxFit.cover,
-      ),
+      child: Image.asset(imagePath, fit: BoxFit.cover),
     );
   }
 }

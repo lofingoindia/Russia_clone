@@ -13,7 +13,7 @@ class MainScreen extends StatefulWidget {
   State<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
   late PageController _pageController;
   int _currentIndex = 1; // Default to Home (Center)
 
@@ -27,7 +27,10 @@ class _MainScreenState extends State<MainScreen> {
       HomeScreen(key: HomeScreen.globalKey),
       const ServicesScreen(),
     ];
-    _pageController = PageController(initialPage: _currentIndex);
+    _pageController = PageController(
+      initialPage: _currentIndex,
+      viewportFraction: 1.0,
+    );
   }
 
 
@@ -61,7 +64,7 @@ class _MainScreenState extends State<MainScreen> {
                 });
               }
             },
-            physics: const BouncingScrollPhysics(),
+            physics: const ClampingScrollPhysics(),
             children: _screens,
           ),
           Align(
@@ -80,18 +83,29 @@ class _MainScreenState extends State<MainScreen> {
                       return;
                     }
                     
+                    // Check if we're jumping over the home screen (0 to 2 or 2 to 0)
+                    bool isJumpingOverHome = (_currentIndex == 0 && index == 2) || 
+                                            (_currentIndex == 2 && index == 0);
+                    
                     setState(() {
                       _currentIndex = index;
                       _isManualTransition = true;
                     });
                     
-                    _pageController.animateToPage(
-                      index,
-                      duration: const Duration(milliseconds: 600),
-                      curve: Curves.easeInOutCubic,
-                    ).then((_) {
+                    if (isJumpingOverHome) {
+                      // Jump directly without animation to avoid showing home screen
+                      _pageController.jumpToPage(index);
                       _isManualTransition = false;
-                    });
+                    } else {
+                      // Normal smooth animation for adjacent pages
+                      _pageController.animateToPage(
+                        index,
+                        duration: const Duration(milliseconds: 400),
+                        curve: Curves.easeInOutCubicEmphasized,
+                      ).then((_) {
+                        _isManualTransition = false;
+                      });
+                    }
                   },
                 ),
                 // Solid background for the bottom safe area (home indicator area)
