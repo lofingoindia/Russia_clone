@@ -48,10 +48,10 @@ class InfoScreen extends StatelessWidget {
                   // Image (replace with your asset)
                   Image.asset(
                     'lib/assets/us.png',
-                    height:   255,
+                    height:   230,
                     fit: BoxFit.contain,
                   ),
-                  const SizedBox(height: 70),
+                  const SizedBox(height: 50),
                   // Info list
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -75,7 +75,7 @@ class InfoScreen extends StatelessWidget {
             ),
             // Button
             Positioned(
-              bottom: 20,
+              bottom: 40,
               left: 0,
               right: 0,
               child: Center(

@@ -123,8 +123,8 @@ class HomeScreenState extends State<HomeScreen>
           // Background components
           HomeBackground(
             imagePath: _currentView == HomeViewType.home
-                ? 'lib/assets/neww.png'
-                : 'lib/assets/backy.png',
+                ? 'lib/assets/PH.png'
+                : 'lib/assets/P1.png',
           ),
 
           // Foreground content
@@ -170,6 +170,7 @@ class HomeScreenState extends State<HomeScreen>
                         ]),
                         builder: (context, _) {
                           // Add a little padding while loading (displacement = 50.0)
+                          // Ensure displacement is never negative (only move down, not up)
                           double displacement = controller.isLoading
                               ? 50.0
                               : (80.0 * controller.value);
@@ -177,6 +178,8 @@ class HomeScreenState extends State<HomeScreen>
                           if (_isManualRefreshing) {
                             displacement = _manualDisplacementAnimation.value;
                           }
+                          // Clamp displacement to only allow downward movement (positive values)
+                          displacement = displacement.clamp(0.0, double.infinity);
                           return Transform.translate(
                             offset: Offset(0, displacement),
                             child: child,
@@ -302,7 +305,7 @@ class HomeScreenState extends State<HomeScreen>
             },
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(
-                parent: BouncingScrollPhysics(),
+                parent: ClampingScrollPhysics(),
               ),
               // Allow content to bleed through under the header
               clipBehavior: Clip.none,

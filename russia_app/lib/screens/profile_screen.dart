@@ -95,8 +95,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           // Background
           ProfileBackground(
             imagePath: _showPersonalInfo 
-                ? 'lib/assets/backy.png' 
-                : (_showDocuments ? 'lib/assets/backy.png' : 'lib/assets/backy.png'),
+                ? 'lib/assets/P1.png' 
+                : (_showDocuments ? 'lib/assets/P1.png' : 'lib/assets/P1.png'),
           ),
           
           // Content - toggle between profile, documents, personal info, and document detail

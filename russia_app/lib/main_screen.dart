@@ -64,7 +64,7 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
                 });
               }
             },
-            physics: const ClampingScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             children: _screens,
           ),
           Align(
